@@ -19,7 +19,6 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
-import MemberCarousel from "@/components/MemberCarousel";
 
 export default function HomePage() {
   const { lang, openDonateModal } = useApp();
@@ -460,18 +459,6 @@ export default function HomePage() {
               </button>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* DEVOTEE COMMUNITY / OUR ACTIVE MEMBERS CAROUSEL */}
-      <section className="section-py bg-[#FFF9F2] border-t border-[#E7D8C8]">
-        <div className="page-container max-w-5xl">
-          <div className="text-center max-w-2xl mx-auto section-header space-y-2 mb-8">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#B8893E]">DEVOTEE COMMUNITY</p>
-            <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">Our Active Members</h2>
-          </div>
-
-          <MemberCarousel />
         </div>
       </section>
 
