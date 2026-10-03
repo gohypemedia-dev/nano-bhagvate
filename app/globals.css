@@ -1,26 +1,306 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: var(--surface);
+  --color-saffron: var(--saffron);
+  --color-saffron-hover: var(--saffron-hover);
+  --color-gold: var(--gold);
+  --color-green: var(--green);
+  --color-border: var(--border);
+  
+  --font-serif: var(--font-cormorant), Georgia, serif;
+  --font-sans: var(--font-manrope), system-ui, sans-serif;
+  --font-devanagari: var(--font-devanagari), serif;
+  
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-ring: var(--ring);
+
+  --container-max: 1240px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --background: #FFF9F2;
+  --surface: #FBF2E7;
+  --saffron: #E86F1D;
+  --saffron-hover: #D25E12;
+  --gold: #B8893E;
+  --green: #2F5A43;
+  --green-hover: #234533;
+  --text: #2B201A;
+  --border: rgba(122, 82, 45, 0.14);
+
+  --foreground: #2B201A;
+  --card: #FBF2E7;
+  --card-foreground: #2B201A;
+  --popover: #FFF9F2;
+  --popover-foreground: #2B201A;
+  --primary: #E86F1D;
+  --primary-foreground: #FFFFFF;
+  --secondary: #2F5A43;
+  --secondary-foreground: #FFFFFF;
+  --muted: #F3E7D7;
+  --muted-foreground: #6B5B52;
+  --accent: #B8893E;
+  --accent-foreground: #FFFFFF;
+  --destructive: #D32F2F;
+  --ring: #E86F1D;
+  --radius: 1.125rem; /* 18px */
+}
+
+@layer base {
+  *, ::before, ::after {
+    border-color: var(--border);
+    box-sizing: border-box;
+  }
+  
+  html, body {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-manrope), system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  
+  h1, h2, h3, h4, .font-editorial {
+    font-family: var(--font-cormorant), Georgia, serif;
+    letter-spacing: -0.015em;
+  }
+  
+  .lang-hi {
+    font-family: var(--font-devanagari), Georgia, serif;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ===================================================
+   UNIFIED PAGE CONTAINER & SECTION SPACING
+   =================================================== */
+
+/* Global Page Container: 1240px max width with precise responsive inline padding */
+.page-container {
+  width: 100%;
+  max-width: 1240px;
+  margin-inline: auto;
+  padding-inline: 16px; /* mobile 360px-430px */
+}
+
+@media (min-width: 640px) {
+  .page-container {
+    padding-inline: 24px; /* tablet 768px */
+  }
+}
+
+@media (min-width: 1024px) {
+  .page-container {
+    padding-inline: 32px; /* desktop 1024px-1440px */
+  }
+}
+
+/* Section Vertical Padding Scale */
+.section-py {
+  padding-block: 56px; /* Mobile: 56px */
+}
+@media (min-width: 768px) {
+  .section-py {
+    padding-block: 72px; /* Tablet: 72px */
+  }
+}
+@media (min-width: 1024px) {
+  .section-py {
+    padding-block: 96px; /* Desktop: 96px */
+  }
+}
+
+/* Section Header Spacing */
+.section-header {
+  margin-bottom: 32px;
+}
+@media (min-width: 768px) {
+  .section-header {
+    margin-bottom: 44px;
+  }
+}
+
+/* ===================================================
+   UNIFIED CARD SYSTEM
+   =================================================== */
+
+.card-warm {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #FBF2E7;
+  border: 1px solid rgba(122, 82, 45, 0.14);
+  border-radius: 18px;
+  padding: 22px; /* mobile padding */
+  box-shadow: 0 10px 32px -8px rgba(43, 32, 26, 0.05), 0 4px 12px -2px rgba(232, 111, 29, 0.03);
+  transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 250ms cubic-bezier(0.16, 1, 0.3, 1), border-color 250ms ease;
+}
+
+@media (min-width: 768px) {
+  .card-warm {
+    padding: 26px; /* tablet padding */
+  }
+}
+
+@media (min-width: 1024px) {
+  .card-warm {
+    padding: 30px; /* desktop padding */
+  }
+}
+
+.card-warm:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px -10px rgba(43, 32, 26, 0.09), 0 8px 24px -4px rgba(232, 111, 29, 0.06);
+  border-color: rgba(232, 111, 29, 0.35);
+}
+
+.card-warm-highlight {
+  border: 2px solid #E86F1D;
+  background-color: #FFF9F2;
+}
+
+/* Flex content inside card so buttons auto-align at bottom */
+.card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+
+.card-action {
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+/* ===================================================
+   UNIFIED BUTTON SYSTEM
+   =================================================== */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding-inline: 24px;
+  background-color: #E86F1D;
+  color: #FFFFFF;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px -2px rgba(232, 111, 29, 0.35);
+  transition: all 200ms ease;
+  user-select: none;
+}
+
+.btn-primary:hover {
+  background-color: #D25E12;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px -3px rgba(232, 111, 29, 0.45);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding-inline: 24px;
+  background-color: #2F5A43;
+  color: #FFFFFF;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px -2px rgba(47, 90, 67, 0.3);
+  transition: all 200ms ease;
+}
+
+.btn-secondary:hover {
+  background-color: #234533;
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding-inline: 24px;
+  background-color: #FFF9F2;
+  color: #2B201A;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 12px;
+  border: 1px solid rgba(122, 82, 45, 0.25);
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.btn-outline:hover {
+  background-color: #FBF2E7;
+  border-color: #E86F1D;
+  color: #E86F1D;
+}
+
+/* Form input standardization */
+.input-warm {
+  width: 100%;
+  min-height: 48px;
+  padding-inline: 16px;
+  padding-block: 12px;
+  background-color: #FFF9F2;
+  border: 1px solid rgba(122, 82, 45, 0.2);
+  border-radius: 12px;
+  font-size: 0.9375rem;
+  color: #2B201A;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.input-warm:focus {
+  outline: none;
+  border-color: #E86F1D;
+  box-shadow: 0 0 0 3px rgba(232, 111, 29, 0.15);
+}
+
+textarea.input-warm {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Smooth Scroll behavior */
+html {
+  scroll-behavior: smooth;
 }
