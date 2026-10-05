@@ -44,14 +44,14 @@ export default function FounderPage() {
               </p>
             </div>
 
-            {/* Right photo */}
+            {/* Right photo card */}
             <div className="lg:col-span-5 relative w-full">
-              <div className="relative rounded-[24px] overflow-hidden border-4 border-[#FFF9F2] shadow-2xl aspect-[16/10]">
+              <div className="relative rounded-[28px] overflow-hidden border-4 border-[#FFF9F2] shadow-2xl aspect-[1.58/1]">
                 <Image
                   src="/images/founder-hero-card.jpg"
-                  alt="Pujya Sadhvi Vijeshanand Saraswati Ji"
+                  alt="Pujya Sadhvi Vijeshanand Saraswati Ji - Founder"
                   fill
-                  className="object-cover object-[50%_35%] contrast-[1.04] brightness-[1.02]"
+                  className="object-cover"
                   priority
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 45vw"
                 />

@@ -1,13 +1,21 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { X, Heart, ShieldCheck, QrCode, CheckCircle2, CreditCard } from "lucide-react";
+import { X, Heart, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+
+const MEMBERSHIP_PLANS = [
+  { name: "Membership", price: 1100 },
+  { name: "Silver Membership", price: 5100 },
+  { name: "Gold Membership", price: 11000 },
+  { name: "Platinum Membership", price: 51000 },
+];
 
 export default function DonateModal() {
   const { donateModal, closeDonateModal, lang } = useApp();
   const [selectedAmount, setSelectedAmount] = useState<number>(donateModal.amount || 1100);
+  const [selectedPlanName, setSelectedPlanName] = useState<string>("Membership");
   const [customAmount, setCustomAmount] = useState<string>("");
   const [donorName, setDonorName] = useState("");
   const [donorEmail, setDonorEmail] = useState("");
@@ -15,11 +23,43 @@ export default function DonateModal() {
   const [paymentStep, setPaymentStep] = useState<"SELECT" | "PAY" | "SUCCESS">("SELECT");
   const [isProcessing, setIsProcessing] = useState(false);
 
+  const isMembershipModal = Boolean(
+    donateModal.isMembership ||
+    (donateModal.program && donateModal.program.toLowerCase().includes("membership"))
+  );
+
+  useEffect(() => {
+    if (donateModal.isOpen) {
+      if (isMembershipModal) {
+        const matchedPlan = MEMBERSHIP_PLANS.find(
+          (p) =>
+            p.name.toLowerCase() === donateModal.program?.toLowerCase() ||
+            p.price === donateModal.amount
+        );
+        if (matchedPlan) {
+          setSelectedPlanName(matchedPlan.name);
+          setSelectedAmount(matchedPlan.price);
+        } else {
+          setSelectedPlanName("Membership");
+          setSelectedAmount(1100);
+        }
+        setCustomAmount("");
+      } else {
+        setSelectedAmount(donateModal.amount || 1100);
+        setCustomAmount("");
+      }
+    }
+  }, [donateModal.isOpen, donateModal.program, donateModal.amount, isMembershipModal]);
+
   if (!donateModal.isOpen) return null;
 
   const presetAmounts = [500, 1100, 2100, 5100, 11000];
 
-  const currentAmount = customAmount ? parseFloat(customAmount) || 0 : selectedAmount;
+  const currentAmount = isMembershipModal
+    ? selectedAmount
+    : customAmount
+    ? parseFloat(customAmount) || 0
+    : selectedAmount;
 
   const handlePay = (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,43 +132,82 @@ export default function DonateModal() {
             </div>
           ) : paymentStep === "SELECT" ? (
             <form onSubmit={(e) => { e.preventDefault(); setPaymentStep("PAY"); }} className="space-y-5">
-              <div>
-                <label className="block text-xs font-bold uppercase text-[#2B201A]/80 tracking-wider mb-2">
-                  {lang === "hi" ? "योगदान की राशि चुनें (Select Amount)" : "Select Contribution Amount"}
-                </label>
-                <div className="grid grid-cols-3 gap-2.5">
-                  {presetAmounts.map((amt) => (
-                    <button
-                      key={amt}
-                      type="button"
-                      onClick={() => {
-                        setSelectedAmount(amt);
-                        setCustomAmount("");
-                      }}
-                      className={`py-2.5 px-3 rounded-xl border text-sm font-bold transition-all ${
-                        selectedAmount === amt && !customAmount
-                          ? "bg-[#E86F1D] text-white border-[#E86F1D] shadow-warm-sm"
-                          : "bg-[#FBF2E7] border-[#E7D8C8] text-[#2B201A] hover:border-[#E86F1D]"
-                      }`}
-                    >
-                      ₹{amt.toLocaleString("en-IN")}
-                    </button>
-                  ))}
+              {isMembershipModal ? (
+                /* MEMBERSHIP PLAN SELECTION SECTION */
+                <div>
+                  <label className="block text-xs font-bold uppercase text-[#2B201A]/80 tracking-wider mb-2.5">
+                    {lang === "hi" ? "सदस्यता योजना चुनें" : "Select Membership Plan"}
+                  </label>
+                  <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+                    {MEMBERSHIP_PLANS.map((plan) => {
+                      const isSelected = selectedPlanName === plan.name;
+                      return (
+                        <button
+                          key={plan.name}
+                          type="button"
+                          onClick={() => {
+                            setSelectedPlanName(plan.name);
+                            setSelectedAmount(plan.price);
+                          }}
+                          className={`p-3 sm:p-3.5 rounded-xl border text-left flex flex-col justify-between transition-all min-h-[72px] sm:min-h-[76px] cursor-pointer ${
+                            isSelected
+                              ? "bg-[#E86F1D] text-white border-[#E86F1D] shadow-warm-sm"
+                              : "bg-[#FBF2E7] border-[#E7D8C8] text-[#2B201A] hover:border-[#E86F1D] hover:bg-[#FFF9F2]"
+                          }`}
+                        >
+                          <span className={`text-xs font-bold leading-tight ${isSelected ? "text-white" : "text-[#2B201A]"}`}>
+                            {plan.name}
+                          </span>
+                          <span className={`text-sm sm:text-base font-extrabold mt-1 ${isSelected ? "text-white" : "text-[#E86F1D]"}`}>
+                            ₹{plan.price.toLocaleString("en-IN")}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                /* STANDARD DONATION CONTRIBUTION SECTION */
+                <>
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-[#2B201A]/80 tracking-wider mb-2">
+                      {lang === "hi" ? "योगदान की राशि चुनें (Select Amount)" : "Select Contribution Amount"}
+                    </label>
+                    <div className="grid grid-cols-3 gap-2.5">
+                      {presetAmounts.map((amt) => (
+                        <button
+                          key={amt}
+                          type="button"
+                          onClick={() => {
+                            setSelectedAmount(amt);
+                            setCustomAmount("");
+                          }}
+                          className={`py-2.5 px-3 rounded-xl border text-sm font-bold transition-all ${
+                            selectedAmount === amt && !customAmount
+                              ? "bg-[#E86F1D] text-white border-[#E86F1D] shadow-warm-sm"
+                              : "bg-[#FBF2E7] border-[#E7D8C8] text-[#2B201A] hover:border-[#E86F1D]"
+                          }`}
+                        >
+                          ₹{amt.toLocaleString("en-IN")}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-[#2B201A]/70 mb-1">
-                  {lang === "hi" ? "अथवा अपनी इच्छानुसार राशि दर्ज करें (Or Enter Custom Amount)" : "Or Enter Custom Amount (₹)"}
-                </label>
-                <input
-                  type="number"
-                  placeholder="Enter amount in INR"
-                  value={customAmount}
-                  onChange={(e) => setCustomAmount(e.target.value)}
-                  className="input-warm"
-                />
-              </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-[#2B201A]/70 mb-1">
+                      {lang === "hi" ? "अथवा अपनी इच्छानुसार राशि दर्ज करें (Or Enter Custom Amount)" : "Or Enter Custom Amount (₹)"}
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="Enter amount in INR"
+                      value={customAmount}
+                      onChange={(e) => setCustomAmount(e.target.value)}
+                      className="input-warm"
+                    />
+                  </div>
+                </>
+              )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
@@ -176,7 +255,11 @@ export default function DonateModal() {
                 type="submit"
                 className="btn-primary w-full"
               >
-                <span>Proceed to Pay ₹{currentAmount.toLocaleString("en-IN")}</span>
+                <span>
+                  {isMembershipModal
+                    ? `PROCEED TO PAY ₹${currentAmount.toLocaleString("en-IN")}`
+                    : `Proceed to Pay ₹${currentAmount.toLocaleString("en-IN")}`}
+                </span>
               </button>
             </form>
           ) : (

@@ -33,6 +33,12 @@ export default function MembershipPage() {
         "Direct Seva Participation Opportunities",
       ],
       highlight: false,
+      cardStyle: "bg-[#FFF9F2] border border-[#E7D8C8] shadow-warm-sm hover:border-[#E86F1D]/40 relative",
+      badgeText: null,
+      badgeStyle: "",
+      priceColor: "text-[#E86F1D]",
+      checkColor: "text-[#2F5A43]",
+      buttonStyle: "btn-outline w-full",
     },
     {
       name: "Silver Membership",
@@ -47,6 +53,12 @@ export default function MembershipPage() {
         "Priority Seat Booking at Bhagwat Katha Events",
       ],
       highlight: false,
+      cardStyle: "bg-gradient-to-b from-[#FAFBFD] to-[#EEF1F6] border-2 border-[#C0C7D2] shadow-warm-sm hover:border-[#9AA5B5] relative",
+      badgeText: "SILVER TIER",
+      badgeStyle: "bg-[#E2E6ED] text-[#4A5568] border border-[#CBD2DC]",
+      priceColor: "text-[#3B4656]",
+      checkColor: "text-[#4A5E6D]",
+      buttonStyle: "w-full min-h-[48px] px-6 bg-[#E2E6ED] hover:bg-[#D4DAE4] text-[#2D3748] font-bold text-xs uppercase tracking-wider rounded-xl border border-[#CBD2DC] transition-all shadow-sm hover:shadow flex items-center justify-center cursor-pointer",
     },
     {
       name: "Gold Membership",
@@ -61,6 +73,12 @@ export default function MembershipPage() {
         "Direct Advisory Updates from Trust Board",
       ],
       highlight: true,
+      cardStyle: "bg-gradient-to-b from-[#FFFDF7] via-[#FFF9EA] to-[#FFF3D6] border-2 border-[#D4A359] shadow-warm-md hover:border-[#C68A2E] relative",
+      badgeText: "MOST POPULAR TIER",
+      badgeStyle: "bg-gradient-to-r from-[#D48820] to-[#E86F1D] text-white shadow-warm-sm",
+      priceColor: "text-[#C67A18]",
+      checkColor: "text-[#2F5A43]",
+      buttonStyle: "btn-primary w-full",
     },
     {
       name: "Platinum Membership",
@@ -75,6 +93,12 @@ export default function MembershipPage() {
         "Permanent Inscription at Ashram Wall",
       ],
       highlight: false,
+      cardStyle: "bg-gradient-to-b from-[#F9FAFC] via-[#F2F4F8] to-[#E5E9F0] border-2 border-[#A3AFBF] shadow-warm-sm hover:border-[#8291A5] relative",
+      badgeText: "PATRON TIER",
+      badgeStyle: "bg-[#2B3545] text-white shadow-sm",
+      priceColor: "text-[#242C37]",
+      checkColor: "text-[#3B4856]",
+      buttonStyle: "w-full min-h-[48px] px-6 bg-[#2B3545] hover:bg-[#1E2633] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-warm-sm hover:shadow flex items-center justify-center cursor-pointer",
     },
   ];
 
@@ -112,13 +136,11 @@ export default function MembershipPage() {
             {tiers.map((tier) => (
               <div
                 key={tier.name}
-                className={`card-warm ${
-                  tier.highlight ? "card-warm-highlight relative border-2 border-[#E86F1D]" : ""
-                }`}
+                className={`rounded-[18px] p-6 flex flex-col justify-between transition-all duration-300 ${tier.cardStyle}`}
               >
-                {tier.highlight && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#E86F1D] text-white text-[10px] font-bold uppercase tracking-widest rounded-full shadow-warm-sm">
-                    MOST POPULAR TIER
+                {tier.badgeText && (
+                  <div className={`absolute -top-3.5 left-1/2 -translate-x-1/2 px-3.5 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full z-10 whitespace-nowrap ${tier.badgeStyle}`}>
+                    {tier.badgeText}
                   </div>
                 )}
 
@@ -130,8 +152,8 @@ export default function MembershipPage() {
                     <p className="text-xs text-[#2B201A]/75 mt-1 leading-relaxed">{tier.desc}</p>
                   </div>
 
-                  <div className="py-3 border-y border-[#E7D8C8]">
-                    <span className="font-editorial text-3xl font-bold text-[#E86F1D]">
+                  <div className="py-3 border-y border-[#2B201A]/10">
+                    <span className={`font-editorial text-3xl font-bold ${tier.priceColor}`}>
                       ₹{tier.price.toLocaleString("en-IN")}
                     </span>
                     <span className="text-xs text-[#2B201A]/60 ml-1.5 font-semibold">INR / {tier.period}</span>
@@ -140,7 +162,7 @@ export default function MembershipPage() {
                   <ul className="space-y-2.5 text-xs text-[#2B201A]/85 font-sans pt-1">
                     {tier.features.map((feat, idx) => (
                       <li key={idx} className="flex items-start gap-2">
-                        <Check className="w-4 h-4 text-[#2F5A43] shrink-0 mt-0.5" />
+                        <Check className={`w-4 h-4 shrink-0 mt-0.5 ${tier.checkColor}`} />
                         <span>{feat}</span>
                       </li>
                     ))}
@@ -149,8 +171,8 @@ export default function MembershipPage() {
 
                 <div className="card-action">
                   <button
-                    onClick={() => openDonateModal(tier.name, tier.price)}
-                    className={tier.highlight ? "btn-primary w-full" : "btn-outline w-full"}
+                    onClick={() => openDonateModal(tier.name, tier.price, true)}
+                    className={tier.buttonStyle}
                   >
                     Join Now — ₹{tier.price.toLocaleString("en-IN")}
                   </button>

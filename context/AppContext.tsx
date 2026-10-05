@@ -21,8 +21,8 @@ interface AppContextType {
   cartTotal: number;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
-  donateModal: { isOpen: boolean; program?: string; amount?: number };
-  openDonateModal: (program?: string, amount?: number) => void;
+  donateModal: { isOpen: boolean; program?: string; amount?: number; isMembership?: boolean };
+  openDonateModal: (program?: string, amount?: number, isMembership?: boolean) => void;
   closeDonateModal: () => void;
 }
 
@@ -32,7 +32,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLang] = useState<"en" | "hi">("en");
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [donateModal, setDonateModal] = useState<{ isOpen: boolean; program?: string; amount?: number }>({
+  const [donateModal, setDonateModal] = useState<{ isOpen: boolean; program?: string; amount?: number; isMembership?: boolean }>({
     isOpen: false,
   });
 
@@ -68,8 +68,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const cartTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  const openDonateModal = (program?: string, amount?: number) => {
-    setDonateModal({ isOpen: true, program, amount });
+  const openDonateModal = (program?: string, amount?: number, isMembership?: boolean) => {
+    setDonateModal({ isOpen: true, program, amount, isMembership });
   };
 
   const closeDonateModal = () => {
