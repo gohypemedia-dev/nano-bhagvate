@@ -9,7 +9,7 @@ export interface Member {
 export const membersData: Member[] = [
   {
     name: "Mr Satish Kumar",
-    image: "/images/members/satish-kumar.jpg",
+    image: "/images/members/satish-kumar.png",
   },
   {
     name: "Mr Chandan Singh",
@@ -30,19 +30,19 @@ export const membersData: Member[] = [
   },
   {
     name: "Mrs Rashmi Sharma",
-    image: "/images/members/rashmi-sharma.jpg",
+    image: "/images/members/rashmi-sharma.png",
   },
   {
     name: "Birender Yadav",
-    image: "/images/members/birender-yadav.jpg",
+    image: "/images/members/birender-yadav.png",
   },
   {
     name: "Manish Yadav",
-    image: "/images/members/manish-yadav.jpg",
+    image: "/images/members/manish-yadav.png",
   },
   {
     name: "Dr. Pramod Kumar Mishra",
-    image: "/images/members/pramod-kumar-mishra.jpg",
+    image: "/images/members/pramod-kumar-mishra.png",
   },
   {
     name: "Sonal Goel",
@@ -51,10 +51,10 @@ export const membersData: Member[] = [
   },
   {
     name: "Mr Sanjeev Akeel",
-    image: "/images/members/sanjeev-akeel.jpg",
+    image: "/images/members/sanjeev-akeel.png",
   },
   {
     name: "Mr Mani Singh",
-    image: "/images/members/mani-singh.jpg",
+    image: "/images/members/mani-singh.png",
   },
 ];
