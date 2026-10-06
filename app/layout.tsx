@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Namo Bhagwate Vasudevaya Trust" }],
   openGraph: {
-    title: "Namo Bhagwate Vasudevaya Trust | Rooted in Dharma. Dedicated to Seva.",
+    title: "Namo Bhagwate Vasudevaya Trust | Rooted in Dharma, Dedicated to Seva",
     description:
       "A spiritual and charitable trust empowering communities through spiritual learning, farmer guidance, youth mentorship, and humanitarian service.",
     url: "https://namobhagwatevasudevaya.com",

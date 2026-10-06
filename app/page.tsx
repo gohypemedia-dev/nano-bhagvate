@@ -87,18 +87,17 @@ export default function HomePage() {
             {/* Left Copy */}
             <div className="lg:col-span-7 space-y-6 text-left">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FBF2E7] border border-[#B8893E]/30 text-[#E86F1D] text-xs font-bold uppercase tracking-widest">
-                <Sparkles className="w-3.5 h-3.5 text-[#B8893E]" />
                 <span>DHARMA • SEVA • SANSKAR</span>
               </div>
 
               <h1 className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2B201A] leading-[1.12] tracking-tight">
                 {lang === "hi" ? (
-                  <span className="lang-hi">धर्म में निहित। सेवा के प्रति समर्पित।</span>
+                  <span className="lang-hi">धर्म में निहित। सेवा के प्रति समर्पित</span>
                 ) : (
                   <>
-                    Rooted in <span className="text-[#E86F1D]">Dharma</span>.
+                    Rooted in <span className="text-[#E86F1D]">Dharma</span>
                     <br />
-                    Dedicated to <span className="text-[#B8893E]">Seva</span>.
+                    Dedicated to <span className="text-[#B8893E]">Seva</span>
                   </>
                 )}
               </h1>

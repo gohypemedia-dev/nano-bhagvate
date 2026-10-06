@@ -48,13 +48,12 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             <div className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFF9F2] border border-[#B8893E]/30 text-[#E86F1D] text-xs font-bold uppercase tracking-widest">
-                <Sparkles className="w-3.5 h-3.5 text-[#B8893E]" />
                 <span>ABOUT NAMO BHAGWATE VASUDEVAYA TRUST</span>
               </div>
               <h1 className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2B201A] leading-[1.12]">
-                Rooted in Wisdom.
+                Rooted in Wisdom
                 <br />
-                <span className="text-[#E86F1D]">Driven by Service.</span>
+                <span className="text-[#E86F1D]">Driven by Service</span>
               </h1>
               <p className="text-base sm:text-lg text-[#2B201A]/85 leading-relaxed font-sans">
                 Namo Bhagwate Vasudevaya Trust brings spiritual wisdom and practical service together to strengthen individuals, families, and communities across India.
