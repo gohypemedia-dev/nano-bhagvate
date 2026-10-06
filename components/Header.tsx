@@ -47,12 +47,12 @@ export default function Header() {
           
           {/* 1. LEFT: Trust Logo + Brand Name (285px width) */}
           <Link href="/" className="flex items-center gap-3 shrink-0 min-w-0 group whitespace-nowrap">
-            <div className="relative w-[54px] h-[54px] rounded-full overflow-hidden border-2 border-[#B8893E] shadow-sm transition-transform group-hover:scale-105 shrink-0">
+            <div className="relative w-[54px] h-[54px] rounded-full overflow-hidden border-2 border-[#B8893E] shadow-sm transition-transform group-hover:scale-105 shrink-0 bg-white">
               <Image
                 src="/images/logo.jpg"
                 alt="Namo Bhagwate Vasudevaya Trust Logo"
                 fill
-                className="object-cover"
+                className="object-contain p-0.5"
                 priority
               />
             </div>
@@ -128,12 +128,12 @@ export default function Header() {
         <div className="flex xl:hidden items-center justify-between h-[76px]">
           {/* Mobile Logo + Brand */}
           <Link href="/" className="flex items-center gap-2.5 shrink-0 min-w-0 group">
-            <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-[#B8893E] shadow-sm shrink-0">
+            <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-[#B8893E] shadow-sm shrink-0 bg-white">
               <Image
                 src="/images/logo.jpg"
                 alt="Namo Bhagwate Vasudevaya Trust Logo"
                 fill
-                className="object-cover"
+                className="object-contain p-0.5"
                 priority
               />
             </div>
