@@ -300,6 +300,39 @@ textarea.input-warm {
   resize: vertical;
 }
 
+/* ===================================================
+   FOUNDER CARD OVERLAY STYLES
+   =================================================== */
+
+.founder-text-overlay {
+  position: absolute;
+  left: 24px;
+  bottom: 18px;
+  right: 20px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.founder-label {
+  color: #d97706;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.founder-name {
+  color: #ffffff;
+  font-family: Georgia, serif;
+  font-size: 22px;
+  line-height: 1.1;
+  font-weight: 600;
+  margin: 0;
+  padding: 0;
+  text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
 /* Smooth Scroll behavior */
 html {
   scroll-behavior: smooth;

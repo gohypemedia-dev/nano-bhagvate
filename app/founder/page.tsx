@@ -55,6 +55,16 @@ export default function FounderPage() {
                   priority
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 45vw"
                 />
+                {/* Reduced Height & Intensity Dark Gradient Overlay at Bottom */}
+                <div className="absolute bottom-0 left-0 right-0 h-[32%] bg-gradient-to-t from-black/75 via-black/30 to-transparent pointer-events-none" />
+                
+                {/* Lower-left Clean Text Overlay */}
+                <div className="founder-text-overlay">
+                  <div className="founder-label">FOUNDER</div>
+                  <div className="founder-name">
+                    Pujya Sadhvi Vijeshanand Saraswati Ji
+                  </div>
+                </div>
               </div>
             </div>
           </div>

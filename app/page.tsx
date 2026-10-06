@@ -156,18 +156,15 @@ export default function HomePage() {
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 45vw"
                     />
                   </div>
-                  {/* Subtle Dark Gradient Overlay at Bottom */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#2B201A]/95 via-[#2B201A]/30 to-transparent" />
+                  {/* Reduced Height & Intensity Dark Gradient Overlay at Bottom */}
+                  <div className="absolute bottom-0 left-0 right-0 h-[32%] bg-gradient-to-t from-black/75 via-black/30 to-transparent pointer-events-none" />
                   
-                  {/* Lower-left Safe Space Text Overlay */}
-                  <div className="absolute bottom-5 left-5 right-5 text-white space-y-1">
-                    <p className="text-xs font-bold text-[#B8893E] uppercase tracking-[0.15em] flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-[#E86F1D] inline-block" />
-                      FOUNDER
-                    </p>
-                    <h3 className="font-editorial text-xl sm:text-2xl font-bold text-white tracking-tight leading-tight">
+                  {/* Lower-left Clean Text Overlay */}
+                  <div className="founder-text-overlay">
+                    <div className="founder-label">FOUNDER</div>
+                    <div className="founder-name">
                       Pujya Sadhvi Vijeshanand Saraswati Ji
-                    </h3>
+                    </div>
                   </div>
                 </div>
               </div>
