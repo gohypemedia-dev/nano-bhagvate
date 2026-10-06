@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Dev only: lets a phone on the same Wi-Fi open the dev server via this PC's LAN IP.
+  allowedDevOrigins: ["192.168.0.3"],
 };
 
 export default nextConfig;
