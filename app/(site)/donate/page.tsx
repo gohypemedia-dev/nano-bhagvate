@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { Heart, BookOpen, Sprout, GraduationCap, Sun, ShieldCheck, QrCode } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
@@ -125,22 +124,17 @@ export default function DonatePage() {
 
             <h2 className="font-editorial text-3xl font-bold text-[#2B201A]">Scan & Support</h2>
             <p className="text-sm text-[#2B201A]/85 max-w-lg mx-auto">
-              Scan the official Trust QR code below using any UPI app (BHIM, Google Pay, PhonePe, Paytm) to contribute instantly and securely.
+              Choose your amount and we will create a UPI QR code for exactly that amount. Pay with any UPI app (BHIM, Google Pay, PhonePe, Paytm), then share the UTR so we can verify your donation and email your confirmation.
             </p>
 
-            {/* QR Container */}
-            <div className="relative w-60 h-60 mx-auto rounded-2xl overflow-hidden border-4 border-[#B8893E] p-2 bg-white shadow-2xl">
-              <Image src="/images/qr-code.jpg" alt="Official Trust Payment QR" fill className="object-contain" />
-            </div>
-
-            <div className="space-y-1">
-              <p className="text-sm font-bold text-[#2B201A]">Namo Bhagwate Vasudevaya Trust</p>
-              <p className="text-xs font-mono text-[#E86F1D] font-bold">UPI ID: namobhagwate@upi</p>
-            </div>
+            <button onClick={() => openDonateModal("General Donation")} className="btn-primary mx-auto">
+              <QrCode className="w-4 h-4" />
+              <span>Get My UPI QR Code</span>
+            </button>
 
             <div className="pt-4 flex items-center justify-center gap-2 text-xs text-[#2B201A]/75 font-semibold">
               <ShieldCheck className="w-4 h-4 text-[#2F5A43]" />
-              <span>All contributions are securely processed and receipts issued via email.</span>
+              <span>Payments go directly to the Trust&apos;s UPI account. Confirmation emails are sent after verification.</span>
             </div>
           </div>
         </div>

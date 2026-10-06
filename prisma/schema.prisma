@@ -1,0 +1,166 @@
+// Donation system schema. See DONATION_SYSTEM.md for the flow.
+
+generator client {
+  provider   = "prisma-client-js"
+  // No native query engine: runs on any CPU (incl. Windows on ARM) and on serverless,
+  // talking to Postgres through the `pg` driver adapter (see lib/server/prisma.ts).
+  engineType = "client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL") // Neon pooled connection (host contains "-pooler")
+  directUrl = env("DIRECT_URL") // Neon direct connection, used by prisma migrate
+}
+
+enum DonationStatus {
+  PENDING_PAYMENT
+  PENDING_VERIFICATION
+  VERIFIED
+  REJECTED
+  CANCELLED
+}
+
+enum DonationType {
+  DONATION
+  MEMBERSHIP
+}
+
+enum PaymentMethod {
+  UPI_MANUAL
+  GATEWAY
+}
+
+enum EmailStatus {
+  NOT_SENT
+  SENT
+  FAILED
+}
+
+enum VerificationSource {
+  ADMIN
+  BANK_EMAIL
+}
+
+enum AlertStatus {
+  MATCHED
+  AMBIGUOUS
+  UNMATCHED
+}
+
+model Donation {
+  id                 String              @id @default(cuid())
+  donationId         String              @unique
+  type               DonationType        @default(DONATION)
+  program            String?
+  donorName          String
+  donorEmail         String
+  donorMobile        String?
+  amountPaise        Int
+  currency           String              @default("INR")
+  status             DonationStatus      @default(PENDING_PAYMENT)
+  paymentMethod      PaymentMethod       @default(UPI_MANUAL)
+  upiUri             String
+  submitTokenHash    String
+  utr                String?
+  utrOverride        Boolean             @default(false)
+  screenshotKey      String?
+  proofSubmittedAt   DateTime?
+  providerRef        String?             @unique
+  adminNote          String?
+  verifiedById       String?
+  verifiedBy         AdminUser?          @relation("VerifiedBy", fields: [verifiedById], references: [id])
+  verifiedAt         DateTime?
+  verificationSource VerificationSource?
+  rejectedAt         DateTime?
+  emailStatus        EmailStatus         @default(NOT_SENT)
+  emailSentAt        DateTime?
+  emails             EmailLog[]
+  utrClaim           UtrClaim?
+  paymentAlert       PaymentAlert?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@index([status, createdAt])
+  @@index([utr])
+  @@index([donorEmail])
+}
+
+// One row per UTR that is attached to an active (pending or verified) donation.
+// The primary key makes duplicate UTRs impossible, even under concurrent submits.
+// Rejecting a donation deletes its claim; an admin override skips the claim.
+model UtrClaim {
+  utr        String   @id
+  donationId String   @unique
+  donation   Donation @relation(fields: [donationId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+}
+
+model AdminUser {
+  id           String         @id @default(cuid())
+  email        String         @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime       @default(now())
+  sessions     AdminSession[]
+  verified     Donation[]     @relation("VerifiedBy")
+}
+
+model AdminSession {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  adminId   String
+  admin     AdminUser @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+
+  @@index([expiresAt])
+}
+
+model EmailLog {
+  id         String      @id @default(cuid())
+  donationId String
+  donation   Donation    @relation(fields: [donationId], references: [id], onDelete: Cascade)
+  to         String
+  status     EmailStatus
+  providerId String?
+  error      String?
+  createdAt  DateTime    @default(now())
+
+  @@index([donationId])
+}
+
+// Fixed-window rate limit counters (replaces Redis). Expired rows are
+// removed by the daily cleanup job.
+model RateLimit {
+  key     String   @id
+  count   Int
+  resetAt DateTime
+
+  @@index([resetAt])
+}
+
+// One row per bank "amount credited" email read from the Gmail inbox.
+model PaymentAlert {
+  id          String      @id @default(cuid())
+  messageId   String      @unique
+  fromAddress String
+  subject     String
+  amountPaise Int
+  utr         String?
+  payer       String?
+  receivedAt  DateTime
+  status      AlertStatus
+  donationId  String?     @unique
+  donation    Donation?   @relation(fields: [donationId], references: [id], onDelete: SetNull)
+  note        String?
+  createdAt   DateTime    @default(now())
+
+  @@index([status, receivedAt])
+}
+
+// Bookkeeping for background jobs (e.g. when the inbox was last checked).
+model SyncState {
+  id        String   @id
+  lastRunAt DateTime
+}

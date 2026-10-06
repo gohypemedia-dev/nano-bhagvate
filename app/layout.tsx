@@ -2,10 +2,6 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Manrope, Noto_Serif_Devanagari } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/context/AppContext";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import CartDrawer from "@/components/CartDrawer";
-import DonateModal from "@/components/DonateModal";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -74,13 +70,7 @@ export default function RootLayout({
       className={`${cormorant.variable} ${manrope.variable} ${devanagari.variable} h-full antialiased`}
     >
       <body suppressHydrationWarning className="min-h-full flex flex-col bg-[#FFF9F2] text-[#2B201A] font-sans">
-        <AppProvider>
-          <Header />
-          <main className="flex-1 w-full">{children}</main>
-          <Footer />
-          <CartDrawer />
-          <DonateModal />
-        </AppProvider>
+        <AppProvider>{children}</AppProvider>
       </body>
     </html>
   );
