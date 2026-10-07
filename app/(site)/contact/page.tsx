@@ -3,6 +3,22 @@
 import React, { useState } from "react";
 import { Mail, Phone, MapPin, Send, CheckCircle2, Clock } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+import {
+  sanitizeEmail,
+  sanitizeMobile,
+  sanitizeName,
+  validateEmail,
+  validateMobile,
+  validateName,
+} from "@/lib/validation/donation";
+
+function validateMessage(msg: string): string | null {
+  const cleaned = msg.trim();
+  if (!cleaned || cleaned.length < 5) {
+    return "Please enter your message.";
+  }
+  return null;
+}
 
 export default function ContactPage() {
   const { lang } = useApp();
@@ -15,8 +31,55 @@ export default function ContactPage() {
     message: "",
   });
 
+  const [errors, setErrors] = useState<Record<string, string | undefined>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const handleBlur = (field: string) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    if (field === "fullName") {
+      const err = validateName(formData.fullName);
+      setErrors((prev) => ({ ...prev, fullName: err || undefined }));
+    } else if (field === "email") {
+      const err = validateEmail(formData.email);
+      setErrors((prev) => ({ ...prev, email: err || undefined }));
+    } else if (field === "phone") {
+      const err = validateMobile(formData.phone, false);
+      setErrors((prev) => ({ ...prev, phone: err || undefined }));
+    } else if (field === "message") {
+      const err = validateMessage(formData.message);
+      setErrors((prev) => ({ ...prev, message: err || undefined }));
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const nameErr = validateName(formData.fullName);
+    const emailErr = validateEmail(formData.email);
+    const phoneErr = validateMobile(formData.phone, false);
+    const msgErr = validateMessage(formData.message);
+
+    if (nameErr || emailErr || phoneErr || msgErr) {
+      setErrors({
+        fullName: nameErr || undefined,
+        email: emailErr || undefined,
+        phone: phoneErr || undefined,
+        message: msgErr || undefined,
+      });
+      if (nameErr) document.getElementById("contact-fullname")?.focus();
+      else if (emailErr) document.getElementById("contact-email")?.focus();
+      else if (phoneErr) document.getElementById("contact-phone")?.focus();
+      else if (msgErr) document.getElementById("contact-message")?.focus();
+      return;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      fullName: sanitizeName(prev.fullName),
+      email: sanitizeEmail(prev.email),
+      phone: sanitizeMobile(prev.phone),
+      subject: prev.subject.trim(),
+      message: prev.message.trim(),
+    }));
     setFormSubmitted(true);
   };
 
@@ -59,57 +122,94 @@ export default function ContactPage() {
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit} noValidate className="space-y-5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
+                      <label htmlFor="contact-fullname" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
                         Full Name *
                       </label>
                       <input
+                        id="contact-fullname"
                         type="text"
                         required
+                        maxLength={60}
                         placeholder="Your full name"
                         value={formData.fullName}
-                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, fullName: e.target.value });
+                          if (errors.fullName && validateName(e.target.value) === null) {
+                            setErrors((prev) => ({ ...prev, fullName: undefined }));
+                          }
+                        }}
+                        onBlur={() => handleBlur("fullName")}
                         className="input-warm"
                       />
+                      {errors.fullName && (touched.fullName || errors.fullName) && (
+                        <p className="mt-1 text-xs font-semibold text-[#B3261E]">{errors.fullName}</p>
+                      )}
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
+                      <label htmlFor="contact-email" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
                         Email Address *
                       </label>
                       <input
+                        id="contact-email"
                         type="email"
                         required
+                        maxLength={254}
                         placeholder="name@example.com"
                         value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, email: e.target.value });
+                          if (errors.email && validateEmail(e.target.value) === null) {
+                            setErrors((prev) => ({ ...prev, email: undefined }));
+                          }
+                        }}
+                        onBlur={() => handleBlur("email")}
                         className="input-warm"
                       />
+                      {errors.email && (touched.email || errors.email) && (
+                        <p className="mt-1 text-xs font-semibold text-[#B3261E]">{errors.email}</p>
+                      )}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
-                        Phone Number
+                      <label htmlFor="contact-phone" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
+                        Phone Number <span className="font-normal text-[#2B201A]/50">(optional)</span>
                       </label>
                       <input
+                        id="contact-phone"
                         type="tel"
-                        placeholder="+91 98765 43210"
+                        inputMode="numeric"
+                        maxLength={10}
+                        placeholder="9876543210"
                         value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        onChange={(e) => {
+                          const sanitized = e.target.value.replace(/\D/g, "").slice(0, 10);
+                          setFormData({ ...formData, phone: sanitized });
+                          if (errors.phone && validateMobile(sanitized, false) === null) {
+                            setErrors((prev) => ({ ...prev, phone: undefined }));
+                          }
+                        }}
+                        onBlur={() => handleBlur("phone")}
                         className="input-warm"
                       />
+                      {errors.phone && (touched.phone || errors.phone) && (
+                        <p className="mt-1 text-xs font-semibold text-[#B3261E]">{errors.phone}</p>
+                      )}
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
+                      <label htmlFor="contact-subject" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
                         Subject
                       </label>
                       <input
+                        id="contact-subject"
                         type="text"
+                        maxLength={120}
                         placeholder="e.g., Membership Enquiry"
                         value={formData.subject}
                         onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
@@ -119,17 +219,28 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
+                    <label htmlFor="contact-message" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
                       Message *
                     </label>
                     <textarea
+                      id="contact-message"
                       required
                       rows={5}
+                      maxLength={2000}
                       placeholder="How can Namo Bhagwate Vasudevaya Trust assist you today?"
                       value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      onChange={(e) => {
+                        setFormData({ ...formData, message: e.target.value });
+                        if (errors.message && validateMessage(e.target.value) === null) {
+                          setErrors((prev) => ({ ...prev, message: undefined }));
+                        }
+                      }}
+                      onBlur={() => handleBlur("message")}
                       className="input-warm"
                     />
+                    {errors.message && (touched.message || errors.message) && (
+                      <p className="mt-1 text-xs font-semibold text-[#B3261E]">{errors.message}</p>
+                    )}
                   </div>
 
                   <button type="submit" className="btn-primary w-full">

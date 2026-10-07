@@ -6,7 +6,17 @@ import { QRCodeSVG } from "qrcode.react";
 import { X, Heart, ShieldCheck, Smartphone, Copy, Check, Loader2, CheckCircle2 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { MEMBERSHIP_PLANS, PRESET_AMOUNTS, formatINR } from "@/lib/donation-config";
-import { createDonationSchema, parseRupees } from "@/lib/validation/donation";
+import {
+  createDonationSchema,
+  parseRupees,
+  sanitizeEmail,
+  sanitizeMobile,
+  sanitizeName,
+  validateAmount,
+  validateEmail,
+  validateMobile,
+  validateName,
+} from "@/lib/validation/donation";
 
 // SELECT → PAY (QR shown) → WAITING (donor says they paid) → DONE (bank alert matched).
 // The page polls the server while on PAY/WAITING; no UTR or screenshot is needed.
@@ -74,6 +84,9 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
   const [donorEmail, setDonorEmail] = useState("");
   const [donorPhone, setDonorPhone] = useState("");
 
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [submitted, setSubmitted] = useState(false);
+
   const [slow, setSlow] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
 
@@ -97,6 +110,8 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
     setOpenedFor(openKey);
     if (openKey) {
       setError(null);
+      setTouched({});
+      setSubmitted(false);
       const saved = loadSaved();
       if (saved) {
         setSession(saved.session);
@@ -188,6 +203,8 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
     setSlow(false);
     setEmailSent(false);
     setError(null);
+    setTouched({});
+    setSubmitted(false);
   }
 
   function goTo(next: Step, s: PaymentSession | null = session) {
@@ -197,24 +214,93 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
     if (s && (next === "PAY" || next === "WAITING")) save(s, next);
   }
 
+  function handleBlurField(field: string) {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    if (field === "name") {
+      const err = validateName(donorName);
+      if (err) setError({ message: err, field: "name" });
+      else if (error?.field === "name") setError(null);
+    } else if (field === "email") {
+      const err = validateEmail(donorEmail);
+      if (err) setError({ message: err, field: "email" });
+      else if (error?.field === "email") setError(null);
+    } else if (field === "mobile") {
+      const err = validateMobile(donorPhone, false);
+      if (err) setError({ message: err, field: "mobile" });
+      else if (error?.field === "mobile") setError(null);
+    } else if (field === "amount" && !isMembership) {
+      const amt = customAmount ? parseRupees(customAmount) : selectedAmount;
+      const err = validateAmount(amt, minAmount);
+      if (err) setError({ message: err, field: "amount" });
+      else if (error?.field === "amount") setError(null);
+    }
+  }
+
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
+    if (busy) return;
+    setSubmitted(true);
     setError(null);
-    if (!isMembership && customAmount && typedAmount === null) {
-      setError({ message: "Please enter a whole rupee amount using digits only.", field: "amount" });
+
+    if (!isMembership) {
+      const amt = customAmount ? parseRupees(customAmount) : selectedAmount;
+      const amountErr = validateAmount(amt, minAmount);
+      if (amountErr) {
+        setError({ message: amountErr, field: "amount" });
+        if (customAmount) {
+          document.getElementById("donate-custom-amount")?.focus();
+        }
+        return;
+      }
+    }
+
+    const nameErr = validateName(donorName);
+    if (nameErr) {
+      setError({ message: nameErr, field: "name" });
+      document.getElementById("donate-name")?.focus();
       return;
     }
+
+    const mobileErr = validateMobile(donorPhone, false);
+    if (mobileErr) {
+      setError({ message: mobileErr, field: "mobile" });
+      document.getElementById("donate-mobile")?.focus();
+      return;
+    }
+
+    const emailErr = validateEmail(donorEmail);
+    if (emailErr) {
+      setError({ message: emailErr, field: "email" });
+      document.getElementById("donate-email")?.focus();
+      return;
+    }
+
+    const cleanName = sanitizeName(donorName);
+    const cleanEmail = sanitizeEmail(donorEmail);
+    const cleanMobile = sanitizeMobile(donorPhone);
+
     const payload = {
-      name: donorName,
-      email: donorEmail,
-      mobile: donorPhone,
+      name: cleanName,
+      email: cleanEmail,
+      mobile: cleanMobile,
       program: donateModal.program || "General Donation",
       ...(isMembership ? { planId: plan.id } : { amount: currentAmount }),
     };
+
     const check = createDonationSchema(minAmount).safeParse(payload);
     if (!check.success) {
       const issue = check.error.issues[0];
-      setError({ message: issue.message, field: String(issue.path[0]) });
+      const field = String(issue?.path[0] ?? "");
+      setError({ message: issue?.message ?? "Please check your details.", field });
+      const targetId =
+        field === "name"
+          ? "donate-name"
+          : field === "email"
+          ? "donate-email"
+          : field === "mobile"
+          ? "donate-mobile"
+          : "donate-custom-amount";
+      document.getElementById(targetId)?.focus();
       return;
     }
 
@@ -226,7 +312,19 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
-        setError(await readError(res));
+        const errObj = await readError(res);
+        setError(errObj);
+        if (errObj.field) {
+          const targetId =
+            errObj.field === "name"
+              ? "donate-name"
+              : errObj.field === "email"
+              ? "donate-email"
+              : errObj.field === "mobile"
+              ? "donate-mobile"
+              : "donate-custom-amount";
+          document.getElementById(targetId)?.focus();
+        }
         return;
       }
       const data = await res.json();
@@ -375,9 +473,15 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
                         type="text"
                         inputMode="numeric"
                         autoComplete="off"
+                        maxLength={7}
                         placeholder={`Minimum ${formatINR(minAmount)}`}
                         value={customAmount}
-                        onChange={(e) => setCustomAmount(e.target.value.replace(/[^\d]/g, "").slice(0, 7))}
+                        onChange={(e) => {
+                          const sanitized = e.target.value.replace(/\D/g, "").slice(0, 7);
+                          setCustomAmount(sanitized);
+                          if (error?.field === "amount") setError(null);
+                        }}
+                        onBlur={() => handleBlurField("amount")}
                         className="input-warm"
                       />
                       {fieldError("amount")}
@@ -388,19 +492,62 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label htmlFor="donate-name" className="block text-xs font-semibold text-[#2B201A]/80 mb-1">Full Name *</label>
-                    <input id="donate-name" type="text" autoComplete="name" required maxLength={100} placeholder="Your full name" value={donorName} onChange={(e) => setDonorName(e.target.value)} className="input-warm" />
+                    <input
+                      id="donate-name"
+                      type="text"
+                      autoComplete="name"
+                      required
+                      maxLength={60}
+                      placeholder="Your full name"
+                      value={donorName}
+                      onChange={(e) => {
+                        setDonorName(e.target.value);
+                        if (error?.field === "name" && validateName(e.target.value) === null) setError(null);
+                      }}
+                      onBlur={() => handleBlurField("name")}
+                      className="input-warm"
+                    />
                     {fieldError("name")}
                   </div>
                   <div>
                     <label htmlFor="donate-mobile" className="block text-xs font-semibold text-[#2B201A]/80 mb-1">Mobile Number <span className="font-normal text-[#2B201A]/50">(optional)</span></label>
-                    <input id="donate-mobile" type="tel" autoComplete="tel" inputMode="tel" maxLength={16} placeholder="98765 43210" value={donorPhone} onChange={(e) => setDonorPhone(e.target.value)} className="input-warm" />
+                    <input
+                      id="donate-mobile"
+                      type="tel"
+                      autoComplete="tel"
+                      inputMode="numeric"
+                      maxLength={10}
+                      placeholder="9876543210"
+                      value={donorPhone}
+                      onChange={(e) => {
+                        const sanitized = e.target.value.replace(/\D/g, "").slice(0, 10);
+                        setDonorPhone(sanitized);
+                        if (error?.field === "mobile" && validateMobile(sanitized, false) === null) setError(null);
+                      }}
+                      onBlur={() => handleBlurField("mobile")}
+                      className="input-warm"
+                    />
                     {fieldError("mobile")}
                   </div>
                 </div>
 
                 <div>
                   <label htmlFor="donate-email" className="block text-xs font-semibold text-[#2B201A]/80 mb-1">Email Address *</label>
-                  <input id="donate-email" type="email" autoComplete="email" required maxLength={254} placeholder="email@example.com" value={donorEmail} onChange={(e) => setDonorEmail(e.target.value)} className="input-warm" />
+                  <input
+                    id="donate-email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    maxLength={254}
+                    placeholder="email@example.com"
+                    value={donorEmail}
+                    onChange={(e) => {
+                      setDonorEmail(e.target.value);
+                      if (error?.field === "email" && validateEmail(e.target.value) === null) setError(null);
+                    }}
+                    onBlur={() => handleBlurField("email")}
+                    className="input-warm"
+                  />
                   {fieldError("email")}
                   <p className="mt-1 text-xs text-[#2B201A]/55">Your confirmation will be sent here after we verify the payment.</p>
                 </div>

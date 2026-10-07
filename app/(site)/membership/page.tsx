@@ -5,6 +5,23 @@ import Image from "next/image";
 import { CheckCircle2, Shield, Heart, Users, BookOpen, Check } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import MemberCarousel from "@/components/MemberCarousel";
+import {
+  sanitizeEmail,
+  sanitizeMobile,
+  sanitizeName,
+  validateEmail,
+  validateMobile,
+  validateName,
+} from "@/lib/validation/donation";
+
+function validateAge(ageStr: string): string | null {
+  if (!ageStr.trim()) return "Please enter your age.";
+  const num = Number.parseInt(ageStr, 10);
+  if (isNaN(num) || num < 18 || num > 120) {
+    return "Please enter a valid age (18-120).";
+  }
+  return null;
+}
 
 export default function MembershipPage() {
   const { lang, openDonateModal } = useApp();
@@ -18,6 +35,9 @@ export default function MembershipPage() {
     state: "",
     message: "",
   });
+
+  const [errors, setErrors] = useState<Record<string, string | undefined>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   const tiers = [
     {
@@ -102,8 +122,50 @@ export default function MembershipPage() {
     },
   ];
 
+  const handleBlur = (field: string) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    if (field === "fullName") {
+      const err = validateName(formData.fullName);
+      setErrors((prev) => ({ ...prev, fullName: err || undefined }));
+    } else if (field === "email") {
+      const err = validateEmail(formData.email);
+      setErrors((prev) => ({ ...prev, email: err || undefined }));
+    } else if (field === "phone") {
+      const err = validateMobile(formData.phone, true);
+      setErrors((prev) => ({ ...prev, phone: err || undefined }));
+    } else if (field === "age") {
+      const err = validateAge(formData.age);
+      setErrors((prev) => ({ ...prev, age: err || undefined }));
+    }
+  };
+
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const nameErr = validateName(formData.fullName);
+    const emailErr = validateEmail(formData.email);
+    const phoneErr = validateMobile(formData.phone, true);
+    const ageErr = validateAge(formData.age);
+
+    if (nameErr || emailErr || phoneErr || ageErr) {
+      setErrors({
+        fullName: nameErr || undefined,
+        email: emailErr || undefined,
+        phone: phoneErr || undefined,
+        age: ageErr || undefined,
+      });
+      if (nameErr) document.getElementById("mem-fullname")?.focus();
+      else if (emailErr) document.getElementById("mem-email")?.focus();
+      else if (phoneErr) document.getElementById("mem-phone")?.focus();
+      else if (ageErr) document.getElementById("mem-age")?.focus();
+      return;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      fullName: sanitizeName(prev.fullName),
+      email: sanitizeEmail(prev.email),
+      phone: sanitizeMobile(prev.phone),
+    }));
     setFormSubmitted(true);
   };
 
@@ -282,70 +344,120 @@ export default function MembershipPage() {
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleFormSubmit} className="space-y-5">
+              <form onSubmit={handleFormSubmit} noValidate className="space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
+                    <label htmlFor="mem-fullname" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
                       Full Name *
                     </label>
                     <input
+                      id="mem-fullname"
                       type="text"
                       required
+                      maxLength={60}
                       placeholder="Enter your full name"
                       value={formData.fullName}
-                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                      onChange={(e) => {
+                        setFormData({ ...formData, fullName: e.target.value });
+                        if (errors.fullName && validateName(e.target.value) === null) {
+                          setErrors((prev) => ({ ...prev, fullName: undefined }));
+                        }
+                      }}
+                      onBlur={() => handleBlur("fullName")}
                       className="input-warm"
                     />
+                    {errors.fullName && (touched.fullName || errors.fullName) && (
+                      <p className="mt-1 text-xs font-semibold text-[#B3261E]">{errors.fullName}</p>
+                    )}
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
+                    <label htmlFor="mem-email" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
                       Email Address *
                     </label>
                     <input
+                      id="mem-email"
                       type="email"
                       required
+                      maxLength={254}
                       placeholder="email@domain.com"
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onChange={(e) => {
+                        setFormData({ ...formData, email: e.target.value });
+                        if (errors.email && validateEmail(e.target.value) === null) {
+                          setErrors((prev) => ({ ...prev, email: undefined }));
+                        }
+                      }}
+                      onBlur={() => handleBlur("email")}
                       className="input-warm"
                     />
+                    {errors.email && (touched.email || errors.email) && (
+                      <p className="mt-1 text-xs font-semibold text-[#B3261E]">{errors.email}</p>
+                    )}
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
+                    <label htmlFor="mem-phone" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
                       Phone Number *
                     </label>
                     <input
+                      id="mem-phone"
                       type="tel"
+                      inputMode="numeric"
                       required
-                      placeholder="+91 98765 43210"
+                      maxLength={10}
+                      placeholder="9876543210"
                       value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      onChange={(e) => {
+                        const sanitized = e.target.value.replace(/\D/g, "").slice(0, 10);
+                        setFormData({ ...formData, phone: sanitized });
+                        if (errors.phone && validateMobile(sanitized, true) === null) {
+                          setErrors((prev) => ({ ...prev, phone: undefined }));
+                        }
+                      }}
+                      onBlur={() => handleBlur("phone")}
                       className="input-warm"
                     />
+                    {errors.phone && (touched.phone || errors.phone) && (
+                      <p className="mt-1 text-xs font-semibold text-[#B3261E]">{errors.phone}</p>
+                    )}
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
+                    <label htmlFor="mem-age" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
                       Age *
                     </label>
                     <input
-                      type="number"
+                      id="mem-age"
+                      type="text"
+                      inputMode="numeric"
                       required
+                      maxLength={3}
                       placeholder="Your age"
                       value={formData.age}
-                      onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                      onChange={(e) => {
+                        const sanitized = e.target.value.replace(/\D/g, "").slice(0, 3);
+                        setFormData({ ...formData, age: sanitized });
+                        if (errors.age && validateAge(sanitized) === null) {
+                          setErrors((prev) => ({ ...prev, age: undefined }));
+                        }
+                      }}
+                      onBlur={() => handleBlur("age")}
                       className="input-warm"
                     />
+                    {errors.age && (touched.age || errors.age) && (
+                      <p className="mt-1 text-xs font-semibold text-[#B3261E]">{errors.age}</p>
+                    )}
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
+                    <label htmlFor="mem-city" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
                       City
                     </label>
                     <input
+                      id="mem-city"
                       type="text"
+                      maxLength={100}
                       placeholder="Your city"
                       value={formData.city}
                       onChange={(e) => setFormData({ ...formData, city: e.target.value })}
@@ -354,11 +466,13 @@ export default function MembershipPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
+                    <label htmlFor="mem-state" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
                       State
                     </label>
                     <input
+                      id="mem-state"
                       type="text"
+                      maxLength={100}
                       placeholder="Your state"
                       value={formData.state}
                       onChange={(e) => setFormData({ ...formData, state: e.target.value })}
@@ -368,11 +482,13 @@ export default function MembershipPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
+                  <label htmlFor="mem-message" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
                     Message / Seva Interest
                   </label>
                   <textarea
+                    id="mem-message"
                     rows={3}
+                    maxLength={1000}
                     placeholder="Share any special interest in education, health, or farmer welfare seva..."
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}

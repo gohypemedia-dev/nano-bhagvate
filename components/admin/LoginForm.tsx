@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { sanitizeEmail, validateEmail } from "@/lib/validation/donation";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -13,13 +14,28 @@ export default function LoginForm() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (busy) return;
     setError(null);
+
+    const emailErr = validateEmail(email);
+    if (emailErr) {
+      setError("Please enter a valid email address.");
+      document.getElementById("admin-email")?.focus();
+      return;
+    }
+
+    if (!password.trim()) {
+      setError("Please enter your password.");
+      document.getElementById("admin-password")?.focus();
+      return;
+    }
+
     setBusy(true);
     try {
       const res = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: sanitizeEmail(email), password }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
@@ -36,14 +52,37 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form onSubmit={onSubmit} noValidate className="space-y-4">
       <div>
         <label htmlFor="admin-email" className="block text-xs font-semibold text-[#2B201A]/80 mb-1">Email</label>
-        <input id="admin-email" type="email" autoComplete="username" required value={email} onChange={(e) => setEmail(e.target.value)} className="input-warm" />
+        <input
+          id="admin-email"
+          type="email"
+          autoComplete="username"
+          required
+          maxLength={254}
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (error) setError(null);
+          }}
+          className="input-warm"
+        />
       </div>
       <div>
         <label htmlFor="admin-password" className="block text-xs font-semibold text-[#2B201A]/80 mb-1">Password</label>
-        <input id="admin-password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} className="input-warm" />
+        <input
+          id="admin-password"
+          type="password"
+          autoComplete="current-password"
+          required
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            if (error) setError(null);
+          }}
+          className="input-warm"
+        />
       </div>
       {error && <p role="alert" className="text-sm font-semibold text-[#B3261E]">{error}</p>}
       <button type="submit" disabled={busy} className="btn-primary w-full disabled:opacity-60">
