@@ -2,6 +2,7 @@ import { after } from "next/server";
 import { z } from "zod";
 import { donationIdSchema } from "@/lib/validation/donation";
 import { syncBankAlerts } from "@/lib/server/bank-alerts";
+import { certificateKey } from "@/lib/server/certificate";
 import { tokenMatchesHash } from "@/lib/server/donation";
 import { jsonError } from "@/lib/server/http";
 import { prisma } from "@/lib/server/prisma";
@@ -24,7 +25,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ don
   const body = schema.safeParse(await request.json().catch(() => null));
   const donation = await prisma.donation.findUnique({
     where: { donationId },
-    select: { status: true, emailStatus: true, submitTokenHash: true },
+    select: { donationId: true, status: true, emailStatus: true, submitTokenHash: true },
   });
   if (!donation || !body.success || !tokenMatchesHash(body.data.submitToken, donation.submitTokenHash)) {
     return jsonError("Donation not found.", 404);
@@ -43,7 +44,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ don
   }
 
   return Response.json(
-    { status: donation.status, emailStatus: donation.emailStatus },
+    {
+      status: donation.status,
+      emailStatus: donation.emailStatus,
+      ...(donation.status === "VERIFIED" ? { certificateUrl: `/certificate/${donation.donationId}?k=${certificateKey(donation)}` } : {}),
+    },
     { headers: { "Cache-Control": "no-store" } },
   );
 }

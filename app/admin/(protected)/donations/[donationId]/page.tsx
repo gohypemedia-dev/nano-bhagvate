@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink, TriangleAlert } from "lucide-react";
 import { requireAdminPage } from "@/lib/server/auth";
+import { certificateKey } from "@/lib/server/certificate";
 import { prisma } from "@/lib/server/prisma";
 import { formatIST, rupeesFromPaise } from "@/lib/admin-format";
 import StatusBadge from "@/components/admin/StatusBadge";
@@ -40,6 +41,14 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
     ["Created", formatIST(donation.createdAt)],
     ["Marked as paid", donation.proofSubmittedAt ? formatIST(donation.proofSubmittedAt) : "—"],
   ];
+  if (donation.status === "VERIFIED") {
+    rows.push([
+      "Certificate",
+      <a key="c" href={`/certificate/${donation.donationId}?k=${certificateKey(donation)}`} target="_blank" rel="noopener" className="inline-flex items-center gap-1 text-[#E86F1D] hover:underline">
+        View / download <ExternalLink className="w-3.5 h-3.5" />
+      </a>,
+    ]);
+  }
   if (donation.verificationSource === "BANK_EMAIL") {
     rows.push(["Confirmed by", `Bank payment email (automatic), ${formatIST(donation.verifiedAt ?? donation.updatedAt)}`]);
   } else if (donation.verifiedBy) {

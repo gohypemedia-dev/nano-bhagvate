@@ -1,6 +1,8 @@
 import "server-only";
 import type { Donation } from "@prisma/client";
 import nodemailer, { type Transporter } from "nodemailer";
+import { certificateKey, certificateNumber, generateCertificatePdf } from "./certificate";
+import { publicBaseUrl } from "./donation";
 import { env, type Env } from "./env";
 import { prisma } from "./prisma";
 
@@ -13,7 +15,7 @@ const rupees = (paise: number) =>
 const istDate = (d: Date) =>
   new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", day: "2-digit", month: "long", year: "numeric" }).format(d);
 
-function confirmationEmail(d: Donation, ngoName: string) {
+function confirmationEmail(d: Donation, ngoName: string, certificate: { url: string; attached: boolean }) {
   const amount = rupees(d.amountPaise);
   const date = istDate(d.verifiedAt ?? new Date());
   const rows: [string, string][] = [
@@ -34,6 +36,11 @@ function confirmationEmail(d: Donation, ngoName: string) {
     "",
     ...rows.map(([k, v]) => `${k}: ${v}`),
     "",
+    certificate.attached
+      ? "Your donation certificate is attached to this email as a PDF."
+      : "Your donation certificate is ready to view and download:",
+    certificate.url,
+    "",
     "We sincerely appreciate your support.",
     "",
     "Regards,",
@@ -53,6 +60,10 @@ function confirmationEmail(d: Donation, ngoName: string) {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FBF2E7;border-radius:8px">
 ${rows.map(([k, v]) => `<tr><td style="padding:10px 14px;font-size:13px;color:#6B5B4E">${k}</td><td style="padding:10px 14px;font-size:14px;font-weight:bold;text-align:right">${escapeHtml(v)}</td></tr>`).join("")}
 </table>
+</td></tr>
+<tr><td align="center" style="padding:20px 28px 4px">
+<p style="margin:0 0 14px;font-size:15px;line-height:1.6">${certificate.attached ? "Your <strong>donation certificate</strong> is attached to this email as a PDF." : "Your <strong>donation certificate</strong> is ready."}</p>
+<a href="${escapeHtml(certificate.url)}" style="display:inline-block;background:#2F5A43;color:#ffffff;text-decoration:none;font-weight:bold;font-size:14px;padding:11px 24px;border-radius:8px">View certificate online</a>
 </td></tr>
 <tr><td style="padding:16px 28px 28px">
 <p style="margin:0 0 12px;font-size:15px;line-height:1.6">We sincerely appreciate your support.</p>
@@ -188,14 +199,25 @@ export async function sendApprovalRequestEmail(donation: Donation, approveUrl: s
 // the donation's email status. Never throws; returns the outcome.
 export async function sendConfirmationEmail(donation: Donation) {
   const config = env();
-  const { subject, text, html } = confirmationEmail(donation, config.NGO_NAME);
+  const certificateUrl = `${publicBaseUrl()}/certificate/${donation.donationId}?k=${certificateKey(donation)}`;
+  // A certificate that fails to render must not hold up the confirmation itself.
+  let pdf: Uint8Array | null = null;
+  try {
+    pdf = await generateCertificatePdf(donation, certificateUrl);
+  } catch (e) {
+    console.error(`[certificate] ${donation.donationId}:`, e instanceof Error ? e.message : e);
+  }
+  const { subject, text, html } = confirmationEmail(donation, config.NGO_NAME, { url: certificateUrl, attached: Boolean(pdf) });
+  const attachments = pdf
+    ? [{ filename: `Donation-Certificate-${certificateNumber(donation.donationId).replace(/\//g, "-")}.pdf`, content: Buffer.from(pdf), contentType: "application/pdf" }]
+    : undefined;
 
   let status: "SENT" | "FAILED" = "FAILED";
   let providerId: string | undefined;
   let error: string | undefined;
 
   try {
-    const sent = await deliver(config, { to: donation.donorEmail, subject, text, html });
+    const sent = await deliver(config, { to: donation.donorEmail, subject, text, html, attachments });
     if (sent.ok) {
       status = "SENT";
       providerId = sent.id;
@@ -221,7 +243,8 @@ export async function sendConfirmationEmail(donation: Donation) {
   return { status, error };
 }
 
-type Message = { to: string; subject: string; text: string; html: string };
+type Attachment = { filename: string; content: Buffer; contentType: string };
+type Message = { to: string; subject: string; text: string; html: string; attachments?: Attachment[] };
 type Delivery = { ok: true; id?: string } | { ok: false; error: string };
 
 let gmail: Transporter | undefined;
@@ -248,7 +271,13 @@ async function deliver(config: Env, msg: Message): Promise<Delivery> {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${config.RESEND_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ ...msg, from: config.EMAIL_FROM, to: [msg.to], reply_to: config.EMAIL_REPLY_TO }),
+      body: JSON.stringify({
+        ...msg,
+        from: config.EMAIL_FROM,
+        to: [msg.to],
+        reply_to: config.EMAIL_REPLY_TO,
+        attachments: msg.attachments?.map((a) => ({ filename: a.filename, content: a.content.toString("base64") })),
+      }),
       signal: AbortSignal.timeout(15_000),
     });
     const body = (await res.json().catch(() => ({}))) as { id?: string; message?: string };

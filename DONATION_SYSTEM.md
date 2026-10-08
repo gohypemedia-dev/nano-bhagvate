@@ -17,6 +17,15 @@ How donations work on the Trust website, how to set it up, and how to run it day
 
 The donor does **not** submit a UTR or screenshot.
 
+### Donation certificate
+
+When a payment is approved, the donor's confirmation email carries a **PDF certificate** (A4 landscape): Trust logo, donor name (English or Hindi), amount in figures and words, certificate number `NBVT/CERT/<date>-<code>`, a Trust seal, the authorised signatory, and a QR code. The QR (and the email's "View certificate online" button) opens `/certificate/<Donation ID>?k=<key>`, which confirms the certificate is genuine and offers the PDF. The key is derived from the donation's secret token, so certificates can't be found by guessing IDs. Admins get the same link on the donation's page.
+
+- Code: `lib/server/certificate.ts`; fonts and logo: `assets/certificate/` (bundled via `outputFileTracingIncludes` in `next.config.ts`).
+- Settings: `CERT_SIGNATORY_NAME`, `CERT_SIGNATORY_TITLE`, `TRUST_REGISTRATION_NO` (defaults: Vijeshanand Saraswati Ji, Founder & Authorised Signatory, Trust/2019/NBVT); `TRUST_PAN` and `TRUST_80G_NO` print only when set.
+- Scanned signature: save a transparent PNG as `assets/certificate/signature.png` and it appears above the signatory's name.
+- The Cormorant font files are trimmed to Latin + ₹ with fontTools; the full Google Fonts files crash the PDF library's font reader.
+
 **Main rule:** only the UPI owner or an admin (approval link or dashboard) can mark a donation `VERIFIED`. Tapping "I have paid" never does.
 
 ```

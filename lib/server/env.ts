@@ -68,6 +68,14 @@ const schema = z
       .default("false")
       .transform((v) => v === "true"),
 
+    // Donation certificate (PDF). Registration numbers are printed only when set.
+    CERT_SIGNATORY_NAME: z.string().default("Vijeshanand Saraswati Ji"),
+    CERT_SIGNATORY_TITLE: z.string().default("Founder & Authorised Signatory"),
+    // Same number as in the site footer (components/Footer.tsx).
+    TRUST_REGISTRATION_NO: z.string().default("Trust/2019/NBVT"),
+    TRUST_PAN: optional,
+    TRUST_80G_NO: optional,
+
     CRON_SECRET: optional,
     NEXT_PUBLIC_APP_URL: optional,
   })

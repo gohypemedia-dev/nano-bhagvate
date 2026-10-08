@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { QRCodeSVG } from "qrcode.react";
-import { X, Heart, ShieldCheck, Copy, Check, Loader2, CheckCircle2 } from "lucide-react";
+import { X, Heart, ShieldCheck, Copy, Check, Loader2, CheckCircle2, Award } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { MEMBERSHIP_PLANS, PRESET_AMOUNTS, formatINR } from "@/lib/donation-config";
 import {
@@ -90,6 +90,7 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
   const [submitted, setSubmitted] = useState(false);
 
   const [emailSent, setEmailSent] = useState(false);
+  const [certificateUrl, setCertificateUrl] = useState<string | null>(null);
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<{ message: string; field?: string } | null>(null);
@@ -167,6 +168,7 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
         } else if (data.status === "VERIFIED") {
           clearSaved();
           setEmailSent(data.emailStatus === "SENT");
+          setCertificateUrl(data.certificateUrl ?? null);
           setStep("DONE");
         } else if (data.status === "CANCELLED" || data.status === "REJECTED") {
           clearSaved();
@@ -199,6 +201,7 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
     setStep("SELECT");
     setResumed(false);
     setEmailSent(false);
+    setCertificateUrl(null);
     setError(null);
     setTouched({});
     setSubmitted(false);
@@ -721,7 +724,7 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
               </div>
             )}
 
-            {/* STEP 4: PAYMENT CONFIRMED BY THE BANK */}
+            {/* STEP 4: PAYMENT APPROVED BY THE TRUST */}
             {step === "DONE" && session && (
               <div className="text-center py-4 space-y-4">
                 <CheckCircle2 className="w-14 h-14 text-[#2F5A43] mx-auto" aria-hidden="true" />
@@ -734,10 +737,18 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
                   <dt className="text-[#2B201A]/60">Amount</dt><dd className="font-semibold text-right tabular-nums">{formatINR(session.amount)}</dd>
                 </dl>
                 <p className="text-sm text-[#2B201A]/80 leading-relaxed max-w-sm mx-auto">
-                  {emailSent ? "A confirmation email has been sent to " : "A confirmation email will be sent to "}
+                  {emailSent ? "Your confirmation and certificate have been emailed to " : "Your confirmation and certificate will be emailed to "}
                   <strong className="wrap-anywhere">{session.email}</strong>.
                 </p>
-                <button onClick={handleClose} className="btn-primary px-8">Close</button>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  {certificateUrl && (
+                    <a href={certificateUrl} target="_blank" rel="noopener" className="btn-secondary">
+                      <Award className="w-4 h-4" />
+                      <span>View certificate</span>
+                    </a>
+                  )}
+                  <button onClick={handleClose} className="btn-primary px-8">Close</button>
+                </div>
               </div>
             )}
           </div>
