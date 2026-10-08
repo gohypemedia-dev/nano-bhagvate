@@ -369,39 +369,38 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
   const stepIndex = { SELECT: 0, PAY: 1, WAITING: 1, DONE: 2 }[step];
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-labelledby="donate-title">
-      <div className="min-h-full flex items-center justify-center p-3 sm:p-4">
-        <div className="bg-[#FFF9F2] rounded-2xl max-w-lg w-full overflow-hidden border border-[#E7D8C8] shadow-2xl relative">
-          {/* Header */}
-          <div className="bg-[#FBF2E7] px-5 py-4 sm:p-6 border-b border-[#E7D8C8] flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 shrink-0 rounded-full bg-[#E86F1D]/10 flex items-center justify-center text-[#E86F1D]">
-                <Heart className="w-5 h-5 fill-current" />
-              </div>
-              <div className="min-w-0">
-                <h3 id="donate-title" className="font-editorial text-xl font-bold text-[#2B201A] truncate">
-                  {session && step !== "SELECT" ? session.program : donateModal.program || (hi ? "सेवा हेतु दान" : "Support Our Mission")}
-                </h3>
-                <p className="text-xs text-[#B8893E] font-semibold">Namo Bhagwate Vasudevaya Trust</p>
-              </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-labelledby="donate-title">
+      <div className="bg-[#FFF9F2] rounded-2xl w-full max-w-[min(600px,calc(100vw-24px))] max-h-[calc(100vh-24px)] sm:max-h-[calc(100vh-32px)] border border-[#E7D8C8] shadow-2xl relative flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="bg-[#FBF2E7] px-4 py-3.5 sm:px-6 sm:py-4 border-b border-[#E7D8C8] flex items-center justify-between gap-3 shrink-0">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 shrink-0 rounded-full bg-[#E86F1D]/10 flex items-center justify-center text-[#E86F1D]">
+              <Heart className="w-5 h-5 fill-current" />
             </div>
-            <button onClick={handleClose} aria-label="Close" className="p-2 text-[#2B201A]/60 hover:text-[#2B201A] rounded-lg hover:bg-[#FFF9F2]">
-              <X className="w-5 h-5" />
-            </button>
+            <div className="min-w-0">
+              <h3 id="donate-title" className="font-editorial text-lg sm:text-xl font-bold text-[#2B201A] truncate">
+                {session && step !== "SELECT" ? session.program : donateModal.program || (hi ? "सेवा हेतु दान" : "Support Our Mission")}
+              </h3>
+              <p className="text-xs text-[#B8893E] font-semibold">Namo Bhagwate Vasudevaya Trust</p>
+            </div>
           </div>
+          <button onClick={handleClose} aria-label="Close" className="p-2 text-[#2B201A]/60 hover:text-[#2B201A] rounded-xl hover:bg-[#FFF9F2] min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
-          {/* Progress */}
-          {step !== "DONE" && (
-            <ol className="flex gap-2 px-5 sm:px-6 pt-4 text-[11px] font-bold uppercase tracking-wider">
-              {["Details", "Pay", "Confirmed"].map((label, i) => (
-                <li key={label} className={`flex-1 border-t-2 pt-1.5 ${i <= stepIndex ? "border-[#E86F1D] text-[#E86F1D]" : "border-[#E7D8C8] text-[#2B201A]/40"}`}>
-                  {i + 1}. {label}
-                </li>
-              ))}
-            </ol>
-          )}
+        {/* Progress */}
+        {step !== "DONE" && (
+          <ol className="flex gap-2 sm:gap-3 px-4 sm:px-6 pt-3.5 pb-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider shrink-0 bg-[#FFF9F2] border-b border-[#E7D8C8]/40">
+            {["Details", "Pay", "Confirmed"].map((label, i) => (
+              <li key={label} className={`flex-1 border-t-2 pt-1.5 transition-colors whitespace-nowrap text-center sm:text-left ${i <= stepIndex ? "border-[#E86F1D] text-[#E86F1D]" : "border-[#E7D8C8] text-[#2B201A]/40"}`}>
+                {i + 1}. {label}
+              </li>
+            ))}
+          </ol>
+        )}
 
-          <div className="p-5 sm:p-6">
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4">
             {/* STEP 1: AMOUNT + DETAILS */}
             {step === "SELECT" && (
               <form onSubmit={handleCreate} noValidate className="space-y-5">
@@ -614,9 +613,9 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
                     </div>
 
                     <div className="mt-3 w-full flex items-center gap-3">
-                      <span className="h-px flex-1 bg-linear-to-r from-transparent to-[#C9A24B]" />
+                      <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#C9A24B]" />
                       <span className="font-editorial text-2xl font-bold text-[#14532D] whitespace-nowrap">Scan &amp; Support</span>
-                      <span className="h-px flex-1 bg-linear-to-l from-transparent to-[#C9A24B]" />
+                      <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#C9A24B]" />
                     </div>
                     <p className="text-sm text-[#2B201A]/80">For a Better, Kinder &amp; Healthier Society</p>
                   </div>
@@ -703,6 +702,5 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
           </div>
         </div>
       </div>
-    </div>
   );
 }

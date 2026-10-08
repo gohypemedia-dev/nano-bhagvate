@@ -275,6 +275,22 @@
   color: #E86F1D;
 }
 
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.btn-outline:focus-visible {
+  outline: 2px solid #E86F1D;
+  outline-offset: 2px;
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-outline:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
 /* Form input standardization */
 .input-warm {
   width: 100%;
@@ -298,6 +314,11 @@
 textarea.input-warm {
   min-height: 120px;
   resize: vertical;
+}
+
+img, video {
+  max-width: 100%;
+  height: auto;
 }
 
 /* ===================================================

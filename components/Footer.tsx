@@ -145,17 +145,17 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#2B201A]/75 font-medium">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#2B201A]/75 font-medium text-center sm:text-left">
           <p>© {new Date().getFullYear()} Namo Bhagwate Vasudevaya Trust. All rights reserved.</p>
-          <div className="flex items-center gap-4">
-            <Link href="/privacy-policy" className="hover:text-[#E86F1D]">
+          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2.5 sm:gap-4">
+            <Link href="/privacy-policy" className="hover:text-[#E86F1D] transition-colors">
               Privacy Policy
             </Link>
             <span>•</span>
             <span>Reg. No: Trust/2019/NBVT</span>
             <button
               onClick={scrollToTop}
-              className="ml-2 p-2.5 bg-[#FFF9F2] hover:bg-[#E86F1D] hover:text-white rounded-xl border border-[#E7D8C8] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="ml-1 p-2.5 bg-[#FFF9F2] hover:bg-[#E86F1D] hover:text-white rounded-xl border border-[#E7D8C8] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0 cursor-pointer"
               aria-label="Scroll to top"
             >
               <ArrowUp className="w-4 h-4" />

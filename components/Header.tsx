@@ -41,7 +41,7 @@ export default function Header() {
       }`}
     >
       {/* DESKTOP 3-ZONE GRID LAYOUT (visible >= 1200px / xl) */}
-      <div className="max-w-[1440px] w-full mx-auto px-6 sm:px-8 box-border">
+      <div className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8 box-border">
         {/* DESKTOP HEADER GRID */}
         <div className="hidden xl:grid grid-cols-[285px_minmax(0,1fr)_auto] items-center h-[80px] gap-7">
           
@@ -125,10 +125,10 @@ export default function Header() {
         </div>
 
         {/* MOBILE / TABLET HEADER BAR (< 1200px / xl) */}
-        <div className="flex xl:hidden items-center justify-between h-[76px]">
+        <div className="flex xl:hidden items-center justify-between h-[72px] sm:h-[76px] gap-2">
           {/* Mobile Logo + Brand */}
-          <Link href="/" className="flex items-center gap-2.5 shrink-0 min-w-0 group">
-            <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-[#B8893E] shadow-sm shrink-0 bg-white">
+          <Link href="/" className="flex items-center gap-2 sm:gap-2.5 min-w-0 group shrink">
+            <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-[#B8893E] shadow-sm shrink-0 bg-white">
               <Image
                 src="/images/logo.jpg"
                 alt="Namo Bhagwate Vasudevaya Trust Logo"
@@ -137,21 +137,21 @@ export default function Header() {
                 priority
               />
             </div>
-            <div className="flex flex-col shrink-0">
-              <span className="font-editorial text-base font-bold tracking-tight text-[#2B201A] leading-tight">
+            <div className="flex flex-col min-w-0 shrink">
+              <span className="font-editorial text-sm sm:text-base font-bold tracking-tight text-[#2B201A] leading-tight truncate">
                 NAMO BHAGWATE
               </span>
-              <span className="text-[9px] font-semibold tracking-wider text-[#B8893E] uppercase">
+              <span className="text-[8px] sm:text-[9px] font-semibold tracking-wider text-[#B8893E] uppercase truncate">
                 VASUDEVAYA TRUST
               </span>
             </div>
           </Link>
 
           {/* Mobile Controls: Language + Cart + Hamburger */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               onClick={() => setLang(lang === "en" ? "hi" : "en")}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-[#E7D8C8] text-xs font-bold text-[#2B201A] hover:bg-[#FBF2E7] transition-colors min-h-[40px]"
+              className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-lg border border-[#E7D8C8] text-[11px] sm:text-xs font-bold text-[#2B201A] hover:bg-[#FBF2E7] transition-colors min-h-[40px]"
             >
               <Globe className="w-3.5 h-3.5 text-[#B8893E]" />
               <span>{lang === "en" ? "हिन्दी" : "EN"}</span>
