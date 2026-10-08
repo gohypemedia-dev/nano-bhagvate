@@ -6,6 +6,7 @@ import { prisma } from "@/lib/server/prisma";
 import { formatIST, rupeesFromPaise } from "@/lib/admin-format";
 import StatusBadge from "@/components/admin/StatusBadge";
 import DonationActions from "@/components/admin/DonationActions";
+import AutoRefresh from "@/components/admin/AutoRefresh";
 
 export default async function DonationDetailPage({ params }: { params: Promise<{ donationId: string }> }) {
   await requireAdminPage();
@@ -50,6 +51,7 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
 
   return (
     <div className="space-y-6">
+      <AutoRefresh />
       <Link href="/admin" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#2B201A]/70 hover:text-[#E86F1D]">
         <ArrowLeft className="w-4 h-4" /> All donations
       </Link>
