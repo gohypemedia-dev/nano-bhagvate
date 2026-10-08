@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { requireAdminApi } from "@/lib/server/auth";
-import { sendConfirmationEmail } from "@/lib/server/email";
+import { sendApprovedNoticeEmail, sendConfirmationEmail } from "@/lib/server/email";
 import { jsonError } from "@/lib/server/http";
 import { prisma } from "@/lib/server/prisma";
 
@@ -29,6 +29,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ don
 
   const donation = await prisma.donation.findUniqueOrThrow({ where: { donationId } });
   const email = await sendConfirmationEmail(donation);
+  await sendApprovedNoticeEmail(await prisma.donation.findUniqueOrThrow({ where: { donationId } }), `${admin.name} (dashboard)`);
 
   return Response.json(
     { success: true, status: "VERIFIED", emailStatus: email.status, emailError: email.error },

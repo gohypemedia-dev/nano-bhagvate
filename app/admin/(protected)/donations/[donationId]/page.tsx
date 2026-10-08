@@ -37,7 +37,7 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
     ["Towards", donation.program ?? "—"],
     ["UTR", donation.utr ? <span key="u" className="font-mono">{donation.utr}</span> : "—"],
     ["Created", formatIST(donation.createdAt)],
-    ["Proof submitted", donation.proofSubmittedAt ? formatIST(donation.proofSubmittedAt) : "—"],
+    ["Marked as paid", donation.proofSubmittedAt ? formatIST(donation.proofSubmittedAt) : "—"],
   ];
   if (donation.verificationSource === "BANK_EMAIL") {
     rows.push(["Confirmed by", `Bank payment email (automatic), ${formatIST(donation.verifiedAt ?? donation.updatedAt)}`]);

@@ -10,19 +10,24 @@ How donations work on the Trust website, how to set it up, and how to run it day
 2. **Enter details.** Name and email are required; mobile is optional.
 3. **Create donation.** The server saves a record with an ID like `DON-20261006-A8F32`. Status: `PENDING_PAYMENT`.
 4. **Pay.** The site shows a QR code for that exact amount. On phones there is also a **Pay using UPI app** button.
-5. **Bank emails the Trust.** The bank sends an "amount credited" email to the Gmail inbox.
-6. **Automatic match.** The site reads that email, matches it to the waiting donation by amount, and marks it `VERIFIED`. The donor's screen changes to **Payment received** and they get a confirmation email.
+5. **Donor taps "I Have Completed the Payment".** The QR disappears and the donor sees **Payment submitted successfully**. Status: `PENDING_VERIFICATION`.
+6. **The Trust is asked to approve.** An email goes to the UPI owner's inbox (`GMAIL_USER`) **and** every address in `APPROVAL_EMAILS` (the admins): "*Name* says they paid ₹X, please approve". It has a **Review & approve payment** button that opens `/admin/approve/<one-time token>`. No login is needed; the link itself is the key.
+7. **Approve or reject.** Whoever checks first (UPI owner or admin) approves from the email link **or** the admin dashboard. **Approve** marks the donation `VERIFIED`, emails the donor their confirmation, and sends all approvers a short "Approved" notice saying who approved it. **Reject** marks it `REJECTED`; the donor gets no email.
+8. **The donor is emailed only after a person approves.** With `AUTO_CONFIRM_BANK_EMAILS=false` (the default), a matching bank "amount credited" email does not confirm anything by itself. It waits under **Bank payment alerts → Need review** with a note naming the likely donation. Set it to `true` to let bank emails confirm donations automatically.
 
 The donor does **not** submit a UTR or screenshot.
 
-**Main rule:** only a bank email (or an admin) can mark a donation `VERIFIED`. Showing a QR or clicking "I have paid" never does.
+**Main rule:** only the UPI owner or an admin (approval link or dashboard) can mark a donation `VERIFIED`. Tapping "I have paid" never does.
 
 ```
-PENDING_PAYMENT ──(bank "credited" email matched)──► VERIFIED ──► confirmation email
-       │
-       ├─ two donations fit one bank email: admin picks which on the dashboard
-       └─ older than 48 hours ──► CANCELLED (daily cleanup)
+PENDING_PAYMENT ──(donor taps "I have paid")──► PENDING_VERIFICATION ──(UPI owner / admin approves: email link or dashboard)──► VERIFIED ──► donor confirmation + "Approved" notice to approvers
+       │                                                │
+       │                                                └─(rejected)──► REJECTED
+       ├─ bank "credited" email matched: only with AUTO_CONFIRM_BANK_EMAILS=true ──► VERIFIED
+       └─ older than 48 hours, never marked paid ──► CANCELLED (daily cleanup)
 ```
+
+Opening the approval link changes nothing (email scanners open links automatically); only the buttons on that page do.
 
 ### How matching works
 
@@ -137,7 +142,9 @@ If the bank never sends credit emails (some only send SMS), automatic confirmati
 | Method | Route | Who | What it does |
 |---|---|---|---|
 | POST | `/api/donations` | Anyone (10 per 10 min per IP) | Creates the donation and returns the QR link and a secret `submitToken` |
-| POST | `/api/donations/[id]/payment-proof` | Holder of the `submitToken` | Saves the UTR and screenshot |
+| POST | `/api/donations/[id]/paid` | Holder of the `submitToken` | "I have completed the payment": moves to PENDING_VERIFICATION and emails the Trust an approval link |
+| POST | `/api/admin/approve/[token]` | Holder of the emailed approval link | Approve (VERIFIED + donor email) or reject, from `/admin/approve/[token]` |
+| POST | `/api/donations/[id]/payment-proof` | Holder of the `submitToken` | Saves the UTR and screenshot (legacy, not used by the donate modal) |
 | POST | `/api/admin/login` | Anyone (5 tries per 15 min per email) | Logs an admin in |
 | POST | `/api/admin/logout` | Admin | Logs the admin out |
 | POST | `/api/admin/donations/[id]/verify` | Admin | Marks the donation VERIFIED and sends the email |

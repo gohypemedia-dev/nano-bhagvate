@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     (
       await prisma.donation.findMany({
         where: {
-          status: "PENDING_PAYMENT",
+          status: { in: ["PENDING_PAYMENT", "PENDING_VERIFICATION"] },
           amountPaise: { gte: base, lt: base + 100 },
           createdAt: { gte: new Date(Date.now() - config.AUTO_MATCH_WINDOW_MINUTES * 60_000) },
         },

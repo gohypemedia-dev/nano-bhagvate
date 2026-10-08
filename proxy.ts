@@ -6,7 +6,9 @@ import { NextResponse, type NextRequest } from "next/server";
 const SESSION_COOKIE = "nbvt_admin"; // keep in sync with lib/server/auth.ts
 
 export function proxy(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith("/admin/login")) return NextResponse.next();
+  const { pathname } = request.nextUrl;
+  // /admin/approve/<token> is opened from the approval email; the token is the credential.
+  if (pathname.startsWith("/admin/login") || pathname.startsWith("/admin/approve/")) return NextResponse.next();
   if (!request.cookies.has(SESSION_COOKIE)) {
     return NextResponse.redirect(new URL("/admin/login", request.url));
   }

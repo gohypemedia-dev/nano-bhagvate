@@ -66,7 +66,9 @@ model Donation {
   utrOverride        Boolean             @default(false)
   screenshotKey      String?
   proofSubmittedAt   DateTime?
-  providerRef        String?             @unique
+  // Hash of the one-time token in the "approve this payment" email sent to the Trust.
+  approvalTokenHash  String?             @unique
+  providerRef       String?             @unique
   adminNote          String?
   verifiedById       String?
   verifiedBy         AdminUser?          @relation("VerifiedBy", fields: [verifiedById], references: [id])

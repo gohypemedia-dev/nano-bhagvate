@@ -18,9 +18,10 @@ import {
   validateName,
 } from "@/lib/validation/donation";
 
-// SELECT → PAY (QR shown) → WAITING (donor says they paid) → DONE (bank alert matched).
-// The page polls the server while on PAY/WAITING; no UTR or screenshot is needed.
-type Step = "SELECT" | "PAY" | "WAITING" | "DONE";
+// SELECT → PAY (QR shown) → SUBMITTED (donor tapped "I have paid"; QR hidden, the Trust
+// is emailed a link to approve) → DONE (approved by the Trust, or matched to a bank alert).
+// The page polls the server while on PAY/SUBMITTED; no UTR or screenshot is needed.
+type Step = "SELECT" | "PAY" | "SUBMITTED" | "DONE";
 
 interface PaymentSession {
   donationId: string;
@@ -42,7 +43,8 @@ function loadSaved(): { session: PaymentSession; step: Step } | null {
     const raw = sessionStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const saved = JSON.parse(raw);
-    return { session: saved.session, step: saved.step === "WAITING" ? "WAITING" : "PAY" };
+    const submitted = saved.step === "SUBMITTED" || saved.step === "WAITING"; // WAITING: older saves
+    return { session: saved.session, step: submitted ? "SUBMITTED" : "PAY" };
   } catch {
     return null;
   }
@@ -87,7 +89,6 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [submitted, setSubmitted] = useState(false);
 
-  const [slow, setSlow] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
 
   const [busy, setBusy] = useState(false);
@@ -143,7 +144,7 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
   // While the QR is showing (and after "I have paid"), ask the server whether the
   // bank has confirmed the payment. The server checks the bank-alert inbox.
   useEffect(() => {
-    if (!donateModal.isOpen || !session || (step !== "PAY" && step !== "WAITING")) return;
+    if (!donateModal.isOpen || !session || (step !== "PAY" && step !== "SUBMITTED")) return;
     let stopped = false;
     const check = async () => {
       try {
@@ -161,7 +162,11 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
         if (!res.ok) return;
         const data = await res.json();
         if (stopped) return;
-        if (data.status === "VERIFIED") {
+        if (data.status === "PENDING_VERIFICATION" && step === "PAY") {
+          // Marked as paid from another tab: hide the QR here too.
+          save(session, "SUBMITTED");
+          setStep("SUBMITTED");
+        } else if (data.status === "VERIFIED") {
           clearSaved();
           setEmailSent(data.emailStatus === "SENT");
           setStep("DONE");
@@ -174,24 +179,19 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
       }
     };
     check();
-    const timer = setInterval(check, step === "WAITING" ? 5000 : 8000);
+    const timer = setInterval(check, step === "SUBMITTED" ? 5000 : 8000);
     return () => {
       stopped = true;
       clearInterval(timer);
     };
   }, [donateModal.isOpen, session, step]);
 
-  // After a few minutes of waiting, reassure the donor that they can leave.
-  useEffect(() => {
-    if (step !== "WAITING") return;
-    const timer = setTimeout(() => setSlow(true), 3 * 60_000);
-    return () => clearTimeout(timer);
-  }, [step]);
-
   if (!donateModal.isOpen) return null;
 
   function handleClose() {
-    if (step === "DONE") resetAll();
+    // Once submitted, the Trust takes it from here (confirmation goes by email),
+    // so the next "Donate" click starts a fresh donation.
+    if (step === "DONE" || step === "SUBMITTED") resetAll();
     closeDonateModal();
   }
 
@@ -200,7 +200,6 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
     setSession(null);
     setStep("SELECT");
     setResumed(false);
-    setSlow(false);
     setEmailSent(false);
     setError(null);
     setTouched({});
@@ -209,9 +208,8 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
 
   function goTo(next: Step, s: PaymentSession | null = session) {
     setError(null);
-    setSlow(false);
     setStep(next);
-    if (s && (next === "PAY" || next === "WAITING")) save(s, next);
+    if (s && (next === "PAY" || next === "SUBMITTED")) save(s, next);
   }
 
   function handleBlurField(field: string) {
@@ -349,6 +347,39 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
     }
   }
 
+  // "I have completed the payment": tell the server (which emails the Trust for approval)
+  // and swap the QR for the "submitted" screen.
+  async function handlePaid() {
+    if (!session) return;
+    setError(null);
+    setBusy(true);
+    try {
+      const res = await fetch(`/api/donations/${encodeURIComponent(session.donationId)}/paid`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ submitToken: session.submitToken }),
+      });
+      if (!res.ok) {
+        setError(await readError(res));
+        return;
+      }
+      const data = await res.json();
+      if (data.status === "VERIFIED") {
+        clearSaved();
+        setStep("DONE");
+      } else if (data.status === "CANCELLED" || data.status === "REJECTED") {
+        clearSaved();
+        setError({ message: "This donation was closed. Please start a new donation." });
+      } else {
+        goTo("SUBMITTED");
+      }
+    } catch {
+      setError({ message: "Couldn't reach the server. Check your connection and try again." });
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function copyUpiId() {
     if (!session) return;
     try {
@@ -366,11 +397,17 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
     </p>
   ) : null;
 
-  const stepIndex = { SELECT: 0, PAY: 1, WAITING: 1, DONE: 2 }[step];
+  const stepIndex = { SELECT: 0, PAY: 1, SUBMITTED: 1, DONE: 2 }[step];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-labelledby="donate-title">
-      <div className="bg-[#FFF9F2] rounded-2xl w-full max-w-[min(600px,calc(100vw-24px))] max-h-[calc(100vh-24px)] sm:max-h-[calc(100vh-32px)] border border-[#E7D8C8] shadow-2xl relative flex flex-col overflow-hidden">
+      {/* Never taller than the screen: the body scrolls inside the card only if it really has to.
+          The PAY step is wider on laptops so the QR and the actions sit side by side. */}
+      <div
+        className={`bg-[#FFF9F2] rounded-2xl w-full max-h-[calc(100dvh-24px)] sm:max-h-[calc(100dvh-32px)] border border-[#E7D8C8] shadow-2xl relative flex flex-col overflow-hidden ${
+          step === "PAY" ? "max-w-md md:max-w-3xl" : "max-w-[600px]"
+        }`}
+      >
         {/* Header */}
         <div className="bg-[#FBF2E7] px-4 py-3.5 sm:px-6 sm:py-4 border-b border-[#E7D8C8] flex items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
@@ -400,7 +437,7 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
           </ol>
         )}
 
-        <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4">
+        <div className="p-4 sm:p-6 min-h-0 overflow-y-auto overscroll-contain flex-1 space-y-4">
             {/* STEP 1: AMOUNT + DETAILS */}
             {step === "SELECT" && (
               <form onSubmit={handleCreate} noValidate className="space-y-5">
@@ -567,37 +604,54 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
 
             {/* STEP 2: PAY BY UPI */}
             {step === "PAY" && session && (
-              <div className="space-y-4">
-                {resumed && (
-                  <p className="text-xs text-[#2B201A]/70 bg-[#FBF2E7] border border-[#E7D8C8] rounded-xl p-3">
-                    Continuing the donation you started earlier.{" "}
-                    <button type="button" onClick={resetAll} className="font-bold text-[#E86F1D] underline underline-offset-2">Start a new donation</button>
-                  </p>
-                )}
+              // Phones: one compact column. Laptops (md+): QR card left, details and actions right,
+              // so the whole step fits on screen without scrolling.
+              <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-[minmax(0,320px)_minmax(0,1fr)] md:gap-6 md:items-center">
                 {/* Payment card, styled after the Trust's printed UPI standee */}
                 <div className="rounded-2xl border-[3px] border-[#C9A24B] bg-white overflow-hidden shadow-sm">
-                  <div className="flex flex-col items-center text-center px-4 pt-5 pb-4">
-                    <div className="relative w-22 h-22 rounded-full border-[5px] border-[#14532D] bg-white overflow-hidden shadow-md">
-                      <Image src="/images/logo.jpg" alt="Namo Bhagwate Vasudevaya Trust emblem" fill sizes="88px" className="object-cover" />
+                  <div className="flex flex-col items-center text-center px-3 pt-3 pb-2.5 md:px-4 md:pt-4 md:pb-3">
+                    <div className="w-full flex items-center justify-center gap-2.5">
+                      <div className="relative w-11 h-11 md:w-14 md:h-14 shrink-0 rounded-full border-[3px] md:border-4 border-[#14532D] bg-white overflow-hidden shadow">
+                        <Image src="/images/logo.jpg" alt="Namo Bhagwate Vasudevaya Trust emblem" fill sizes="56px" className="object-cover" />
+                      </div>
+                      <h4 className="font-sans text-lg md:text-xl leading-tight font-extrabold tracking-tight uppercase text-[#14532D] text-left">
+                        Namo Bhagwate Trust
+                      </h4>
                     </div>
-                    <h4 className="mt-2.5 font-sans text-[1.45rem] sm:text-[1.6rem] leading-tight font-extrabold tracking-tight uppercase text-[#14532D]">
-                      Namo Bhagwate Trust
-                    </h4>
-                    <p className="mt-1 text-sm text-[#2B201A]/75">UPI ID:</p>
-                    <div className="flex items-center justify-center gap-1 max-w-full">
-                      <p className="font-bold text-[15px] sm:text-base text-[#1F1A17] break-all">{session.upiId}</p>
-                      <button
-                        type="button"
-                        onClick={copyUpiId}
-                        aria-label={copied ? "UPI ID copied" : "Copy UPI ID"}
-                        className="shrink-0 p-1.5 rounded-md text-[#14532D]/70 hover:text-[#14532D] hover:bg-[#14532D]/5"
-                      >
-                        {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                      </button>
-                    </div>
-                    {session.accountLabel && <p className="text-sm text-[#2B201A]/60">{session.accountLabel}</p>}
 
-                    <div className="mt-3 w-full flex items-end justify-between gap-3 rounded-xl bg-[#14532D]/5 border border-[#14532D]/15 px-4 py-2.5 text-left">
+                    <div className="mt-2.5 bg-white">
+                      <QRCodeSVG
+                        value={session.qrData}
+                        size={224}
+                        level="M"
+                        marginSize={0}
+                        className="w-40 h-40 sm:w-48 sm:h-48 md:w-52 md:h-52"
+                        title={`UPI payment of ${formatINR(session.amount)} to ${session.upiName}`}
+                      />
+                    </div>
+
+                    <div className="mt-2 w-full flex items-center gap-3">
+                      <span className="h-px flex-1 bg-linear-to-r from-transparent to-[#C9A24B]" />
+                      <span className="font-editorial text-lg md:text-xl font-bold text-[#14532D] whitespace-nowrap">Scan &amp; Support</span>
+                      <span className="h-px flex-1 bg-linear-to-l from-transparent to-[#C9A24B]" />
+                    </div>
+                    <p className="hidden md:block text-xs text-[#2B201A]/75">For a Better, Kinder &amp; Healthier Society</p>
+                  </div>
+                  <div className="bg-[#14532D] text-[#E9D9A6] text-center py-1.5 text-[10px] font-semibold tracking-[0.3em]">
+                    SEVA • SANSKAR • SAMARPAN
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {resumed && (
+                    <p className="text-xs text-[#2B201A]/70 bg-[#FBF2E7] border border-[#E7D8C8] rounded-xl p-2.5">
+                      Continuing the donation you started earlier.{" "}
+                      <button type="button" onClick={resetAll} className="font-bold text-[#E86F1D] underline underline-offset-2">Start a new donation</button>
+                    </p>
+                  )}
+
+                  <div className="rounded-xl bg-[#14532D]/5 border border-[#14532D]/15 px-3.5 py-2.5 space-y-2">
+                    <div className="flex items-end justify-between gap-3">
                       <div>
                         <p className="text-[10px] font-bold uppercase tracking-wider text-[#14532D]/70">Amount</p>
                         <p className="text-2xl font-extrabold text-[#14532D] tabular-nums leading-tight">{formatINR(session.amount)}</p>
@@ -607,76 +661,72 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
                         <p className="font-mono text-xs font-bold text-[#1F1A17] truncate">{session.donationId}</p>
                       </div>
                     </div>
-
-                    <div className="mt-3 bg-white p-1.5">
-                      <QRCodeSVG value={session.qrData} size={208} level="M" marginSize={0} title={`UPI payment of ${formatINR(session.amount)} to ${session.upiName}`} />
+                    <div className="flex items-center justify-between gap-2 border-t border-[#14532D]/10 pt-2">
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-[#14532D]/70">UPI ID</p>
+                        <p className="font-bold text-sm text-[#1F1A17] break-all">{session.upiId}</p>
+                        {session.accountLabel && <p className="text-xs text-[#2B201A]/60">{session.accountLabel}</p>}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={copyUpiId}
+                        aria-label={copied ? "UPI ID copied" : "Copy UPI ID"}
+                        className="shrink-0 p-1.5 rounded-md text-[#14532D]/70 hover:text-[#14532D] hover:bg-[#14532D]/5"
+                      >
+                        {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      </button>
                     </div>
-
-                    <div className="mt-3 w-full flex items-center gap-3">
-                      <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#C9A24B]" />
-                      <span className="font-editorial text-2xl font-bold text-[#14532D] whitespace-nowrap">Scan &amp; Support</span>
-                      <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#C9A24B]" />
-                    </div>
-                    <p className="text-sm text-[#2B201A]/80">For a Better, Kinder &amp; Healthier Society</p>
                   </div>
-                  <div className="bg-[#14532D] text-[#E9D9A6] text-center py-2.5 text-[11px] font-semibold tracking-[0.35em]">
-                    SEVA • SANSKAR • SAMARPAN
-                  </div>
-                </div>
 
-                {isMobile && (
-                  <a href={session.qrData} className="btn-secondary w-full">
-                    <Smartphone className="w-4 h-4" />
-                    <span>Pay {formatINR(session.amount)} using UPI app</span>
-                  </a>
-                )}
+                  {isMobile && (
+                    <a href={session.qrData} className="btn-secondary w-full">
+                      <Smartphone className="w-4 h-4" />
+                      <span>Pay {formatINR(session.amount)} using UPI app</span>
+                    </a>
+                  )}
 
-                <p className="flex items-start gap-2 text-xs text-[#2B201A]/70">
-                  <ShieldCheck className="w-4 h-4 text-[#2F5A43] shrink-0" />
-                  <span>
-                    {isMobile ? "Or scan the QR from another phone. " : "Scan the QR with any UPI app (BHIM, Google Pay, PhonePe, Paytm). "}
-                    Your payment goes directly to the Trust&apos;s UPI account ({session.upiName}). Please pay exactly {formatINR(session.amount)}.
-                  </span>
-                </p>
-
-                <div className="border-t border-[#E7D8C8] pt-4 space-y-2">
-                  <p className="text-center text-xs text-[#2B201A]/70">
-                    This page confirms your payment automatically once the bank notifies us.
+                  <p className="flex items-start gap-2 text-xs text-[#2B201A]/70">
+                    <ShieldCheck className="w-4 h-4 text-[#2F5A43] shrink-0" />
+                    <span>
+                      {isMobile ? "Or scan the QR from another phone. " : "Scan the QR with any UPI app (BHIM, Google Pay, PhonePe, Paytm). "}
+                      Pay exactly {formatINR(session.amount)} to {session.upiName}, then tap the button below. No screenshot or UTR needed.
+                    </span>
                   </p>
-                  <button type="button" onClick={() => goTo("WAITING")} className="btn-primary w-full">
-                    I Have Completed the Payment
+
+                  {generalError}
+                  <button type="button" onClick={handlePaid} disabled={busy} className="btn-primary w-full disabled:opacity-60 disabled:cursor-not-allowed">
+                    {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                    <span>I Have Completed the Payment</span>
                   </button>
-                  <button type="button" onClick={resetAll} className="w-full text-xs font-semibold text-[#2B201A]/60 hover:text-[#2B201A] py-2">
+                  <button type="button" onClick={resetAll} className="w-full text-xs font-semibold text-[#2B201A]/60 hover:text-[#2B201A] py-1">
                     Cancel and change amount
                   </button>
                 </div>
               </div>
             )}
 
-            {/* STEP 3: WAITING FOR THE BANK ALERT */}
-            {step === "WAITING" && session && (
+            {/* STEP 3: SUBMITTED, WAITING FOR THE TRUST TO APPROVE */}
+            {step === "SUBMITTED" && session && (
               <div className="text-center py-2 space-y-4">
-                <Loader2 className="w-12 h-12 text-[#2F5A43] mx-auto animate-spin" aria-hidden="true" />
-                <h4 className="font-editorial text-2xl font-bold text-[#2B201A]">Confirming your payment…</h4>
+                <CheckCircle2 className="w-14 h-14 text-[#2F5A43] mx-auto" aria-hidden="true" />
+                <h4 className="font-editorial text-2xl font-bold text-[#2B201A]">
+                  {hi ? "भुगतान सफलतापूर्वक सबमिट हुआ" : "Payment submitted successfully"}
+                </h4>
                 <p className="text-sm text-[#2B201A]/80 leading-relaxed max-w-sm mx-auto" role="status">
-                  We&apos;re waiting for the bank to confirm your payment of <strong>{formatINR(session.amount)}</strong>. This usually
-                  takes under a minute, and this page updates on its own.
+                  Thank you, {session.name}! The Trust has been notified of your payment of <strong>{formatINR(session.amount)}</strong>.
+                  Once they confirm it has reached their UPI account, we&apos;ll email your confirmation to{" "}
+                  <strong className="wrap-anywhere">{session.email}</strong>.
                 </p>
                 <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm text-left bg-[#FBF2E7] border border-[#E7D8C8] rounded-xl p-4 max-w-sm mx-auto">
                   <dt className="text-[#2B201A]/60">Donation ID</dt><dd className="font-mono font-semibold text-right">{session.donationId}</dd>
                   <dt className="text-[#2B201A]/60">Amount</dt><dd className="font-semibold text-right tabular-nums">{formatINR(session.amount)}</dd>
+                  <dt className="text-[#2B201A]/60">Status</dt><dd className="font-semibold text-right text-[#B8893E]">Awaiting confirmation</dd>
                 </dl>
-                {slow && (
-                  <p className="text-sm text-[#2B201A]/80 bg-[#FBF2E7] border border-[#E7D8C8] rounded-xl p-3 max-w-sm mx-auto">
-                    Bank confirmations are sometimes delayed. You can safely close this window: once your payment reaches us, we&apos;ll
-                    email the confirmation to <strong className="wrap-anywhere">{session.email}</strong>. Keep your Donation ID for reference.
-                  </p>
-                )}
+                <p className="text-xs text-[#2B201A]/60 max-w-sm mx-auto">
+                  You can close this window. Keep your Donation ID for reference.
+                </p>
                 {generalError}
-                <div className="flex flex-wrap justify-center gap-3">
-                  <button type="button" onClick={() => goTo("PAY")} className="btn-outline">Show QR code again</button>
-                  <button type="button" onClick={handleClose} className="btn-outline">Close</button>
-                </div>
+                <button type="button" onClick={handleClose} className="btn-primary px-8">Close</button>
               </div>
             )}
 

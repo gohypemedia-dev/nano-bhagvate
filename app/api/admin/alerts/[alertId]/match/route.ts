@@ -32,7 +32,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ ale
     );
   }
 
-  const result = await confirmPayment(donation.id, { utr: alert.utr ?? undefined, alertId: alert.id, adminId: admin.id, source: "ADMIN" });
+  const result = await confirmPayment(donation.id, { utr: alert.utr ?? undefined, alertId: alert.id, adminId: admin.id, source: "ADMIN", approvedBy: `${admin.name} (dashboard, bank alert match)` });
   if (!result.ok) {
     return jsonError(
       result.reason === "utr-in-use" ? `UTR ${alert.utr} is already linked to another donation.` : "That donation is not awaiting payment.",

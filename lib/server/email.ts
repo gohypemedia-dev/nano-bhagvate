@@ -63,6 +63,120 @@ ${rows.map(([k, v]) => `<tr><td style="padding:10px 14px;font-size:13px;color:#6
   return { subject, text, html };
 }
 
+function approvalRequestEmail(d: Donation, approveUrl: string, ngoName: string, upiId: string) {
+  const amount = rupees(d.amountPaise);
+  const rows: [string, string][] = [
+    ["Donor", d.donorName],
+    ["Amount", amount],
+    ["Donation ID", d.donationId],
+    ["Towards", d.program ?? "-"],
+    ["Email", d.donorEmail],
+    ["Mobile", d.donorMobile ?? "-"],
+    ["Marked as paid", new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" }).format(d.proofSubmittedAt ?? new Date())],
+  ];
+
+  const subject = `Payment to approve: ${amount} from ${d.donorName} (${d.donationId})`;
+  const text = [
+    `${d.donorName} says they have paid ${amount} to ${upiId}.`,
+    "",
+    "Please check your UPI app or bank statement. If the money has arrived, approve the payment",
+    "and the donor will get their confirmation email:",
+    "",
+    approveUrl,
+    "",
+    ...rows.map(([k, v]) => `${k}: ${v}`),
+    "",
+    "If you can't find the payment, open the same link and reject it.",
+  ].join("\n");
+
+  const html = `<!doctype html><html><body style="margin:0;background:#FFF9F2;font-family:Arial,Helvetica,sans-serif;color:#2B201A">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:24px 12px">
+<table role="presentation" width="100%" style="max-width:560px;background:#ffffff;border:1px solid #E7D8C8;border-radius:12px" cellpadding="0" cellspacing="0">
+<tr><td style="padding:28px 28px 8px">
+<p style="margin:0 0 4px;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#B8893E;font-weight:bold">${escapeHtml(ngoName)}</p>
+<h1 style="margin:0 0 16px;font-size:22px;color:#2B201A">Payment waiting for your approval</h1>
+<p style="margin:0 0 12px;font-size:15px;line-height:1.6"><strong>${escapeHtml(d.donorName)}</strong> says they have paid <strong>${amount}</strong> to <strong>${escapeHtml(upiId)}</strong>.</p>
+<p style="margin:0 0 12px;font-size:15px;line-height:1.6">Check your UPI app or bank statement. If the money has arrived, approve it and the donor will get their confirmation email.</p>
+</td></tr>
+<tr><td style="padding:8px 28px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FBF2E7;border-radius:8px">
+${rows.map(([k, v]) => `<tr><td style="padding:10px 14px;font-size:13px;color:#6B5B4E">${k}</td><td style="padding:10px 14px;font-size:14px;font-weight:bold;text-align:right">${escapeHtml(v)}</td></tr>`).join("")}
+</table>
+</td></tr>
+<tr><td align="center" style="padding:20px 28px 28px">
+<a href="${escapeHtml(approveUrl)}" style="display:inline-block;background:#2F5A43;color:#ffffff;text-decoration:none;font-weight:bold;font-size:15px;padding:12px 28px;border-radius:8px">Review &amp; approve payment</a>
+<p style="margin:14px 0 0;font-size:12px;color:#6B5B4E">Payment not received? Open the same link and reject it.</p>
+</td></tr>
+</table></td></tr></table></body></html>`;
+
+  return { subject, text, html };
+}
+
+// The people who approve payments: the UPI owner's inbox (GMAIL_USER) plus APPROVAL_EMAILS.
+function approvers(config: Env) {
+  const all = [config.GMAIL_USER, ...config.APPROVAL_EMAILS].filter((e): e is string => Boolean(e));
+  return [...new Set(all.map((e) => e.toLowerCase()))];
+}
+
+async function sendToApprovers(donation: Donation, msg: Omit<Message, "to">, what: string) {
+  const config = env();
+  const recipients = approvers(config);
+  if (recipients.length === 0) {
+    console.warn(`[email] No GMAIL_USER or APPROVAL_EMAILS set; ${what} not sent for`, donation.donationId);
+    return;
+  }
+  for (const to of recipients) {
+    try {
+      const sent = await deliver(config, { to, ...msg });
+      if (!sent.ok) console.warn(`[email] ${sent.error} (${what} for ${donation.donationId} to ${to})`);
+    } catch (e) {
+      console.error(`[email] ${what} for ${donation.donationId} to ${to} failed:`, e instanceof Error ? e.message : e);
+    }
+  }
+}
+
+// Tells the approvers that a payment was approved and the donor has been emailed.
+// `approvedBy` is e.g. "Aniket (dashboard)" or "the approval email link". Never throws.
+export async function sendApprovedNoticeEmail(donation: Donation, approvedBy: string) {
+  const config = env();
+  const amount = rupees(donation.amountPaise);
+  const donorEmail =
+    donation.emailStatus === "SENT"
+      ? `The confirmation email was sent to ${donation.donorEmail}.`
+      : `The confirmation email to ${donation.donorEmail} FAILED. Use "Resend email" on the dashboard.`;
+  const rows: [string, string][] = [
+    ["Donor", donation.donorName],
+    ["Amount", amount],
+    ["Donation ID", donation.donationId],
+    ["Approved by", approvedBy],
+  ];
+  const subject = `Approved: ${amount} from ${donation.donorName} (${donation.donationId})`;
+  const text = [`This payment has been approved.`, donorEmail, "", ...rows.map(([k, v]) => `${k}: ${v}`)].join("\n");
+  const html = `<!doctype html><html><body style="margin:0;background:#FFF9F2;font-family:Arial,Helvetica,sans-serif;color:#2B201A">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:24px 12px">
+<table role="presentation" width="100%" style="max-width:560px;background:#ffffff;border:1px solid #E7D8C8;border-radius:12px" cellpadding="0" cellspacing="0">
+<tr><td style="padding:28px 28px 8px">
+<p style="margin:0 0 4px;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#B8893E;font-weight:bold">${escapeHtml(config.NGO_NAME)}</p>
+<h1 style="margin:0 0 16px;font-size:22px;color:#2F5A43">Payment approved</h1>
+<p style="margin:0 0 12px;font-size:15px;line-height:1.6">${escapeHtml(donorEmail)}</p>
+</td></tr>
+<tr><td style="padding:8px 28px 28px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FBF2E7;border-radius:8px">
+${rows.map(([k, v]) => `<tr><td style="padding:10px 14px;font-size:13px;color:#6B5B4E">${k}</td><td style="padding:10px 14px;font-size:14px;font-weight:bold;text-align:right">${escapeHtml(v)}</td></tr>`).join("")}
+</table>
+</td></tr>
+</table></td></tr></table></body></html>`;
+  await sendToApprovers(donation, { subject, text, html }, "approved notice");
+}
+
+// Tells the approvers (UPI owner + admins) that a donor has marked their payment as done,
+// with a link to approve it. Never throws.
+export async function sendApprovalRequestEmail(donation: Donation, approveUrl: string) {
+  const config = env();
+  const msg = approvalRequestEmail(donation, approveUrl, config.NGO_NAME, config.UPI_ID ?? "the Trust's UPI ID");
+  await sendToApprovers(donation, msg, "approval request");
+}
+
 // Sends the confirmation email, records the attempt in EmailLog and updates
 // the donation's email status. Never throws; returns the outcome.
 export async function sendConfirmationEmail(donation: Donation) {

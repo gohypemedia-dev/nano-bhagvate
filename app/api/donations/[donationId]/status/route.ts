@@ -12,7 +12,7 @@ const schema = z.object({ submitToken: z.string().min(20).max(100) });
 // Gives the background inbox check time to finish on serverless hosts.
 export const maxDuration = 30;
 
-// Polled by the donor's payment screen. While the donation awaits payment it
+// Polled by the donor's payment screen. While the donation awaits payment or approval it
 // also triggers a (throttled) check of the bank-alert inbox.
 export async function POST(request: Request, { params }: { params: Promise<{ donationId: string }> }) {
   const { donationId } = await params;
@@ -32,7 +32,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ don
 
   // Check the inbox after replying, so the donor never waits on Gmail.
   // A match shows up on the next poll a few seconds later.
-  if (donation.status === "PENDING_PAYMENT") {
+  if (donation.status === "PENDING_PAYMENT" || donation.status === "PENDING_VERIFICATION") {
     after(async () => {
       try {
         await syncBankAlerts();
