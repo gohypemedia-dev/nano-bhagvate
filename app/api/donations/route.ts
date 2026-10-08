@@ -29,20 +29,24 @@ export async function POST(request: Request) {
   // Membership prices always come from the server-side plan list.
   const rupees = plan ? plan.price : amount!;
 
-  // Bank alerts are matched by amount, so no two donations awaiting payment may share one.
-  // If the amount is taken, add a few paise (₹500 → ₹500.01).
+  // With AUTO_CONFIRM_BANK_EMAILS, bank alerts are matched by amount alone, so no two waiting
+  // donations may share one: a taken amount gets a few paise added (₹500 → ₹500.01).
+  // Otherwise a person approves each payment (the UPI app shows who paid), so the donor
+  // pays exactly the amount they chose.
   const base = rupees * 100;
   const taken = new Set(
-    (
-      await prisma.donation.findMany({
-        where: {
-          status: { in: ["PENDING_PAYMENT", "PENDING_VERIFICATION"] },
-          amountPaise: { gte: base, lt: base + 100 },
-          createdAt: { gte: new Date(Date.now() - config.AUTO_MATCH_WINDOW_MINUTES * 60_000) },
-        },
-        select: { amountPaise: true },
-      })
-    ).map((d) => d.amountPaise),
+    config.AUTO_CONFIRM_BANK_EMAILS
+      ? (
+          await prisma.donation.findMany({
+            where: {
+              status: { in: ["PENDING_PAYMENT", "PENDING_VERIFICATION"] },
+              amountPaise: { gte: base, lt: base + 100 },
+              createdAt: { gte: new Date(Date.now() - config.AUTO_MATCH_WINDOW_MINUTES * 60_000) },
+            },
+            select: { amountPaise: true },
+          })
+        ).map((d) => d.amountPaise)
+      : [],
   );
   let amountPaise = base;
   while (taken.has(amountPaise) && amountPaise < base + 99) amountPaise++;

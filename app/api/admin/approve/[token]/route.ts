@@ -7,7 +7,10 @@ import { clientIp, rateLimit, tooManyRequests } from "@/lib/server/rate-limit";
 // Form posted from /admin/approve/[token], the page linked in the "payment to approve"
 // email. Whoever holds the emailed link may approve or reject that one donation.
 export async function POST(request: Request, { params }: { params: Promise<{ token: string }> }) {
-  if (!sameOrigin(request)) return Response.json({ error: "Invalid request origin." }, { status: 403 });
+  // Some in-app browsers (e.g. opened from Gmail) send "Origin: null" on form posts;
+  // Sec-Fetch-Site is set by the browser itself and can't be forged by another site.
+  const fromOurPage = sameOrigin(request) || request.headers.get("sec-fetch-site") === "same-origin";
+  if (!fromOurPage) return Response.json({ error: "Invalid request origin." }, { status: 403 });
   const limit = await rateLimit("approve-ip", clientIp(request), 30, 10 * 60);
   if (!limit.ok) return tooManyRequests(limit.retryAfterSeconds);
 

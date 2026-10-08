@@ -8,8 +8,9 @@ import { formatIST, rupeesFromPaise } from "@/lib/admin-format";
 export const metadata: Metadata = {
   title: "Approve payment | Namo Bhagwate Vasudevaya Trust",
   robots: { index: false, follow: false },
-  // The token is in the URL; don't leak it to other sites.
-  referrer: "no-referrer",
+  // The token is in the URL; don't leak it to other sites. Not "no-referrer": that makes
+  // browsers send "Origin: null" on the approve/reject form, which the origin check rejects.
+  referrer: "same-origin",
 };
 
 // Opened from the "payment to approve" email. No login needed: the one-time link is the key.

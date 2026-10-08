@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { QRCodeSVG } from "qrcode.react";
-import { X, Heart, ShieldCheck, Smartphone, Copy, Check, Loader2, CheckCircle2 } from "lucide-react";
+import { X, Heart, ShieldCheck, Copy, Check, Loader2, CheckCircle2 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { MEMBERSHIP_PLANS, PRESET_AMOUNTS, formatINR } from "@/lib/donation-config";
 import {
@@ -102,8 +102,6 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
   const plan = MEMBERSHIP_PLANS.find((p) => p.id === planId) ?? MEMBERSHIP_PLANS[0];
   const typedAmount = customAmount ? parseRupees(customAmount) : null;
   const currentAmount = isMembership ? plan.price : customAmount ? typedAmount ?? 0 : selectedAmount;
-  // The modal body only renders after a click, so this never runs on the server.
-  const isMobile = typeof navigator !== "undefined" && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   // When the modal opens: resume an unfinished donation from this tab, or start fresh.
   const openKey = donateModal.isOpen ? `${donateModal.program}|${donateModal.amount}|${isMembership}` : null;
@@ -678,17 +676,10 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
                     </div>
                   </div>
 
-                  {isMobile && (
-                    <a href={session.qrData} className="btn-secondary w-full">
-                      <Smartphone className="w-4 h-4" />
-                      <span>Pay {formatINR(session.amount)} using UPI app</span>
-                    </a>
-                  )}
-
                   <p className="flex items-start gap-2 text-xs text-[#2B201A]/70">
                     <ShieldCheck className="w-4 h-4 text-[#2F5A43] shrink-0" />
                     <span>
-                      {isMobile ? "Or scan the QR from another phone. " : "Scan the QR with any UPI app (BHIM, Google Pay, PhonePe, Paytm). "}
+                      Scan the QR with any UPI app (BHIM, Google Pay, PhonePe, Paytm), or send to the UPI ID above.{" "}
                       Pay exactly {formatINR(session.amount)} to {session.upiName}, then tap the button below. No screenshot or UTR needed.
                     </span>
                   </p>
