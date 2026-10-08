@@ -35,6 +35,14 @@ export function tokenMatchesHash(token: string, hash: string) {
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
+// The approver opens this link from their phone/inbox, so it must be the public site:
+// NEXT_PUBLIC_APP_URL, else the Vercel production domain (set by Vercel), else this request's origin.
+export function approvalLink(request: Request, approvalToken: string) {
+  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  const base = (env().NEXT_PUBLIC_APP_URL ?? (vercel ? `https://${vercel}` : new URL(request.url).origin)).replace(/\/+$/, "");
+  return `${base}/admin/approve/${approvalToken}`;
+}
+
 export function buildUpiUri(upiId: string, donationId: string, amountPaise: number) {
   const config = env();
   // Same fields, in the same order, as the bank's printed QR, plus amount and note.

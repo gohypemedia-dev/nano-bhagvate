@@ -65,6 +65,10 @@ ${rows.map(([k, v]) => `<tr><td style="padding:10px 14px;font-size:13px;color:#6
 
 function approvalRequestEmail(d: Donation, approveUrl: string, ngoName: string, upiId: string) {
   const amount = rupees(d.amountPaise);
+  const ist = (date: Date) =>
+    new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" }).format(date);
+  // Usually sent the moment the QR is shown; older donations get it when the donor taps "I have paid".
+  const markedPaid = d.status === "PENDING_VERIFICATION";
   const rows: [string, string][] = [
     ["Donor", d.donorName],
     ["Amount", amount],
@@ -72,21 +76,24 @@ function approvalRequestEmail(d: Donation, approveUrl: string, ngoName: string, 
     ["Towards", d.program ?? "-"],
     ["Email", d.donorEmail],
     ["Mobile", d.donorMobile ?? "-"],
-    ["Marked as paid", new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" }).format(d.proofSubmittedAt ?? new Date())],
+    markedPaid ? ["Marked as paid", ist(d.proofSubmittedAt ?? new Date())] : ["QR shown", ist(d.createdAt)],
   ];
+  const lead = markedPaid
+    ? `${d.donorName} says they have paid ${amount} to ${upiId}.`
+    : `${d.donorName} is paying ${amount} to ${upiId} by UPI (the QR has just been shown to them).`;
 
   const subject = `Payment to approve: ${amount} from ${d.donorName} (${d.donationId})`;
   const text = [
-    `${d.donorName} says they have paid ${amount} to ${upiId}.`,
+    lead,
     "",
-    "Please check your UPI app or bank statement. If the money has arrived, approve the payment",
+    "When the money shows up in your UPI app or bank statement, approve the payment",
     "and the donor will get their confirmation email:",
     "",
     approveUrl,
     "",
     ...rows.map(([k, v]) => `${k}: ${v}`),
     "",
-    "If you can't find the payment, open the same link and reject it.",
+    "If the payment never arrives, open the same link and reject it.",
   ].join("\n");
 
   const html = `<!doctype html><html><body style="margin:0;background:#FFF9F2;font-family:Arial,Helvetica,sans-serif;color:#2B201A">
@@ -94,9 +101,9 @@ function approvalRequestEmail(d: Donation, approveUrl: string, ngoName: string, 
 <table role="presentation" width="100%" style="max-width:560px;background:#ffffff;border:1px solid #E7D8C8;border-radius:12px" cellpadding="0" cellspacing="0">
 <tr><td style="padding:28px 28px 8px">
 <p style="margin:0 0 4px;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#B8893E;font-weight:bold">${escapeHtml(ngoName)}</p>
-<h1 style="margin:0 0 16px;font-size:22px;color:#2B201A">Payment waiting for your approval</h1>
-<p style="margin:0 0 12px;font-size:15px;line-height:1.6"><strong>${escapeHtml(d.donorName)}</strong> says they have paid <strong>${amount}</strong> to <strong>${escapeHtml(upiId)}</strong>.</p>
-<p style="margin:0 0 12px;font-size:15px;line-height:1.6">Check your UPI app or bank statement. If the money has arrived, approve it and the donor will get their confirmation email.</p>
+<h1 style="margin:0 0 16px;font-size:22px;color:#2B201A">${markedPaid ? "Payment waiting for your approval" : "New donation: approve when received"}</h1>
+<p style="margin:0 0 12px;font-size:15px;line-height:1.6">${escapeHtml(lead)}</p>
+<p style="margin:0 0 12px;font-size:15px;line-height:1.6">When the money shows up in your UPI app or bank statement, approve it and the donor will get their confirmation email.</p>
 </td></tr>
 <tr><td style="padding:8px 28px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FBF2E7;border-radius:8px">
@@ -105,7 +112,7 @@ ${rows.map(([k, v]) => `<tr><td style="padding:10px 14px;font-size:13px;color:#6
 </td></tr>
 <tr><td align="center" style="padding:20px 28px 28px">
 <a href="${escapeHtml(approveUrl)}" style="display:inline-block;background:#2F5A43;color:#ffffff;text-decoration:none;font-weight:bold;font-size:15px;padding:12px 28px;border-radius:8px">Review &amp; approve payment</a>
-<p style="margin:14px 0 0;font-size:12px;color:#6B5B4E">Payment not received? Open the same link and reject it.</p>
+<p style="margin:14px 0 0;font-size:12px;color:#6B5B4E">Payment never arrived? Open the same link and reject it.</p>
 </td></tr>
 </table></td></tr></table></body></html>`;
 

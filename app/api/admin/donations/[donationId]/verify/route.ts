@@ -18,7 +18,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ don
 
   // Conditional update: a second click (or a second admin) changes nothing and sends no second email.
   const updated = await prisma.donation.updateMany({
-    where: { donationId, status: "PENDING_VERIFICATION" },
+    where: { donationId, status: { in: ["PENDING_PAYMENT", "PENDING_VERIFICATION"] } },
     data: { status: "VERIFIED", verificationSource: "ADMIN", verifiedById: admin.id, verifiedAt: new Date(), ...(note ? { adminNote: note } : {}) },
   });
   if (updated.count === 0) {

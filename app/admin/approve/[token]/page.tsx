@@ -49,7 +49,8 @@ function Body({ donation: d, token }: { donation: Donation; token: string }) {
     ["Towards", d.program ?? "—"],
     ["Email", d.donorEmail],
     ["Mobile", d.donorMobile ?? "—"],
-    ["Marked as paid", d.proofSubmittedAt ? formatIST(d.proofSubmittedAt) : "—"],
+    ["QR shown", formatIST(d.createdAt)],
+    ["Donor marked as paid", d.proofSubmittedAt ? formatIST(d.proofSubmittedAt) : "Not yet"],
   ];
   const details = (
     <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm bg-[#FBF2E7] border border-[#E7D8C8] rounded-xl p-4">
@@ -94,8 +95,10 @@ function Body({ donation: d, token }: { donation: Donation; token: string }) {
       <div className="space-y-1">
         <h1 className="font-editorial text-2xl font-bold text-[#2B201A]">Approve this payment?</h1>
         <p className="text-sm text-[#2B201A]/75">
-          <strong>{d.donorName}</strong> says they paid <strong>{amount}</strong> to <strong>{env().UPI_ID ?? "the Trust's UPI ID"}</strong>.
-          Check your UPI app or bank statement for this credit before approving.
+          <strong>{d.donorName}</strong> {d.status === "PENDING_VERIFICATION" ? "says they paid" : "is paying"} <strong>{amount}</strong> to{" "}
+          <strong>{env().UPI_ID ?? "the Trust's UPI ID"}</strong>
+          {d.status === "PENDING_PAYMENT" && " (they haven't tapped “I have paid” yet)"}. Check your UPI app or bank statement for
+          this credit before approving.
         </p>
       </div>
       {details}

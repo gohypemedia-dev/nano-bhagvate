@@ -23,7 +23,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ tok
     select: { id: true, status: true },
   });
   const action = (await request.formData().catch(() => null))?.get("action");
-  if (!donation || donation.status !== "PENDING_VERIFICATION") return Response.redirect(back, 303);
+  // The link works from the moment the QR is shown, before or after the donor taps "I have paid".
+  const waiting = donation?.status === "PENDING_PAYMENT" || donation?.status === "PENDING_VERIFICATION";
+  if (!donation || !waiting) return Response.redirect(back, 303);
 
   if (action === "approve") {
     // Same path as an automatic bank match: marks VERIFIED and emails the donor.
@@ -34,7 +36,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ tok
   } else if (action === "reject") {
     await prisma.$transaction(async (tx) => {
       const updated = await tx.donation.updateMany({
-        where: { id: donation.id, status: "PENDING_VERIFICATION" },
+        where: { id: donation.id, status: { in: ["PENDING_PAYMENT", "PENDING_VERIFICATION"] } },
         data: { status: "REJECTED", rejectedAt: new Date(), adminNote: "Rejected from the payment email link: payment not received." },
       });
       if (updated.count === 1) await tx.utrClaim.deleteMany({ where: { donationId: donation.id } });
