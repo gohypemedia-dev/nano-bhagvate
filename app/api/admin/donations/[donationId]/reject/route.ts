@@ -18,7 +18,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ don
   try {
     await prisma.$transaction(async (tx) => {
       const updated = await tx.donation.updateMany({
-        where: { donationId, status: "PENDING_VERIFICATION" },
+        where: { donationId, status: { in: ["PENDING_PAYMENT", "PENDING_VERIFICATION"] } },
         data: { status: "REJECTED", rejectedAt: new Date(), verifiedById: admin.id, ...(note ? { adminNote: note } : {}) },
       });
       if (updated.count === 0) throw new NotPending();

@@ -2,9 +2,10 @@ import "server-only";
 import { createHash } from "node:crypto";
 import { ImapFlow } from "imapflow";
 import { simpleParser, type ParsedMail } from "mailparser";
+import type { DonationStatus } from "@prisma/client";
 import { env } from "./env";
 import { prisma } from "./prisma";
-import { sendConfirmationEmail } from "./email";
+import { sendApprovedNoticeEmail, sendConfirmationEmail } from "./email";
 import { isUniqueViolation } from "./http";
 
 // Automatic payment confirmation from bank "amount credited" emails.
@@ -117,11 +118,12 @@ export function parseBankAlert(mail: ParsedMail, allowedDomains: string[], ownUp
 class NotPayable extends Error {}
 class UtrInUse extends Error {}
 
-// Marks a donation as paid (VERIFIED) and sends the confirmation email.
-// Used by the automatic matcher and by an admin matching an alert by hand.
+// Marks a donation as paid (VERIFIED), emails the donor their confirmation and tells
+// the approvers who approved it. Used by the approval email link, an admin matching a
+// bank alert by hand, and (only when AUTO_CONFIRM_BANK_EMAILS=true) the automatic matcher.
 export async function confirmPayment(
   donationDbId: string,
-  opts: { utr?: string; alertId?: string; adminId?: string; source: "BANK_EMAIL" | "ADMIN" },
+  opts: { utr?: string; alertId?: string; adminId?: string; source: "BANK_EMAIL" | "ADMIN"; approvedBy: string },
 ): Promise<{ ok: true } | { ok: false; reason: "not-payable" | "utr-in-use" }> {
   try {
     await prisma.$transaction(async (tx) => {
@@ -155,10 +157,14 @@ export async function confirmPayment(
     throw e;
   }
 
-  const donation = await prisma.donation.findUniqueOrThrow({ where: { id: donationDbId } });
-  await sendConfirmationEmail(donation);
+  await sendConfirmationEmail(await prisma.donation.findUniqueOrThrow({ where: { id: donationDbId } }));
+  // Re-read so the notice reports whether the donor email went out.
+  await sendApprovedNoticeEmail(await prisma.donation.findUniqueOrThrow({ where: { id: donationDbId } }), opts.approvedBy);
   return { ok: true };
 }
+
+// Donations whose money may still arrive: QR shown, or donor has tapped "I have paid".
+const AWAITING: DonationStatus[] = ["PENDING_PAYMENT", "PENDING_VERIFICATION"];
 
 // Stores an alert and, when exactly one pending donation fits, confirms it.
 export async function recordAndMatch(alert: ParsedAlert) {
@@ -169,13 +175,13 @@ export async function recordAndMatch(alert: ParsedAlert) {
   let candidates: { id: string; donationId: string }[] = [];
   if (alert.donationRef) {
     candidates = await prisma.donation.findMany({
-      where: { donationId: alert.donationRef, status: "PENDING_PAYMENT", amountPaise: alert.amountPaise },
+      where: { donationId: alert.donationRef, status: { in: AWAITING }, amountPaise: alert.amountPaise },
       select: { id: true, donationId: true },
     });
   }
   if (candidates.length === 0) {
     candidates = await prisma.donation.findMany({
-      where: { status: "PENDING_PAYMENT", amountPaise: alert.amountPaise, createdAt: { gte: from, lte: to } },
+      where: { status: { in: AWAITING }, amountPaise: alert.amountPaise, createdAt: { gte: from, lte: to } },
       select: { id: true, donationId: true },
       take: 5,
     });
@@ -205,7 +211,17 @@ export async function recordAndMatch(alert: ParsedAlert) {
 
   if (status !== "MATCHED") return { messageId: alert.messageId, status };
 
-  const result = await confirmPayment(candidates[0].id, { utr: alert.utr, alertId: row.id, source: "BANK_EMAIL" });
+  // By default the donor is only emailed after a person approves. The alert waits under
+  // "Need review" so an admin can click Match (or approve from the email link).
+  if (!config.AUTO_CONFIRM_BANK_EMAILS) {
+    await prisma.paymentAlert.update({
+      where: { id: row.id },
+      data: { note: `Looks like ${candidates[0].donationId}. Approve it from the email link or click Match.` },
+    });
+    return { messageId: alert.messageId, status: "UNMATCHED" as const };
+  }
+
+  const result = await confirmPayment(candidates[0].id, { utr: alert.utr, alertId: row.id, source: "BANK_EMAIL", approvedBy: "Bank payment email (automatic)" });
   if (!result.ok) {
     const note =
       result.reason === "utr-in-use"

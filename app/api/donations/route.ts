@@ -1,12 +1,18 @@
+import { after } from "next/server";
 import { findPlan } from "@/lib/donation-config";
 import { createDonationSchema } from "@/lib/validation/donation";
-import { buildUpiUri, generateDonationId, generateToken, sha256 } from "@/lib/server/donation";
+import { approvalLink, buildUpiUri, generateDonationId, generateToken, sha256 } from "@/lib/server/donation";
+import { sendApprovalRequestEmail } from "@/lib/server/email";
 import { env } from "@/lib/server/env";
 import { isUniqueViolation, jsonError } from "@/lib/server/http";
 import { prisma } from "@/lib/server/prisma";
 import { clientIp, rateLimit, tooManyRequests } from "@/lib/server/rate-limit";
 
-// Creates a payment intent (status PENDING_PAYMENT) and returns the UPI QR data.
+// Gives the background approval email time to send on serverless hosts.
+export const maxDuration = 30;
+
+// Creates a payment intent (status PENDING_PAYMENT), returns the UPI QR data and
+// emails the approvers a link to approve it once the money arrives.
 export async function POST(request: Request) {
   const limit = await rateLimit("donation-create", clientIp(request), 10, 10 * 60);
   if (!limit.ok) return tooManyRequests(limit.retryAfterSeconds);
@@ -29,24 +35,29 @@ export async function POST(request: Request) {
   // Membership prices always come from the server-side plan list.
   const rupees = plan ? plan.price : amount!;
 
-  // Bank alerts are matched by amount, so no two donations awaiting payment may share one.
-  // If the amount is taken, add a few paise (₹500 → ₹500.01).
+  // With AUTO_CONFIRM_BANK_EMAILS, bank alerts are matched by amount alone, so no two waiting
+  // donations may share one: a taken amount gets a few paise added (₹500 → ₹500.01).
+  // Otherwise a person approves each payment (the UPI app shows who paid), so the donor
+  // pays exactly the amount they chose.
   const base = rupees * 100;
   const taken = new Set(
-    (
-      await prisma.donation.findMany({
-        where: {
-          status: "PENDING_PAYMENT",
-          amountPaise: { gte: base, lt: base + 100 },
-          createdAt: { gte: new Date(Date.now() - config.AUTO_MATCH_WINDOW_MINUTES * 60_000) },
-        },
-        select: { amountPaise: true },
-      })
-    ).map((d) => d.amountPaise),
+    config.AUTO_CONFIRM_BANK_EMAILS
+      ? (
+          await prisma.donation.findMany({
+            where: {
+              status: { in: ["PENDING_PAYMENT", "PENDING_VERIFICATION"] },
+              amountPaise: { gte: base, lt: base + 100 },
+              createdAt: { gte: new Date(Date.now() - config.AUTO_MATCH_WINDOW_MINUTES * 60_000) },
+            },
+            select: { amountPaise: true },
+          })
+        ).map((d) => d.amountPaise)
+      : [],
   );
   let amountPaise = base;
   while (taken.has(amountPaise) && amountPaise < base + 99) amountPaise++;
   const submitToken = generateToken();
+  const approvalToken = generateToken();
 
   for (let attempt = 1; ; attempt++) {
     const donationId = generateDonationId();
@@ -63,7 +74,15 @@ export async function POST(request: Request) {
           amountPaise,
           upiUri,
           submitTokenHash: sha256(submitToken),
+          approvalTokenHash: sha256(approvalToken),
         },
+      });
+      // Tell the approvers right away, so they can approve as soon as the money shows up
+      // in the UPI app, whether or not the donor taps "I have completed the payment".
+      const approveUrl = approvalLink(request, approvalToken);
+      after(async () => {
+        const created = await prisma.donation.findUniqueOrThrow({ where: { donationId } });
+        await sendApprovalRequestEmail(created, approveUrl);
       });
       return Response.json(
         {

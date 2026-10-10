@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { requireAdminApi } from "@/lib/server/auth";
-import { sendConfirmationEmail } from "@/lib/server/email";
+import { sendApprovedNoticeEmail, sendConfirmationEmail } from "@/lib/server/email";
 import { jsonError } from "@/lib/server/http";
 import { prisma } from "@/lib/server/prisma";
 
@@ -18,7 +18,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ don
 
   // Conditional update: a second click (or a second admin) changes nothing and sends no second email.
   const updated = await prisma.donation.updateMany({
-    where: { donationId, status: "PENDING_VERIFICATION" },
+    where: { donationId, status: { in: ["PENDING_PAYMENT", "PENDING_VERIFICATION"] } },
     data: { status: "VERIFIED", verificationSource: "ADMIN", verifiedById: admin.id, verifiedAt: new Date(), ...(note ? { adminNote: note } : {}) },
   });
   if (updated.count === 0) {
@@ -29,6 +29,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ don
 
   const donation = await prisma.donation.findUniqueOrThrow({ where: { donationId } });
   const email = await sendConfirmationEmail(donation);
+  await sendApprovedNoticeEmail(await prisma.donation.findUniqueOrThrow({ where: { donationId } }), `${admin.name} (dashboard)`);
 
   return Response.json(
     { success: true, status: "VERIFIED", emailStatus: email.status, emailError: email.error },

@@ -5,6 +5,7 @@ import { prisma } from "@/lib/server/prisma";
 import { formatIST, rupeesFromPaise, STATUS_LABELS } from "@/lib/admin-format";
 import StatusBadge from "@/components/admin/StatusBadge";
 import BankAlertsPanel from "@/components/admin/BankAlertsPanel";
+import AutoRefresh from "@/components/admin/AutoRefresh";
 import { alertsNeedingReview, lastBankSync } from "@/lib/server/bank-alerts";
 
 const PAGE_SIZE = 25;
@@ -74,6 +75,7 @@ export default async function AdminDashboard({
 
   return (
     <div className="space-y-8">
+      <AutoRefresh />
       <BankAlertsPanel
         lastSync={lastSync ? formatIST(lastSync) : null}
         alerts={reviewAlerts.map((a) => ({

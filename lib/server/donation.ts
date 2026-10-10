@@ -35,6 +35,24 @@ export function tokenMatchesHash(token: string, hash: string) {
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
+// The approver opens this link from their phone/inbox, so it must be the public site:
+// NEXT_PUBLIC_APP_URL, else the Vercel production domain (set by Vercel), else this request's origin.
+// A localhost NEXT_PUBLIC_APP_URL (e.g. copied from a dev .env into Vercel) is ignored when the
+// site itself runs on a real domain, so live emails never link to localhost.
+export function publicBaseUrl(request?: Request) {
+  const isLocal = (url: string) => /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:|\/|$)/i.test(url);
+  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  const origin = request ? new URL(request.url).origin : "http://localhost:3000";
+  const fallback = vercel ? `https://${vercel}` : origin;
+  const configured = env().NEXT_PUBLIC_APP_URL;
+  const base = configured && !(isLocal(configured) && !isLocal(fallback)) ? configured : fallback;
+  return base.replace(/\/+$/, "");
+}
+
+export function approvalLink(request: Request, approvalToken: string) {
+  return `${publicBaseUrl(request)}/admin/approve/${approvalToken}`;
+}
+
 export function buildUpiUri(upiId: string, donationId: string, amountPaise: number) {
   const config = env();
   // Same fields, in the same order, as the bank's printed QR, plus amount and note.

@@ -40,6 +40,12 @@ const schema = z
     EMAIL_FROM: optional,
     EMAIL_REPLY_TO: optional,
     NGO_NAME: z.string().default("Namo Bhagwate Vasudevaya Trust"),
+    // Who gets the "donor says they paid, please approve" email (comma-separated).
+    // Defaults to GMAIL_USER, the inbox of the UPI account owner.
+    APPROVAL_EMAILS: z
+      .string()
+      .optional()
+      .transform((v) => (v ?? "").split(",").map((e) => e.trim()).filter(Boolean)),
 
     // Bank alert emails are trusted only from these domains (subdomains included),
     // and only when Gmail reports a DMARC/DKIM pass for that domain.
@@ -55,6 +61,20 @@ const schema = z
     // How far back a bank alert may match a donation, and how often the inbox may be checked.
     AUTO_MATCH_WINDOW_MINUTES: z.coerce.number().int().min(5).max(24 * 60).default(120),
     BANK_SYNC_INTERVAL_SECONDS: z.coerce.number().int().min(5).max(3600).default(15),
+    // false (default): a matching bank email never confirms a donation by itself; the donor
+    // is emailed only after the UPI owner or an admin approves (email link or dashboard).
+    AUTO_CONFIRM_BANK_EMAILS: z
+      .enum(["true", "false"])
+      .default("false")
+      .transform((v) => v === "true"),
+
+    // Donation certificate (PDF). Registration numbers are printed only when set.
+    CERT_SIGNATORY_NAME: z.string().default("Vijeshanand Saraswati Ji"),
+    CERT_SIGNATORY_TITLE: z.string().default("Founder & Authorised Signatory"),
+    // Same number as in the site footer (components/Footer.tsx).
+    TRUST_REGISTRATION_NO: z.string().default("Trust/2019/NBVT"),
+    TRUST_PAN: optional,
+    TRUST_80G_NO: optional,
 
     CRON_SECRET: optional,
     NEXT_PUBLIC_APP_URL: optional,

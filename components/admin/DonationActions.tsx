@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, MailSearch } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 interface Props {
   donationId: string;
@@ -85,46 +85,29 @@ export default function DonationActions({ donationId, status, amount, utr, email
     }
   }
 
-  // Runs the same automatic bank-email check the donor's screen triggers, right now.
-  async function checkBankEmails() {
-    setBusy("bank-sync");
-    setMessage(null);
-    try {
-      const res = await fetch("/api/admin/bank-sync", { method: "POST" });
-      const data = await res.json().catch(() => ({}));
-      if (res.status === 401) {
-        router.replace("/admin/login");
-        return;
-      }
-      if (!res.ok) {
-        setMessage({ kind: "error", text: data.error ?? "Couldn't check the inbox." });
-      } else {
-        setMessage({
-          kind: "ok",
-          text: data.newAlerts ? `${data.newAlerts} new bank email(s) checked.` : "No new bank payment emails yet.",
-        });
-        router.refresh();
-      }
-    } catch {
-      setMessage({ kind: "error", text: "Couldn't reach the server." });
-    } finally {
-      setBusy(null);
-    }
-  }
-
   const feedback = message && (
     <p role="status" className={`text-sm font-semibold ${message.kind === "ok" ? "text-[#2F5A43]" : "text-[#B3261E]"}`}>
       {message.text}
     </p>
   );
 
-  if (status === "PENDING_VERIFICATION") {
+  // Reviewable from the moment the QR is shown; the donor may never tap "I have paid".
+  if (status === "PENDING_VERIFICATION" || status === "PENDING_PAYMENT") {
     return (
       <section className="rounded-xl border-2 border-[#B8893E]/60 bg-white p-4 sm:p-5 space-y-4">
         <h2 className="font-bold text-[#2B201A]">Review payment</h2>
         <p className="text-sm text-[#2B201A]/75">
-          Open the Trust&apos;s bank or UPI statement and look for a credit of <strong>{amount}</strong> with UTR{" "}
-          <strong className="font-mono">{utr}</strong>. The screenshot alone is not proof.
+          {status === "PENDING_VERIFICATION"
+            ? "The donor says they have paid."
+            : "The donor was shown the QR but hasn't tapped “I have paid” yet."}{" "}
+          Open the Trust&apos;s UPI app or bank statement and look for a credit of{" "}
+          <strong>{amount}</strong>
+          {utr ? (
+            <>
+              {" "}with UTR <strong className="font-mono">{utr}</strong>
+            </>
+          ) : null}
+          . If it arrived, verify it and the donor gets their confirmation email.
         </p>
         <div>
           <label htmlFor="admin-note" className="block text-xs font-semibold text-[#2B201A]/80 mb-1">Admin note (optional)</label>
@@ -132,7 +115,7 @@ export default function DonationActions({ donationId, status, amount, utr, email
         </div>
         <label className="flex items-start gap-2.5 text-sm text-[#2B201A] cursor-pointer">
           <input type="checkbox" checked={checked} onChange={(e) => setChecked(e.target.checked)} className="mt-1 w-4 h-4 accent-[#2F5A43]" />
-          <span>I found {amount} with this UTR in the Trust&apos;s bank statement.</span>
+          <span>I found {amount}{utr ? " with this UTR" : ""} in the Trust&apos;s UPI account or bank statement.</span>
         </label>
         {feedback}
         <div className="flex flex-wrap gap-3">
@@ -168,23 +151,6 @@ export default function DonationActions({ donationId, status, amount, utr, email
         <button type="button" onClick={resend} disabled={busy !== null} className="btn-outline disabled:opacity-50">
           {busy === "resend-email" && <Loader2 className="w-4 h-4 animate-spin" />}
           {emailStatus === "SENT" ? "Send email again" : "Resend email"}
-        </button>
-      </section>
-    );
-  }
-
-  if (status === "PENDING_PAYMENT") {
-    return (
-      <section className="rounded-xl border border-[#E7D8C8] bg-white p-4 sm:p-5 space-y-3">
-        <h2 className="font-bold text-[#2B201A]">Waiting for payment</h2>
-        <p className="text-sm text-[#2B201A]/75">
-          This donation will be confirmed automatically as soon as the bank&apos;s &quot;amount credited&quot; email for{" "}
-          <strong>{amount}</strong> reaches the inbox. The donor then gets their confirmation email.
-        </p>
-        {feedback}
-        <button type="button" onClick={checkBankEmails} disabled={busy !== null} className="btn-outline disabled:opacity-50">
-          {busy === "bank-sync" ? <Loader2 className="w-4 h-4 animate-spin" /> : <MailSearch className="w-4 h-4" />}
-          Check bank emails now
         </button>
       </section>
     );

@@ -2,10 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink, TriangleAlert } from "lucide-react";
 import { requireAdminPage } from "@/lib/server/auth";
+import { certificateKey } from "@/lib/server/certificate";
 import { prisma } from "@/lib/server/prisma";
 import { formatIST, rupeesFromPaise } from "@/lib/admin-format";
 import StatusBadge from "@/components/admin/StatusBadge";
 import DonationActions from "@/components/admin/DonationActions";
+import AutoRefresh from "@/components/admin/AutoRefresh";
 
 export default async function DonationDetailPage({ params }: { params: Promise<{ donationId: string }> }) {
   await requireAdminPage();
@@ -37,8 +39,16 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
     ["Towards", donation.program ?? "—"],
     ["UTR", donation.utr ? <span key="u" className="font-mono">{donation.utr}</span> : "—"],
     ["Created", formatIST(donation.createdAt)],
-    ["Proof submitted", donation.proofSubmittedAt ? formatIST(donation.proofSubmittedAt) : "—"],
+    ["Marked as paid", donation.proofSubmittedAt ? formatIST(donation.proofSubmittedAt) : "—"],
   ];
+  if (donation.status === "VERIFIED") {
+    rows.push([
+      "Certificate",
+      <a key="c" href={`/certificate/${donation.donationId}?k=${certificateKey(donation)}`} target="_blank" rel="noopener" className="inline-flex items-center gap-1 text-[#E86F1D] hover:underline">
+        View / download <ExternalLink className="w-3.5 h-3.5" />
+      </a>,
+    ]);
+  }
   if (donation.verificationSource === "BANK_EMAIL") {
     rows.push(["Confirmed by", `Bank payment email (automatic), ${formatIST(donation.verifiedAt ?? donation.updatedAt)}`]);
   } else if (donation.verifiedBy) {
@@ -50,6 +60,7 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
 
   return (
     <div className="space-y-6">
+      <AutoRefresh />
       <Link href="/admin" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#2B201A]/70 hover:text-[#E86F1D]">
         <ArrowLeft className="w-4 h-4" /> All donations
       </Link>
