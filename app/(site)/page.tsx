@@ -457,8 +457,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* STRICT RULE CONFIRMED: ZERO GALLERY SECTION HERE! */}
     </div>
   );
 }

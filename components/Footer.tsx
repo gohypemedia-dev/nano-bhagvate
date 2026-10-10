@@ -80,6 +80,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/gallery" className="hover:text-[#E86F1D] transition-colors">
+                  {lang === "hi" ? "हमारी झलकियाँ (Gallery)" : "Gallery & Moments"}
+                </Link>
+              </li>
+              <li>
                 <Link href="/contact" className="hover:text-[#E86F1D] transition-colors">
                   {lang === "hi" ? "संपर्क करें (Contact Us)" : "Contact Us"}
                 </Link>

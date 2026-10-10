@@ -21,11 +21,12 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // 7 Desktop Center Navigation Links (Donate text link removed to prevent duplicate CTA)
+  // Navigation Links including dedicated Gallery page
   const navLinks = [
     { href: "/", label: lang === "hi" ? "मुख्य पृष्ठ" : "Home" },
     { href: "/about", label: lang === "hi" ? "हमारे बारे में" : "About Us" },
     { href: "/initiatives", label: lang === "hi" ? "हमारी पहल" : "Our Initiatives" },
+    { href: "/gallery", label: lang === "hi" ? "झलकियाँ" : "Gallery" },
     { href: "/founder", label: lang === "hi" ? "संस्थापक का दृष्टिकोण" : "Founder’s Vision" },
     { href: "/membership", label: lang === "hi" ? "सदस्यता" : "Membership" },
     { href: "/books", label: lang === "hi" ? "पुस्तकें" : "Books" },
@@ -67,14 +68,14 @@ export default function Header() {
           </Link>
 
           {/* 2. CENTER: Navigation Menu (Centered in middle grid column) */}
-          <nav className="flex items-center justify-center gap-3.5 2xl:gap-6 min-w-0 whitespace-nowrap">
+          <nav className="flex items-center justify-center gap-1.5 xl:gap-2 2xl:gap-4 min-w-0 whitespace-nowrap">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`px-3 py-1.5 rounded-lg text-xs 2xl:text-sm font-semibold transition-all duration-200 whitespace-nowrap shrink-0 ${
+                  className={`px-2 xl:px-2.5 2xl:px-3 py-1.5 rounded-lg text-xs 2xl:text-sm font-semibold transition-all duration-200 whitespace-nowrap shrink-0 ${
                     isActive
                       ? "text-[#E86F1D] bg-[#FBF2E7] font-bold"
                       : "text-[#2B201A]/85 hover:text-[#E86F1D] hover:bg-[#FBF2E7]/60"
