@@ -32,6 +32,7 @@ const schema = z
     R2_ACCESS_KEY_ID: optional,
     R2_SECRET_ACCESS_KEY: optional,
     R2_BUCKET: optional,
+    R2_PUBLIC_URL: optional.default("https://pub-6c55b4a33c034944bc9030fd94d673db.r2.dev"),
 
     // Gmail account used to send confirmations (SMTP) and to read bank alerts (IMAP).
     GMAIL_USER: optional,

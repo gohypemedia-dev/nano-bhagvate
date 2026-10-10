@@ -23,7 +23,7 @@ type FilterType = "all" | "photos" | "videos";
 const INITIAL_COUNT = 9;
 const LOAD_MORE_STEP = 6;
 
-export default function GalleryPageClient() {
+export default function GalleryPageClient({ initialItems }: { initialItems?: GalleryItem[] } = {}) {
   const { lang } = useApp();
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [visibleCount, setVisibleCount] = useState<number>(INITIAL_COUNT);
@@ -31,10 +31,13 @@ export default function GalleryPageClient() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const lastTriggerRef = useRef<HTMLElement | null>(null);
 
+  const currentData = initialItems && initialItems.length > 0 ? initialItems : galleryData;
+
   // Sort items by displayOrder ascending
   const sortedItems = useMemo(() => {
-    return [...galleryData].sort((a, b) => a.displayOrder - b.displayOrder);
-  }, []);
+    return [...currentData].sort((a, b) => a.displayOrder - b.displayOrder);
+  }, [currentData]);
+
 
   // Filter items based on active tab
   const filteredItems = useMemo(() => {

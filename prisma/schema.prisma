@@ -166,3 +166,31 @@ model SyncState {
   id        String   @id
   lastRunAt DateTime
 }
+
+enum GalleryMediaType {
+  PHOTO
+  VIDEO
+}
+
+model GalleryItem {
+  id            String           @id @default(cuid())
+  type          GalleryMediaType @default(PHOTO)
+  title         String
+  titleHi       String?
+  event         String?
+  eventHi       String?
+  src           String
+  thumbnail     String
+  alt           String
+  videoProvider String?
+  focalPoint    String?
+  aspectRatio   String?
+  displayOrder  Int              @default(0)
+  date          String?
+  isActive      Boolean          @default(true)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@index([isActive, displayOrder])
+}
+
