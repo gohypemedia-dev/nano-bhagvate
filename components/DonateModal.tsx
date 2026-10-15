@@ -34,6 +34,7 @@ interface PaymentSession {
   program: string;
   name: string;
   email: string;
+  membership?: boolean;
 }
 
 const STORAGE_KEY = "nbvt-donation-in-progress";
@@ -121,6 +122,10 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
         setResumed(false);
         setStep("SELECT");
         setCustomAmount("");
+        const prefill = donateModal.prefill;
+        if (prefill?.name) setDonorName(prefill.name);
+        if (prefill?.email) setDonorEmail(prefill.email);
+        if (prefill?.mobile) setDonorPhone(prefill.mobile);
         if (isMembership) {
           const match = MEMBERSHIP_PLANS.find(
             (p) => p.name.toLowerCase() === donateModal.program?.toLowerCase() || p.price === donateModal.amount,
@@ -338,6 +343,7 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
         program: isMembership ? plan.name : payload.program,
         name: check.data.name,
         email: check.data.email,
+        membership: isMembership,
       };
       setSession(s);
       goTo("PAY", s);
@@ -651,6 +657,11 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
                     </p>
                   )}
 
+                  {session.membership && (
+                    <p className="text-xs text-[#2B201A]/75">
+                      <strong>{session.program}</strong>: your membership certificate is emailed to you once the Trust confirms the payment.
+                    </p>
+                  )}
                   <div className="rounded-xl bg-[#14532D]/5 border border-[#14532D]/15 px-3.5 py-2.5 space-y-2">
                     <div className="flex items-end justify-between gap-3">
                       <div>
@@ -658,7 +669,7 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
                         <p className="text-2xl font-extrabold text-[#14532D] tabular-nums leading-tight">{formatINR(session.amount)}</p>
                       </div>
                       <div className="text-right min-w-0">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-[#14532D]/70">Donation ID</p>
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-[#14532D]/70">{session.membership ? "Membership ID" : "Donation ID"}</p>
                         <p className="font-mono text-xs font-bold text-[#1F1A17] truncate">{session.donationId}</p>
                       </div>
                     </div>
@@ -712,12 +723,13 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
                   <strong className="wrap-anywhere">{session.email}</strong>.
                 </p>
                 <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm text-left bg-[#FBF2E7] border border-[#E7D8C8] rounded-xl p-4 max-w-sm mx-auto">
-                  <dt className="text-[#2B201A]/60">Donation ID</dt><dd className="font-mono font-semibold text-right">{session.donationId}</dd>
+                  <dt className="text-[#2B201A]/60">{session.membership ? "Membership ID" : "Donation ID"}</dt><dd className="font-mono font-semibold text-right">{session.donationId}</dd>
+                  {session.membership && (<><dt className="text-[#2B201A]/60">Plan</dt><dd className="font-semibold text-right">{session.program}</dd></>)}
                   <dt className="text-[#2B201A]/60">Amount</dt><dd className="font-semibold text-right tabular-nums">{formatINR(session.amount)}</dd>
                   <dt className="text-[#2B201A]/60">Status</dt><dd className="font-semibold text-right text-[#B8893E]">Awaiting confirmation</dd>
                 </dl>
                 <p className="text-xs text-[#2B201A]/60 max-w-sm mx-auto">
-                  You can close this window. Keep your Donation ID for reference.
+                  You can close this window. Keep your {session.membership ? "Membership ID" : "Donation ID"} for reference.
                 </p>
                 {generalError}
                 <button type="button" onClick={handleClose} className="btn-primary px-8">Close</button>
@@ -730,14 +742,20 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
                 <CheckCircle2 className="w-14 h-14 text-[#2F5A43] mx-auto" aria-hidden="true" />
                 <h4 className="font-editorial text-2xl font-bold text-[#2B201A]">{hi ? "धन्यवाद! भुगतान प्राप्त हुआ" : "Payment received. Thank you!"}</h4>
                 <p className="text-sm text-[#2B201A]/80 leading-relaxed max-w-sm mx-auto">
-                  The Trust has received your donation of <strong>{formatINR(session.amount)}</strong>.
+                  {session.membership ? (
+                    <>Welcome to the Trust! Your <strong>{session.program}</strong> payment of <strong>{formatINR(session.amount)}</strong> has been received.</>
+                  ) : (
+                    <>The Trust has received your donation of <strong>{formatINR(session.amount)}</strong>.</>
+                  )}
                 </p>
                 <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm text-left bg-[#FBF2E7] border border-[#E7D8C8] rounded-xl p-4 max-w-sm mx-auto">
-                  <dt className="text-[#2B201A]/60">Donation ID</dt><dd className="font-mono font-semibold text-right">{session.donationId}</dd>
+                  <dt className="text-[#2B201A]/60">{session.membership ? "Membership ID" : "Donation ID"}</dt><dd className="font-mono font-semibold text-right">{session.donationId}</dd>
                   <dt className="text-[#2B201A]/60">Amount</dt><dd className="font-semibold text-right tabular-nums">{formatINR(session.amount)}</dd>
                 </dl>
                 <p className="text-sm text-[#2B201A]/80 leading-relaxed max-w-sm mx-auto">
-                  {emailSent ? "Your confirmation and certificate have been emailed to " : "Your confirmation and certificate will be emailed to "}
+                  {session.membership
+                    ? emailSent ? "Your membership confirmation and certificate have been emailed to " : "Your membership confirmation and certificate will be emailed to "
+                    : emailSent ? "Your confirmation and certificate have been emailed to " : "Your confirmation and certificate will be emailed to "}
                   <strong className="wrap-anywhere">{session.email}</strong>.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">

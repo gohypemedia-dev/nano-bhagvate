@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { DonationStatus, Prisma } from "@prisma/client";
+import { Prisma, type DonationStatus } from "@prisma/client";
 import { requireAdminPage } from "@/lib/server/auth";
 import { prisma } from "@/lib/server/prisma";
 import { formatIST, rupeesFromPaise, STATUS_LABELS } from "@/lib/admin-format";
@@ -10,19 +10,27 @@ import { alertsNeedingReview, lastBankSync } from "@/lib/server/bank-alerts";
 
 const PAGE_SIZE = 25;
 const STATUSES = ["PENDING_VERIFICATION", "VERIFIED", "REJECTED", "PENDING_PAYMENT", "CANCELLED"] as const;
+const TYPES = [
+  { value: "DONATION", label: "Donations" },
+  { value: "MEMBERSHIP", label: "Memberships" },
+] as const;
 
 export default async function AdminDashboard({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; q?: string; page?: string }>;
+  searchParams: Promise<{ status?: string; type?: string; q?: string; page?: string }>;
 }) {
   await requireAdminPage();
   const sp = await searchParams;
   const status = STATUSES.find((s) => s === sp.status);
+  const type = TYPES.find((t) => t.value === sp.type)?.value;
   const q = sp.q?.trim().slice(0, 100) ?? "";
   const page = Math.max(1, Number.parseInt(sp.page ?? "1", 10) || 1);
 
+  // The stats and status counts follow the Donations / Memberships filter.
+  const typeWhere: Prisma.DonationWhereInput = type ? { type } : {};
   const where: Prisma.DonationWhereInput = {
+    ...typeWhere,
     ...(status ? { status } : {}),
     ...(q
       ? {
@@ -37,14 +45,16 @@ export default async function AdminDashboard({
   };
 
   const [grouped, donorRows, donations, total, lastSync, reviewAlerts] = await Promise.all([
-    prisma.donation.groupBy({ by: ["status"], _sum: { amountPaise: true }, _count: { _all: true } }),
-    prisma.$queryRaw<{ count: number }[]>`SELECT COUNT(DISTINCT "donorEmail")::int AS count FROM "Donation" WHERE "status" = 'VERIFIED'`,
+    prisma.donation.groupBy({ by: ["status"], where: typeWhere, _sum: { amountPaise: true }, _count: { _all: true } }),
+    prisma.$queryRaw<{ count: number }[]>`SELECT COUNT(DISTINCT "donorEmail")::int AS count FROM "Donation" WHERE "status" = 'VERIFIED'${
+      type ? Prisma.sql` AND "type" = ${type}::"DonationType"` : Prisma.empty
+    }`,
     prisma.donation.findMany({
       where,
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
-      select: { donationId: true, donorName: true, donorEmail: true, amountPaise: true, status: true, program: true, createdAt: true },
+      select: { donationId: true, type: true, donorName: true, donorEmail: true, amountPaise: true, status: true, program: true, createdAt: true },
     }),
     prisma.donation.count({ where }),
     lastBankSync(),
@@ -56,15 +66,17 @@ export default async function AdminDashboard({
   const count = (s: DonationStatus) => byStatus(s)?._count._all ?? 0;
 
   // Only proof-submitted and verified donations count; QR-only intents are excluded.
+  const noun = type === "MEMBERSHIP" ? "memberships" : "donations";
   const stats = [
-    { label: "Total donations", value: rupeesFromPaise(sum("VERIFIED") + sum("PENDING_VERIFICATION")), note: "Verified + pending verification" },
-    { label: "Verified donations", value: rupeesFromPaise(sum("VERIFIED")), note: `${count("VERIFIED")} donations` },
+    { label: `Total ${noun}`, value: rupeesFromPaise(sum("VERIFIED") + sum("PENDING_VERIFICATION")), note: "Verified + pending verification" },
+    { label: `Verified ${noun}`, value: rupeesFromPaise(sum("VERIFIED")), note: `${count("VERIFIED")} ${noun}` },
     { label: "Pending verification", value: rupeesFromPaise(sum("PENDING_VERIFICATION")), note: `${count("PENDING_VERIFICATION")} to review`, highlight: count("PENDING_VERIFICATION") > 0 },
-    { label: "Verified donors", value: (donorRows[0]?.count ?? 0).toLocaleString("en-IN"), note: "Unique email addresses" },
+    { label: type === "MEMBERSHIP" ? "Verified members" : "Verified donors", value: (donorRows[0]?.count ?? 0).toLocaleString("en-IN"), note: "Unique email addresses" },
   ];
 
-  const href = (params: { status?: string; q?: string; page?: number }) => {
+  const href = (params: { status?: string; type?: string; q?: string; page?: number }) => {
     const u = new URLSearchParams();
+    if (params.type) u.set("type", params.type);
     if (params.status) u.set("status", params.status);
     if (params.q) u.set("q", params.q);
     if (params.page && params.page > 1) u.set("page", String(params.page));
@@ -100,18 +112,26 @@ export default async function AdminDashboard({
       </section>
 
       <section className="space-y-4">
+        <nav className="flex flex-wrap gap-1.5" aria-label="Filter by type">
+          {[{ value: undefined, label: "Everything" }, ...TYPES].map((t) => (
+            <Link key={t.label} href={href({ type: t.value, status, q })} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${type === t.value ? "bg-[#E86F1D] text-white border-[#E86F1D]" : "bg-white border-[#E7D8C8] text-[#2B201A]/75 hover:border-[#E86F1D]/50"}`}>
+              {t.label}
+            </Link>
+          ))}
+        </nav>
         <div className="flex flex-col lg:flex-row lg:items-center gap-3 lg:justify-between">
           <nav className="flex flex-wrap gap-1.5" aria-label="Filter by status">
-            <Link href={href({ q })} className={`px-3 py-1.5 rounded-full text-xs font-bold border ${!status ? "bg-[#2B201A] text-white border-[#2B201A]" : "bg-white border-[#E7D8C8] text-[#2B201A]/75 hover:border-[#2B201A]/40"}`}>
+            <Link href={href({ type, q })} className={`px-3 py-1.5 rounded-full text-xs font-bold border ${!status ? "bg-[#2B201A] text-white border-[#2B201A]" : "bg-white border-[#E7D8C8] text-[#2B201A]/75 hover:border-[#2B201A]/40"}`}>
               All
             </Link>
             {STATUSES.map((s) => (
-              <Link key={s} href={href({ status: s, q })} className={`px-3 py-1.5 rounded-full text-xs font-bold border ${status === s ? "bg-[#2B201A] text-white border-[#2B201A]" : "bg-white border-[#E7D8C8] text-[#2B201A]/75 hover:border-[#2B201A]/40"}`}>
+              <Link key={s} href={href({ type, status: s, q })} className={`px-3 py-1.5 rounded-full text-xs font-bold border ${status === s ? "bg-[#2B201A] text-white border-[#2B201A]" : "bg-white border-[#E7D8C8] text-[#2B201A]/75 hover:border-[#2B201A]/40"}`}>
                 {STATUS_LABELS[s]} <span className="opacity-60 tabular-nums">{count(s)}</span>
               </Link>
             ))}
           </nav>
           <form action="/admin" className="flex gap-2 w-full lg:w-auto">
+            {type && <input type="hidden" name="type" value={type} />}
             {status && <input type="hidden" name="status" value={status} />}
             <input id="admin-search" name="q" defaultValue={q} placeholder="Search ID, name, email or UTR" className="input-warm min-h-10! py-2! text-sm lg:w-72" />
             <button className="btn-outline min-h-10! px-4! text-xs">Search</button>
@@ -124,6 +144,7 @@ export default async function AdminDashboard({
               <tr className="text-left text-[11px] uppercase tracking-wider text-[#2B201A]/60 border-b border-[#E7D8C8]">
                 <th className="px-4 py-3 font-bold">Donation ID</th>
                 <th className="px-4 py-3 font-bold">Donor</th>
+                <th className="px-4 py-3 font-bold">For</th>
                 <th className="px-4 py-3 font-bold text-right">Amount</th>
                 <th className="px-4 py-3 font-bold">Status</th>
                 <th className="px-4 py-3 font-bold">Created</th>
@@ -132,8 +153,8 @@ export default async function AdminDashboard({
             <tbody>
               {donations.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-10 text-center text-[#2B201A]/60">
-                    {q || status ? "No donations match this filter." : "No donations yet. They will appear here when donors submit the donation form."}
+                  <td colSpan={6} className="px-4 py-10 text-center text-[#2B201A]/60">
+                    {q || status || type ? `No ${noun} match this filter.` : "No donations yet. They will appear here when donors submit the donation form."}
                   </td>
                 </tr>
               )}
@@ -148,6 +169,12 @@ export default async function AdminDashboard({
                     <div className="font-semibold text-[#2B201A]">{d.donorName}</div>
                     <div className="text-xs text-[#2B201A]/55">{d.donorEmail}</div>
                   </td>
+                  <td className="px-4 py-3">
+                    {d.type === "MEMBERSHIP" && (
+                      <span className="inline-block mb-0.5 px-2 py-0.5 rounded-full bg-[#B8893E]/15 text-[#7A5A12] text-[10px] font-bold uppercase tracking-wider">Member</span>
+                    )}
+                    <div className="text-xs text-[#2B201A]/75">{d.program ?? "—"}</div>
+                  </td>
                   <td className="px-4 py-3 text-right font-semibold tabular-nums whitespace-nowrap">{rupeesFromPaise(d.amountPaise)}</td>
                   <td className="px-4 py-3"><StatusBadge status={d.status} /></td>
                   <td className="px-4 py-3 text-xs text-[#2B201A]/65 whitespace-nowrap">{formatIST(d.createdAt)}</td>
@@ -159,10 +186,10 @@ export default async function AdminDashboard({
 
         {pages > 1 && (
           <div className="flex items-center justify-between text-sm">
-            <span className="text-[#2B201A]/60">Page {page} of {pages} · {total} donations</span>
+            <span className="text-[#2B201A]/60">Page {page} of {pages} · {total} {noun}</span>
             <div className="flex gap-2">
-              {page > 1 && <Link href={href({ status, q, page: page - 1 })} className="btn-outline min-h-9! px-3! text-xs">Previous</Link>}
-              {page < pages && <Link href={href({ status, q, page: page + 1 })} className="btn-outline min-h-9! px-3! text-xs">Next</Link>}
+              {page > 1 && <Link href={href({ type, status, q, page: page - 1 })} className="btn-outline min-h-9! px-3! text-xs">Previous</Link>}
+              {page < pages && <Link href={href({ type, status, q, page: page + 1 })} className="btn-outline min-h-9! px-3! text-xs">Next</Link>}
             </div>
           </div>
         )}

@@ -36,7 +36,8 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
     ["Email", <a key="e" href={`mailto:${donation.donorEmail}`} className="text-[#E86F1D] hover:underline break-all">{donation.donorEmail}</a>],
     ["Mobile", donation.donorMobile ?? "—"],
     ["Amount", <span key="a" className="font-extrabold tabular-nums">{rupeesFromPaise(donation.amountPaise)}</span>],
-    ["Towards", donation.program ?? "—"],
+    ["Type", donation.type === "MEMBERSHIP" ? "Membership" : "Donation"],
+    [donation.type === "MEMBERSHIP" ? "Membership plan" : "Towards", donation.program ?? "—"],
     ["UTR", donation.utr ? <span key="u" className="font-mono">{donation.utr}</span> : "—"],
     ["Created", formatIST(donation.createdAt)],
     ["Marked as paid", donation.proofSubmittedAt ? formatIST(donation.proofSubmittedAt) : "—"],
@@ -66,7 +67,7 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
       </Link>
 
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="font-editorial text-3xl font-bold text-[#2B201A]">Donation details</h1>
+        <h1 className="font-editorial text-3xl font-bold text-[#2B201A]">{donation.type === "MEMBERSHIP" ? "Membership details" : "Donation details"}</h1>
         <StatusBadge status={donation.status} />
       </div>
 

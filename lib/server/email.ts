@@ -1,6 +1,7 @@
 import "server-only";
 import type { Donation } from "@prisma/client";
 import nodemailer, { type Transporter } from "nodemailer";
+import { membershipValidUntil, planForProgram } from "@/lib/donation-config";
 import { certificateKey, certificateNumber, generateCertificatePdf } from "./certificate";
 import { publicBaseUrl } from "./donation";
 import { env, type Env } from "./env";
@@ -18,27 +19,36 @@ const istDate = (d: Date) =>
 function confirmationEmail(d: Donation, ngoName: string, certificate: { url: string; attached: boolean }) {
   const amount = rupees(d.amountPaise);
   const date = istDate(d.verifiedAt ?? new Date());
+  const member = d.type === "MEMBERSHIP";
   const rows: [string, string][] = [
-    ["Donation ID", d.donationId],
+    [member ? "Membership ID" : "Donation ID", d.donationId],
     ["Amount", amount],
-    ["Transaction / UTR", d.utr ?? "-"],
-    ["Date", date],
+    ["Payment", d.utr ? `UPI · UTR ${d.utr}` : "UPI"],
+    [member ? "Approved on" : "Date", date],
   ];
-  if (d.program) rows.splice(1, 0, ["Towards", d.program]);
+  if (member) {
+    const plan = planForProgram(d.program);
+    const until = membershipValidUntil(plan, d.verifiedAt ?? new Date());
+    rows.splice(1, 0, ["Membership", `${plan.title} (${plan.name})`], ["Valid until", until ? istDate(until) : "Lifetime"]);
+  } else if (d.program) rows.splice(1, 0, ["Towards", d.program]);
+  const thanks = member
+    ? `Thank you for becoming a ${planForProgram(d.program).title} of ${ngoName}. We received your contribution of ${amount}.`
+    : `Thank you for your generous donation of ${amount} to ${ngoName}.`;
+  const certName = member ? "membership certificate" : "donation certificate";
 
-  const subject = `Donation Confirmation – ${ngoName}`;
+  const subject = member ? `Welcome! Membership Confirmation – ${ngoName}` : `Donation Confirmation – ${ngoName}`;
   const text = [
     `Dear ${d.donorName},`,
     "",
-    `Thank you for your generous donation of ${amount} to ${ngoName}.`,
+    thanks,
     "",
     "Your payment has been successfully verified.",
     "",
     ...rows.map(([k, v]) => `${k}: ${v}`),
     "",
     certificate.attached
-      ? "Your donation certificate is attached to this email as a PDF."
-      : "Your donation certificate is ready to view and download:",
+      ? `Your ${certName} is attached to this email as a PDF.`
+      : `Your ${certName} is ready to view and download:`,
     certificate.url,
     "",
     "We sincerely appreciate your support.",
@@ -52,9 +62,9 @@ function confirmationEmail(d: Donation, ngoName: string, certificate: { url: str
 <table role="presentation" width="100%" style="max-width:560px;background:#ffffff;border:1px solid #E7D8C8;border-radius:12px" cellpadding="0" cellspacing="0">
 <tr><td style="padding:28px 28px 8px">
 <p style="margin:0 0 4px;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#B8893E;font-weight:bold">${escapeHtml(ngoName)}</p>
-<h1 style="margin:0 0 16px;font-size:22px;color:#2B201A">Donation confirmed</h1>
+<h1 style="margin:0 0 16px;font-size:22px;color:#2B201A">${member ? "Membership confirmed" : "Donation confirmed"}</h1>
 <p style="margin:0 0 12px;font-size:15px;line-height:1.6">Dear ${escapeHtml(d.donorName)},</p>
-<p style="margin:0 0 12px;font-size:15px;line-height:1.6">Thank you for your generous donation of <strong>${amount}</strong> to ${escapeHtml(ngoName)}. Your payment has been successfully verified.</p>
+<p style="margin:0 0 12px;font-size:15px;line-height:1.6">${escapeHtml(thanks).replace(escapeHtml(amount), `<strong>${amount}</strong>`)} Your payment has been successfully verified.</p>
 </td></tr>
 <tr><td style="padding:8px 28px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FBF2E7;border-radius:8px">
@@ -62,7 +72,7 @@ ${rows.map(([k, v]) => `<tr><td style="padding:10px 14px;font-size:13px;color:#6
 </table>
 </td></tr>
 <tr><td align="center" style="padding:20px 28px 4px">
-<p style="margin:0 0 14px;font-size:15px;line-height:1.6">${certificate.attached ? "Your <strong>donation certificate</strong> is attached to this email as a PDF." : "Your <strong>donation certificate</strong> is ready."}</p>
+<p style="margin:0 0 14px;font-size:15px;line-height:1.6">${certificate.attached ? `Your <strong>${certName}</strong> is attached to this email as a PDF.` : `Your <strong>${certName}</strong> is ready.`}</p>
 <a href="${escapeHtml(certificate.url)}" style="display:inline-block;background:#2F5A43;color:#ffffff;text-decoration:none;font-weight:bold;font-size:14px;padding:11px 24px;border-radius:8px">View certificate online</a>
 </td></tr>
 <tr><td style="padding:16px 28px 28px">
@@ -80,25 +90,28 @@ function approvalRequestEmail(d: Donation, approveUrl: string, ngoName: string, 
     new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" }).format(date);
   // Usually sent the moment the QR is shown; older donations get it when the donor taps "I have paid".
   const markedPaid = d.status === "PENDING_VERIFICATION";
+  const member = d.type === "MEMBERSHIP";
   const rows: [string, string][] = [
-    ["Donor", d.donorName],
+    [member ? "Member" : "Donor", d.donorName],
     ["Amount", amount],
-    ["Donation ID", d.donationId],
-    ["Towards", d.program ?? "-"],
+    [member ? "Membership ID" : "Donation ID", d.donationId],
+    [member ? "Membership plan" : "Towards", d.program ?? "-"],
     ["Email", d.donorEmail],
     ["Mobile", d.donorMobile ?? "-"],
     markedPaid ? ["Marked as paid", ist(d.proofSubmittedAt ?? new Date())] : ["QR shown", ist(d.createdAt)],
   ];
   const lead = markedPaid
-    ? `${d.donorName} says they have paid ${amount} to ${upiId}.`
+    ? `${d.donorName} has tapped "I have completed the payment" for ${amount} to ${upiId}.`
     : `${d.donorName} is paying ${amount} to ${upiId} by UPI (the QR has just been shown to them).`;
+  const who = member ? "member" : "donor";
 
-  const subject = `Payment to approve: ${amount} from ${d.donorName} (${d.donationId})`;
+  // Same subject for both emails (QR shown, then "has paid"), so they are easy to match up.
+  const subject = `${member ? "Membership payment" : "Payment"} to approve: ${amount} from ${d.donorName} (${d.donationId})`;
   const text = [
     lead,
     "",
     "When the money shows up in your UPI app or bank statement, approve the payment",
-    "and the donor will get their confirmation email:",
+    `and the ${who} will get their confirmation email:`,
     "",
     approveUrl,
     "",
@@ -112,9 +125,9 @@ function approvalRequestEmail(d: Donation, approveUrl: string, ngoName: string, 
 <table role="presentation" width="100%" style="max-width:560px;background:#ffffff;border:1px solid #E7D8C8;border-radius:12px" cellpadding="0" cellspacing="0">
 <tr><td style="padding:28px 28px 8px">
 <p style="margin:0 0 4px;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#B8893E;font-weight:bold">${escapeHtml(ngoName)}</p>
-<h1 style="margin:0 0 16px;font-size:22px;color:#2B201A">${markedPaid ? "Payment waiting for your approval" : "New donation: approve when received"}</h1>
+<h1 style="margin:0 0 16px;font-size:22px;color:#2B201A">${markedPaid ? `${escapeHtml(d.donorName)} has paid: please approve` : member ? `New ${escapeHtml(d.program ?? "membership")}: approve when received` : "New donation: approve when received"}</h1>
 <p style="margin:0 0 12px;font-size:15px;line-height:1.6">${escapeHtml(lead)}</p>
-<p style="margin:0 0 12px;font-size:15px;line-height:1.6">When the money shows up in your UPI app or bank statement, approve it and the donor will get their confirmation email.</p>
+<p style="margin:0 0 12px;font-size:15px;line-height:1.6">When the money shows up in your UPI app or bank statement, approve it and the ${who} will get their confirmation email.</p>
 </td></tr>
 <tr><td style="padding:8px 28px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FBF2E7;border-radius:8px">
@@ -130,9 +143,10 @@ ${rows.map(([k, v]) => `<tr><td style="padding:10px 14px;font-size:13px;color:#6
   return { subject, text, html };
 }
 
-// The people who approve payments: the UPI owner's inbox (GMAIL_USER) plus APPROVAL_EMAILS.
+// The people who approve payments: APPROVAL_EMAILS only. GMAIL_USER (the sending inbox)
+// is used only when APPROVAL_EMAILS is empty, so approvals are never lost.
 function approvers(config: Env) {
-  const all = [config.GMAIL_USER, ...config.APPROVAL_EMAILS].filter((e): e is string => Boolean(e));
+  const all = config.APPROVAL_EMAILS.length > 0 ? config.APPROVAL_EMAILS : [config.GMAIL_USER].filter((e): e is string => Boolean(e));
   return [...new Set(all.map((e) => e.toLowerCase()))];
 }
 
@@ -163,9 +177,10 @@ export async function sendApprovedNoticeEmail(donation: Donation, approvedBy: st
       ? `The confirmation email was sent to ${donation.donorEmail}.`
       : `The confirmation email to ${donation.donorEmail} FAILED. Use "Resend email" on the dashboard.`;
   const rows: [string, string][] = [
-    ["Donor", donation.donorName],
+    [donation.type === "MEMBERSHIP" ? "Member" : "Donor", donation.donorName],
     ["Amount", amount],
-    ["Donation ID", donation.donationId],
+    [donation.type === "MEMBERSHIP" ? "Membership ID" : "Donation ID", donation.donationId],
+    ...(donation.type === "MEMBERSHIP" ? [["Membership plan", donation.program ?? "-"] as [string, string]] : []),
     ["Approved by", approvedBy],
   ];
   const subject = `Approved: ${amount} from ${donation.donorName} (${donation.donationId})`;
@@ -187,8 +202,8 @@ ${rows.map(([k, v]) => `<tr><td style="padding:10px 14px;font-size:13px;color:#6
   await sendToApprovers(donation, { subject, text, html }, "approved notice");
 }
 
-// Tells the approvers (UPI owner + admins) that a donor has marked their payment as done,
-// with a link to approve it. Never throws.
+// Tells the approvers (APPROVAL_EMAILS) about a payment to approve, with the approve link:
+// when the QR is shown and again when the donor marks it as paid. Never throws.
 export async function sendApprovalRequestEmail(donation: Donation, approveUrl: string) {
   const config = env();
   const msg = approvalRequestEmail(donation, approveUrl, config.NGO_NAME, config.UPI_ID ?? "the Trust's UPI ID");
@@ -209,7 +224,7 @@ export async function sendConfirmationEmail(donation: Donation) {
   }
   const { subject, text, html } = confirmationEmail(donation, config.NGO_NAME, { url: certificateUrl, attached: Boolean(pdf) });
   const attachments = pdf
-    ? [{ filename: `Donation-Certificate-${certificateNumber(donation.donationId).replace(/\//g, "-")}.pdf`, content: Buffer.from(pdf), contentType: "application/pdf" }]
+    ? [{ filename: `${donation.type === "MEMBERSHIP" ? "Membership" : "Donation"}-Certificate-${certificateNumber(donation.donationId).replace(/\//g, "-")}.pdf`, content: Buffer.from(pdf), contentType: "application/pdf" }]
     : undefined;
 
   let status: "SENT" | "FAILED" = "FAILED";

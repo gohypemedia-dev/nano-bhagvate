@@ -1,7 +1,7 @@
 import { after } from "next/server";
 import { findPlan } from "@/lib/donation-config";
 import { createDonationSchema } from "@/lib/validation/donation";
-import { approvalLink, buildUpiUri, generateDonationId, generateToken, sha256 } from "@/lib/server/donation";
+import { approvalLink, approvalToken, buildUpiUri, generateDonationId, generateToken, sha256 } from "@/lib/server/donation";
 import { sendApprovalRequestEmail } from "@/lib/server/email";
 import { env } from "@/lib/server/env";
 import { isUniqueViolation, jsonError } from "@/lib/server/http";
@@ -57,11 +57,12 @@ export async function POST(request: Request) {
   let amountPaise = base;
   while (taken.has(amountPaise) && amountPaise < base + 99) amountPaise++;
   const submitToken = generateToken();
-  const approvalToken = generateToken();
+  const submitTokenHash = sha256(submitToken);
 
   for (let attempt = 1; ; attempt++) {
     const donationId = generateDonationId();
     const upiUri = buildUpiUri(upiId, donationId, amountPaise);
+    const approveToken = approvalToken({ donationId, submitTokenHash });
     try {
       await prisma.donation.create({
         data: {
@@ -73,13 +74,13 @@ export async function POST(request: Request) {
           donorMobile: mobile || null,
           amountPaise,
           upiUri,
-          submitTokenHash: sha256(submitToken),
-          approvalTokenHash: sha256(approvalToken),
+          submitTokenHash,
+          approvalTokenHash: sha256(approveToken),
         },
       });
       // Tell the approvers right away, so they can approve as soon as the money shows up
       // in the UPI app, whether or not the donor taps "I have completed the payment".
-      const approveUrl = approvalLink(request, approvalToken);
+      const approveUrl = approvalLink(request, approveToken);
       after(async () => {
         const created = await prisma.donation.findUniqueOrThrow({ where: { donationId } });
         await sendApprovalRequestEmail(created, approveUrl);

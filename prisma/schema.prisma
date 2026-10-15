@@ -194,3 +194,28 @@ model GalleryItem {
   @@index([isActive, displayOrder])
 }
 
+
+// Events shown on /events, /events/[slug] and the home page; managed from /admin/events.
+// Dates are stored as midnight IST of the chosen day; `timeText` holds the time as written.
+model Event {
+  id           String    @id @default(cuid())
+  slug         String    @unique
+  title        String
+  titleHi      String?
+  summary      String
+  summaryHi    String?
+  description  String    @default("")
+  startDate    DateTime
+  endDate      DateTime?
+  timeText     String?
+  location     String
+  address      String?
+  mapUrl       String?
+  image        String?
+  contactPhone String?
+  isPublished  Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([isPublished, startDate])
+}

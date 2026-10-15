@@ -1,7 +1,7 @@
 import { after } from "next/server";
 import { z } from "zod";
 import { donationIdSchema } from "@/lib/validation/donation";
-import { approvalLink, generateToken, sha256, tokenMatchesHash } from "@/lib/server/donation";
+import { approvalLink, approvalToken, sha256, tokenMatchesHash } from "@/lib/server/donation";
 import { sendApprovalRequestEmail } from "@/lib/server/email";
 import { jsonError } from "@/lib/server/http";
 import { prisma } from "@/lib/server/prisma";
@@ -13,8 +13,8 @@ export const maxDuration = 30;
 
 // The donor taps "I have completed the payment". No UTR or screenshot is asked for:
 // the donation moves to PENDING_VERIFICATION, which the approval page and the dashboard
-// show as "donor says they paid". The approval email already went out when the QR was
-// created, so no second email is sent (except for donations created before that change).
+// show as "donor says they paid". The approvers were emailed when the QR was shown; they get a
+// second email now ("has paid"), with the same subject and the same approve link.
 export async function POST(request: Request, { params }: { params: Promise<{ donationId: string }> }) {
   const { donationId } = await params;
   if (!donationIdSchema.safeParse(donationId).success) return jsonError("Donation not found.", 404);
@@ -31,20 +31,22 @@ export async function POST(request: Request, { params }: { params: Promise<{ don
     return jsonError("Donation not found.", 404);
   }
 
-  // Older donations have no approval link yet: create one and email it now.
-  const approvalToken = donation.approvalTokenHash ? null : generateToken();
+  // Donations created before approval tokens were derived get the derived token now
+  // (the link in their first email stops working; this email carries the new one).
+  const token = approvalToken({ donationId, submitTokenHash: donation.submitTokenHash });
+  const tokenHash = sha256(token);
   // Conditional update: tapping twice changes nothing the second time.
   const updated = await prisma.donation.updateMany({
     where: { donationId, status: "PENDING_PAYMENT" },
     data: {
       status: "PENDING_VERIFICATION",
       proofSubmittedAt: new Date(),
-      ...(approvalToken ? { approvalTokenHash: sha256(approvalToken) } : {}),
+      ...(donation.approvalTokenHash !== tokenHash ? { approvalTokenHash: tokenHash } : {}),
     },
   });
 
-  if (updated.count === 1 && approvalToken) {
-    const approveUrl = approvalLink(request, approvalToken);
+  if (updated.count === 1) {
+    const approveUrl = approvalLink(request, token);
     after(async () => {
       const fresh = await prisma.donation.findUniqueOrThrow({ where: { donationId } });
       await sendApprovalRequestEmail(fresh, approveUrl);

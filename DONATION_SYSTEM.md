@@ -11,8 +11,8 @@ How donations work on the Trust website, how to set it up, and how to run it day
 3. **Create donation.** The server saves a record with an ID like `DON-20261006-A8F32`. Status: `PENDING_PAYMENT`.
 4. **Pay.** The site shows a QR code for that exact amount. On phones there is also a **Pay using UPI app** button.
 5. **Donor taps "I Have Completed the Payment".** The QR disappears and the donor sees **Payment submitted successfully**. Status: `PENDING_VERIFICATION`.
-6. **The Trust is asked to approve.** An email goes to the UPI owner's inbox (`GMAIL_USER`) **and** every address in `APPROVAL_EMAILS` (the admins): "*Name* says they paid ₹X, please approve". It has a **Review & approve payment** button that opens `/admin/approve/<one-time token>`. No login is needed; the link itself is the key.
-7. **Approve or reject.** Whoever checks first (UPI owner or admin) approves from the email link **or** the admin dashboard. **Approve** marks the donation `VERIFIED`, emails the donor their confirmation, and sends all approvers a short "Approved" notice saying who approved it. **Reject** marks it `REJECTED`; the donor gets no email.
+6. **The Trust is asked to approve.** An email goes to every address in `APPROVAL_EMAILS` (only to `GMAIL_USER` if that is empty): "*Name* says they paid ₹X, please approve". It has a **Review & approve payment** button that opens `/admin/approve/<one-time token>`. No login is needed; the link itself is the key.
+7. **Approve or reject.** Whoever checks first approves from the email link **or** the admin dashboard. **Approve** marks the donation `VERIFIED`, emails the donor their confirmation, and sends all approvers a short "Approved" notice saying who approved it. **Reject** marks it `REJECTED`; the donor gets no email.
 8. **The donor is emailed only after a person approves.** With `AUTO_CONFIRM_BANK_EMAILS=false` (the default), a matching bank "amount credited" email does not confirm anything by itself. It waits under **Bank payment alerts → Need review** with a note naming the likely donation. Set it to `true` to let bank emails confirm donations automatically.
 
 The donor does **not** submit a UTR or screenshot.

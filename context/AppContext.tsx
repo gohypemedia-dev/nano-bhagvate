@@ -2,6 +2,21 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 
+// Details already typed elsewhere (e.g. the membership registration form), used to fill the donate modal.
+export interface DonorPrefill {
+  name?: string;
+  email?: string;
+  mobile?: string;
+}
+
+interface DonateModalState {
+  isOpen: boolean;
+  program?: string;
+  amount?: number;
+  isMembership?: boolean;
+  prefill?: DonorPrefill;
+}
+
 export interface CartItem {
   id: string;
   title: string;
@@ -21,8 +36,8 @@ interface AppContextType {
   cartTotal: number;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
-  donateModal: { isOpen: boolean; program?: string; amount?: number; isMembership?: boolean };
-  openDonateModal: (program?: string, amount?: number, isMembership?: boolean) => void;
+  donateModal: DonateModalState;
+  openDonateModal: (program?: string, amount?: number, isMembership?: boolean, prefill?: DonorPrefill) => void;
   closeDonateModal: () => void;
 }
 
@@ -32,9 +47,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLang] = useState<"en" | "hi">("en");
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [donateModal, setDonateModal] = useState<{ isOpen: boolean; program?: string; amount?: number; isMembership?: boolean }>({
-    isOpen: false,
-  });
+  const [donateModal, setDonateModal] = useState<DonateModalState>({ isOpen: false });
 
   const addToCart = (item: Omit<CartItem, "quantity">, quantity = 1) => {
     setCart((prev) => {
@@ -68,8 +81,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const cartTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  const openDonateModal = (program?: string, amount?: number, isMembership?: boolean) => {
-    setDonateModal({ isOpen: true, program, amount, isMembership });
+  const openDonateModal = (program?: string, amount?: number, isMembership?: boolean, prefill?: DonorPrefill) => {
+    setDonateModal({ isOpen: true, program, amount, isMembership, prefill });
   };
 
   const closeDonateModal = () => {

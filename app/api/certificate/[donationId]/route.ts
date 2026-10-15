@@ -5,7 +5,7 @@ import { prisma } from "@/lib/server/prisma";
 import { clientIp, rateLimit, tooManyRequests } from "@/lib/server/rate-limit";
 import { donationIdSchema } from "@/lib/validation/donation";
 
-// Downloads the donation certificate PDF. Needs the key from the certificate link
+// Downloads the donation (or membership) certificate PDF. Needs the key from the certificate link
 // (/certificate/[donationId]?k=...), and only works once the payment is approved.
 export async function GET(request: Request, { params }: { params: Promise<{ donationId: string }> }) {
   const limit = await rateLimit("certificate-ip", clientIp(request), 60, 10 * 60);
@@ -26,7 +26,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ dona
   return new Response(Buffer.from(pdf), {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `${download ? "attachment" : "inline"}; filename="Donation-Certificate-${donationId}.pdf"`,
+      "Content-Disposition": `${download ? "attachment" : "inline"}; filename="${donation.type === "MEMBERSHIP" ? "Membership" : "Donation"}-Certificate-${donationId}.pdf"`,
       "Cache-Control": "private, no-store",
       "X-Robots-Tag": "noindex",
     },

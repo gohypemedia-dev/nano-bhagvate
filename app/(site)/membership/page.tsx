@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
-import { CheckCircle2, Shield, Heart, Users, BookOpen, Check } from "lucide-react";
+import { Shield, Heart, Users, BookOpen, Check, ShieldCheck } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import MemberCarousel from "@/components/MemberCarousel";
+import { MEMBERSHIP_PLANS, findPlan, formatINR } from "@/lib/donation-config";
 import {
   sanitizeEmail,
   sanitizeMobile,
@@ -14,26 +14,13 @@ import {
   validateName,
 } from "@/lib/validation/donation";
 
-function validateAge(ageStr: string): string | null {
-  if (!ageStr.trim()) return "Please enter your age.";
-  const num = Number.parseInt(ageStr, 10);
-  if (isNaN(num) || num < 18 || num > 120) {
-    return "Please enter a valid age (18-120).";
-  }
-  return null;
-}
-
 export default function MembershipPage() {
   const { lang, openDonateModal } = useApp();
-  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [planId, setPlanId] = useState<string>(MEMBERSHIP_PLANS[0].id);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     phone: "",
-    age: "",
-    city: "",
-    state: "",
-    message: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
@@ -44,14 +31,9 @@ export default function MembershipPage() {
       name: "Membership",
       nameHi: "साधारण सदस्यता",
       price: 1100,
-      period: "per year",
-      desc: "Ideal for devotees starting their journey of seva and spiritual learning.",
-      features: [
-        "Annual Trust Membership Certificate",
-        "Monthly Spiritual Newsletter & E-books",
-        "Invitation to Annual Spiritual Gathering",
-        "Direct Seva Participation Opportunities",
-      ],
+      period: findPlan("basic")!.period,
+      desc: findPlan("basic")!.description,
+      features: findPlan("basic")!.benefits,
       highlight: false,
       cardStyle: "bg-[#FFF9F2] border border-[#E7D8C8] shadow-warm-sm hover:border-[#E86F1D]/40 relative",
       badgeText: null,
@@ -64,17 +46,12 @@ export default function MembershipPage() {
       name: "Silver Membership",
       nameHi: "रजत (सिल्वर) सदस्यता",
       price: 5100,
-      period: "per year",
-      desc: "For dedicated supporters wishing to sponsor education and health camps.",
-      features: [
-        "All Basic Membership Benefits",
-        "Sponsorship of 1 Gurukul Student Education",
-        "Special Prasad & Blessing Card from Ashram",
-        "Priority Seat Booking at Bhagwat Katha Events",
-      ],
+      period: findPlan("silver")!.period,
+      desc: findPlan("silver")!.description,
+      features: findPlan("silver")!.benefits,
       highlight: false,
       cardStyle: "bg-gradient-to-b from-[#FAFBFD] to-[#EEF1F6] border-2 border-[#C0C7D2] shadow-warm-sm hover:border-[#9AA5B5] relative",
-      badgeText: "SILVER TIER",
+      badgeText: findPlan("silver")!.badge,
       badgeStyle: "bg-[#E2E6ED] text-[#4A5568] border border-[#CBD2DC]",
       priceColor: "text-[#3B4656]",
       checkColor: "text-[#4A5E6D]",
@@ -84,17 +61,12 @@ export default function MembershipPage() {
       name: "Gold Membership",
       nameHi: "स्वर्ण (गोल्ड) सदस्यता",
       price: 11000,
-      period: "per year",
-      desc: "Empowering women skill workshops and farmer advisory guidance.",
-      features: [
-        "All Silver Membership Benefits",
-        "Sponsorship of Women Skill Training Kit",
-        "Special Recognition on Trust Member Roll",
-        "Direct Advisory Updates from Trust Board",
-      ],
+      period: findPlan("gold")!.period,
+      desc: findPlan("gold")!.description,
+      features: findPlan("gold")!.benefits,
       highlight: true,
       cardStyle: "bg-gradient-to-b from-[#FFFDF7] via-[#FFF9EA] to-[#FFF3D6] border-2 border-[#D4A359] shadow-warm-md hover:border-[#C68A2E] relative",
-      badgeText: "MOST POPULAR TIER",
+      badgeText: findPlan("gold")!.badge,
       badgeStyle: "bg-gradient-to-r from-[#D48820] to-[#E86F1D] text-white shadow-warm-sm",
       priceColor: "text-[#C67A18]",
       checkColor: "text-[#2F5A43]",
@@ -104,17 +76,12 @@ export default function MembershipPage() {
       name: "Platinum Membership",
       nameHi: "प्लेटिनम सदस्यता",
       price: 51000,
-      period: "lifetime / patron",
-      desc: "Patron level partnership supporting major infrastructure & medical camps.",
-      features: [
-        "Lifetime Trustee Honor & Framed Scroll",
-        "Full Sponsorship of Rural Health Camp",
-        "VIP Seating & Stage Felicitation",
-        "Permanent Inscription at Ashram Wall",
-      ],
+      period: findPlan("platinum")!.period,
+      desc: findPlan("platinum")!.description,
+      features: findPlan("platinum")!.benefits,
       highlight: false,
       cardStyle: "bg-gradient-to-b from-[#F9FAFC] via-[#F2F4F8] to-[#E5E9F0] border-2 border-[#A3AFBF] shadow-warm-sm hover:border-[#8291A5] relative",
-      badgeText: "PATRON TIER",
+      badgeText: findPlan("platinum")!.badge,
       badgeStyle: "bg-[#2B3545] text-white shadow-sm",
       priceColor: "text-[#242C37]",
       checkColor: "text-[#3B4856]",
@@ -133,40 +100,35 @@ export default function MembershipPage() {
     } else if (field === "phone") {
       const err = validateMobile(formData.phone, true);
       setErrors((prev) => ({ ...prev, phone: err || undefined }));
-    } else if (field === "age") {
-      const err = validateAge(formData.age);
-      setErrors((prev) => ({ ...prev, age: err || undefined }));
     }
   };
 
+  // Registration goes through the same UPI payment flow as the "Join Now" buttons, so the
+  // membership is recorded, approved by the Trust and confirmed by email with a certificate.
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const nameErr = validateName(formData.fullName);
     const emailErr = validateEmail(formData.email);
     const phoneErr = validateMobile(formData.phone, true);
-    const ageErr = validateAge(formData.age);
 
-    if (nameErr || emailErr || phoneErr || ageErr) {
+    if (nameErr || emailErr || phoneErr) {
       setErrors({
         fullName: nameErr || undefined,
         email: emailErr || undefined,
         phone: phoneErr || undefined,
-        age: ageErr || undefined,
       });
       if (nameErr) document.getElementById("mem-fullname")?.focus();
       else if (emailErr) document.getElementById("mem-email")?.focus();
       else if (phoneErr) document.getElementById("mem-phone")?.focus();
-      else if (ageErr) document.getElementById("mem-age")?.focus();
       return;
     }
 
-    setFormData((prev) => ({
-      ...prev,
-      fullName: sanitizeName(prev.fullName),
-      email: sanitizeEmail(prev.email),
-      phone: sanitizeMobile(prev.phone),
-    }));
-    setFormSubmitted(true);
+    const plan = MEMBERSHIP_PLANS.find((p) => p.id === planId) ?? MEMBERSHIP_PLANS[0];
+    openDonateModal(plan.name, plan.price, true, {
+      name: sanitizeName(formData.fullName),
+      email: sanitizeEmail(formData.email),
+      mobile: sanitizeMobile(formData.phone),
+    });
   };
 
   return (
@@ -326,192 +288,133 @@ export default function MembershipPage() {
             <div className="text-center space-y-2">
               <p className="text-xs font-bold uppercase tracking-widest text-[#E86F1D]">REGISTRATION</p>
               <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">Membership Registration</h2>
-              <p className="text-sm text-[#2B201A]/75">Please share your details to complete your membership registration.</p>
+              <p className="text-sm text-[#2B201A]/75">Choose your plan and share your details to complete your membership.</p>
             </div>
 
-            {formSubmitted ? (
-              <div className="p-8 bg-[#FFF9F2] rounded-2xl text-center space-y-4 border border-[#2F5A43]">
-                <CheckCircle2 className="w-12 h-12 text-[#2F5A43] mx-auto" />
-                <h3 className="font-editorial text-2xl font-bold text-[#2B201A]">Registration Submitted!</h3>
-                <p className="text-sm text-[#2B201A]/85">
-                  Thank you, <strong>{formData.fullName}</strong>. Our team will contact you shortly to complete your membership certificate issuance.
-                </p>
-                <button
-                  onClick={() => setFormSubmitted(false)}
-                  className="btn-primary"
-                >
-                  Submit Another Registration
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleFormSubmit} noValidate className="space-y-5">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="mem-fullname" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
-                      Full Name *
-                    </label>
-                    <input
-                      id="mem-fullname"
-                      type="text"
-                      required
-                      maxLength={60}
-                      placeholder="Enter your full name"
-                      value={formData.fullName}
-                      onChange={(e) => {
-                        setFormData({ ...formData, fullName: e.target.value });
-                        if (errors.fullName && validateName(e.target.value) === null) {
-                          setErrors((prev) => ({ ...prev, fullName: undefined }));
-                        }
-                      }}
-                      onBlur={() => handleBlur("fullName")}
-                      className="input-warm"
-                    />
-                    {errors.fullName && (touched.fullName || errors.fullName) && (
-                      <p className="mt-1 text-xs font-semibold text-[#B3261E]">{errors.fullName}</p>
-                    )}
-                  </div>
+            <form onSubmit={handleFormSubmit} noValidate className="space-y-5">
+              <fieldset>
+                <legend className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-2">
+                  Membership Plan *
+                </legend>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {MEMBERSHIP_PLANS.map((p) => {
+                    const selected = planId === p.id;
+                    return (
+                      <label
+                        key={p.id}
+                        className={`flex items-center justify-between gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-colors ${
+                          selected ? "border-[#E86F1D] bg-[#E86F1D]/5" : "border-[#E7D8C8] bg-[#FFF9F2] hover:border-[#E86F1D]/40"
+                        }`}
+                      >
+                        <span className="flex items-center gap-2.5">
+                          <input
+                            type="radio"
+                            name="mem-plan"
+                            value={p.id}
+                            checked={selected}
+                            onChange={() => setPlanId(p.id)}
+                            className="accent-[#E86F1D]"
+                          />
+                          <span className="text-sm font-semibold text-[#2B201A]">{p.name}</span>
+                        </span>
+                        <span className="text-sm font-bold text-[#E86F1D] tabular-nums">{formatINR(p.price)}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </fieldset>
 
-                  <div>
-                    <label htmlFor="mem-email" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
-                      Email Address *
-                    </label>
-                    <input
-                      id="mem-email"
-                      type="email"
-                      required
-                      maxLength={254}
-                      placeholder="email@domain.com"
-                      value={formData.email}
-                      onChange={(e) => {
-                        setFormData({ ...formData, email: e.target.value });
-                        if (errors.email && validateEmail(e.target.value) === null) {
-                          setErrors((prev) => ({ ...prev, email: undefined }));
-                        }
-                      }}
-                      onBlur={() => handleBlur("email")}
-                      className="input-warm"
-                    />
-                    {errors.email && (touched.email || errors.email) && (
-                      <p className="mt-1 text-xs font-semibold text-[#B3261E]">{errors.email}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label htmlFor="mem-phone" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
-                      Phone Number *
-                    </label>
-                    <input
-                      id="mem-phone"
-                      type="tel"
-                      inputMode="numeric"
-                      required
-                      maxLength={10}
-                      placeholder="9876543210"
-                      value={formData.phone}
-                      onChange={(e) => {
-                        const sanitized = e.target.value.replace(/\D/g, "").slice(0, 10);
-                        setFormData({ ...formData, phone: sanitized });
-                        if (errors.phone && validateMobile(sanitized, true) === null) {
-                          setErrors((prev) => ({ ...prev, phone: undefined }));
-                        }
-                      }}
-                      onBlur={() => handleBlur("phone")}
-                      className="input-warm"
-                    />
-                    {errors.phone && (touched.phone || errors.phone) && (
-                      <p className="mt-1 text-xs font-semibold text-[#B3261E]">{errors.phone}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label htmlFor="mem-age" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
-                      Age *
-                    </label>
-                    <input
-                      id="mem-age"
-                      type="text"
-                      inputMode="numeric"
-                      required
-                      maxLength={3}
-                      placeholder="Your age"
-                      value={formData.age}
-                      onChange={(e) => {
-                        const sanitized = e.target.value.replace(/\D/g, "").slice(0, 3);
-                        setFormData({ ...formData, age: sanitized });
-                        if (errors.age && validateAge(sanitized) === null) {
-                          setErrors((prev) => ({ ...prev, age: undefined }));
-                        }
-                      }}
-                      onBlur={() => handleBlur("age")}
-                      className="input-warm"
-                    />
-                    {errors.age && (touched.age || errors.age) && (
-                      <p className="mt-1 text-xs font-semibold text-[#B3261E]">{errors.age}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label htmlFor="mem-city" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
-                      City
-                    </label>
-                    <input
-                      id="mem-city"
-                      type="text"
-                      maxLength={100}
-                      placeholder="Your city"
-                      value={formData.city}
-                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                      className="input-warm"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="mem-state" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
-                      State
-                    </label>
-                    <input
-                      id="mem-state"
-                      type="text"
-                      maxLength={100}
-                      placeholder="Your state"
-                      value={formData.state}
-                      onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                      className="input-warm"
-                    />
-                  </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="mem-fullname" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
+                    Full Name *
+                  </label>
+                  <input
+                    id="mem-fullname"
+                    type="text"
+                    required
+                    maxLength={60}
+                    placeholder="Enter your full name"
+                    value={formData.fullName}
+                    onChange={(e) => {
+                      setFormData({ ...formData, fullName: e.target.value });
+                      if (errors.fullName && validateName(e.target.value) === null) {
+                        setErrors((prev) => ({ ...prev, fullName: undefined }));
+                      }
+                    }}
+                    onBlur={() => handleBlur("fullName")}
+                    className="input-warm"
+                  />
+                  {errors.fullName && (touched.fullName || errors.fullName) && (
+                    <p className="mt-1 text-xs font-semibold text-[#B3261E]">{errors.fullName}</p>
+                  )}
                 </div>
 
                 <div>
-                  <label htmlFor="mem-message" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
-                    Message / Seva Interest
+                  <label htmlFor="mem-email" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
+                    Email Address *
                   </label>
-                  <textarea
-                    id="mem-message"
-                    rows={3}
-                    maxLength={1000}
-                    placeholder="Share any special interest in education, health, or farmer welfare seva..."
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  <input
+                    id="mem-email"
+                    type="email"
+                    required
+                    maxLength={254}
+                    placeholder="email@domain.com"
+                    value={formData.email}
+                    onChange={(e) => {
+                      setFormData({ ...formData, email: e.target.value });
+                      if (errors.email && validateEmail(e.target.value) === null) {
+                        setErrors((prev) => ({ ...prev, email: undefined }));
+                      }
+                    }}
+                    onBlur={() => handleBlur("email")}
                     className="input-warm"
                   />
+                  {errors.email && (touched.email || errors.email) && (
+                    <p className="mt-1 text-xs font-semibold text-[#B3261E]">{errors.email}</p>
+                  )}
                 </div>
 
-                {/* AUTHENTIC PAYMENT QR CODE PANEL */}
-                <div className="p-6 bg-[#FFF9F2] rounded-2xl border border-[#B8893E]/40 text-center space-y-3">
-                  <p className="text-xs font-bold uppercase tracking-widest text-[#B8893E]">OFFICIAL TRUST PAYMENT QR</p>
-                  <div className="relative w-44 h-44 mx-auto border-2 border-[#B8893E] rounded-xl overflow-hidden p-1 bg-white shadow-warm-sm">
-                    <Image src="/images/qr-code.jpg" alt="Official Payment QR" fill className="object-contain" />
-                  </div>
-                  <p className="text-xs text-[#2B201A]/80">
-                    Scan to transfer contribution directly or click Submit below to initiate gateway payment.
-                  </p>
+                <div>
+                  <label htmlFor="mem-phone" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
+                    Phone Number *
+                  </label>
+                  <input
+                    id="mem-phone"
+                    type="tel"
+                    inputMode="numeric"
+                    required
+                    maxLength={10}
+                    placeholder="9876543210"
+                    value={formData.phone}
+                    onChange={(e) => {
+                      const sanitized = e.target.value.replace(/\D/g, "").slice(0, 10);
+                      setFormData({ ...formData, phone: sanitized });
+                      if (errors.phone && validateMobile(sanitized, true) === null) {
+                        setErrors((prev) => ({ ...prev, phone: undefined }));
+                      }
+                    }}
+                    onBlur={() => handleBlur("phone")}
+                    className="input-warm"
+                  />
+                  {errors.phone && (touched.phone || errors.phone) && (
+                    <p className="mt-1 text-xs font-semibold text-[#B3261E]">{errors.phone}</p>
+                  )}
                 </div>
+              </div>
 
-                <button type="submit" className="btn-primary w-full">
-                  Submit Registration
-                </button>
-              </form>
-            )}
+              <p className="flex items-start gap-2 text-xs text-[#2B201A]/70 bg-[#FFF9F2] border border-[#E7D8C8] rounded-xl p-3">
+                <ShieldCheck className="w-4 h-4 text-[#2F5A43] shrink-0" />
+                <span>
+                  Next, you&apos;ll pay by UPI to the Trust&apos;s account. Once the Trust confirms your payment, your membership
+                  confirmation and certificate are emailed to you.
+                </span>
+              </p>
+
+              <button type="submit" className="btn-primary w-full">
+                Continue to Payment — {formatINR((MEMBERSHIP_PLANS.find((p) => p.id === planId) ?? MEMBERSHIP_PLANS[0]).price)}
+              </button>
+            </form>
           </div>
         </div>
       </section>

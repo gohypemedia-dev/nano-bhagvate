@@ -1,5 +1,5 @@
 import "server-only";
-import { createHash, randomBytes, randomInt, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, randomBytes, randomInt, timingSafeEqual } from "node:crypto";
 import { env } from "./env";
 
 // No 0/O, 1/I/L so IDs can be read out over the phone.
@@ -27,6 +27,14 @@ export function generateToken() {
 
 export function sha256(value: string) {
   return createHash("sha256").update(value).digest("hex");
+}
+
+// The token in the "payment to approve" emails. It is re-derivable, so the follow-up email sent
+// when the donor taps "I have paid" carries the same working link as the first one. The donor
+// knows the donation ID and their submit token, so the HMAC key must be something only the server
+// has: the database URL (it holds the DB password and is always set).
+export function approvalToken(d: { donationId: string; submitTokenHash: string }) {
+  return createHmac("sha256", env().DATABASE_URL).update(`approval:${d.donationId}:${d.submitTokenHash}`).digest("base64url");
 }
 
 export function tokenMatchesHash(token: string, hash: string) {

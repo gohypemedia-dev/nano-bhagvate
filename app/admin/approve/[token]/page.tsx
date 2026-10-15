@@ -28,7 +28,7 @@ export default async function ApprovePaymentPage({ params }: { params: Promise<{
         {!donation ? (
           <>
             <h1 className="font-editorial text-2xl font-bold text-[#2B201A]">Link not valid</h1>
-            <p className="text-sm text-[#2B201A]/75">This approval link is wrong or incomplete. Open it again from the email, or review the donation in the admin dashboard.</p>
+            <p className="text-sm text-[#2B201A]/75">This approval link is wrong or incomplete. Open it again from the latest &ldquo;payment to approve&rdquo; email, or review the payment in the admin dashboard.</p>
           </>
         ) : (
           <Body donation={donation} token={token} />
@@ -43,14 +43,14 @@ type Donation = NonNullable<Awaited<ReturnType<typeof prisma.donation.findUnique
 function Body({ donation: d, token }: { donation: Donation; token: string }) {
   const amount = rupeesFromPaise(d.amountPaise);
   const rows: [string, string][] = [
-    ["Donor", d.donorName],
+    [d.type === "MEMBERSHIP" ? "Member" : "Donor", d.donorName],
     ["Amount", amount],
-    ["Donation ID", d.donationId],
-    ["Towards", d.program ?? "—"],
+    [d.type === "MEMBERSHIP" ? "Membership ID" : "Donation ID", d.donationId],
+    [d.type === "MEMBERSHIP" ? "Membership plan" : "Towards", d.program ?? "—"],
     ["Email", d.donorEmail],
     ["Mobile", d.donorMobile ?? "—"],
     ["QR shown", formatIST(d.createdAt)],
-    ["Donor marked as paid", d.proofSubmittedAt ? formatIST(d.proofSubmittedAt) : "Not yet"],
+    [d.type === "MEMBERSHIP" ? "Member marked as paid" : "Donor marked as paid", d.proofSubmittedAt ? formatIST(d.proofSubmittedAt) : "Not yet"],
   ];
   const details = (
     <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm bg-[#FBF2E7] border border-[#E7D8C8] rounded-xl p-4">
@@ -83,7 +83,7 @@ function Body({ donation: d, token }: { donation: Donation; token: string }) {
       <>
         <CircleX className="w-12 h-12 text-[#B3261E]" aria-hidden="true" />
         <h1 className="font-editorial text-2xl font-bold text-[#2B201A]">Payment {d.status === "REJECTED" ? "rejected" : "cancelled"}</h1>
-        <p className="text-sm text-[#2B201A]/75">No confirmation email was sent to the donor.</p>
+        <p className="text-sm text-[#2B201A]/75">No confirmation email was sent to the {d.type === "MEMBERSHIP" ? "member" : "donor"}.</p>
         {details}
       </>
     );
