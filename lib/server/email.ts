@@ -1,8 +1,9 @@
 import "server-only";
-import type { Donation } from "@prisma/client";
+import type { Donation, Event } from "@prisma/client";
 import nodemailer, { type Transporter } from "nodemailer";
 import { membershipValidUntil, planForProgram } from "@/lib/donation-config";
 import { certificateKey, certificateNumber, generateCertificatePdf } from "./certificate";
+import { generateEventPassPdf } from "./pass";
 import { publicBaseUrl } from "./donation";
 import { env, type Env } from "./env";
 import { prisma } from "./prisma";
@@ -16,12 +17,20 @@ const rupees = (paise: number) =>
 const istDate = (d: Date) =>
   new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", day: "2-digit", month: "long", year: "numeric" }).format(d);
 
-function confirmationEmail(d: Donation, ngoName: string, certificate: { url: string; attached: boolean }) {
+function confirmationEmail(
+  d: Donation,
+  ngoName: string,
+  certificate: { url: string; attached: boolean },
+  pass?: { url: string; attached: boolean; event: Event | null }
+) {
   const amount = rupees(d.amountPaise);
   const date = istDate(d.verifiedAt ?? new Date());
   const member = d.type === "MEMBERSHIP";
+  const hasPass = Boolean(pass);
+  const eventName = pass?.event?.title || d.program || "Spiritual Gathering";
+
   const rows: [string, string][] = [
-    [member ? "Membership ID" : "Donation ID", d.donationId],
+    [member ? "Membership ID" : hasPass ? "Pass & Donation ID" : "Donation ID", d.donationId],
     ["Amount", amount],
     ["Payment", d.utr ? `UPI · UTR ${d.utr}` : "UPI"],
     [member ? "Approved on" : "Date", date],
@@ -30,20 +39,49 @@ function confirmationEmail(d: Donation, ngoName: string, certificate: { url: str
     const plan = planForProgram(d.program);
     const until = membershipValidUntil(plan, d.verifiedAt ?? new Date());
     rows.splice(1, 0, ["Membership", `${plan.title} (${plan.name})`], ["Valid until", until ? istDate(until) : "Lifetime"]);
-  } else if (d.program) rows.splice(1, 0, ["Towards", d.program]);
+  } else if (d.program) rows.splice(1, 0, [hasPass ? "Event / Program" : "Towards", d.program]);
+
   const thanks = member
     ? `Thank you for becoming a ${planForProgram(d.program).title} of ${ngoName}. We received your contribution of ${amount}.`
+    : hasPass
+    ? `Jai Shri Krishna! Your registration and contribution of ${amount} for "${eventName}" has been successfully approved.`
     : `Thank you for your generous donation of ${amount} to ${ngoName}.`;
+
   const certName = member ? "membership certificate" : "donation certificate";
 
-  const subject = member ? `Welcome! Membership Confirmation – ${ngoName}` : `Donation Confirmation – ${ngoName}`;
-  const text = [
+  const subject = member
+    ? `Welcome! Membership Confirmation – ${ngoName}`
+    : hasPass
+    ? `🎫 Official Event Entry Pass: ${eventName} – ${ngoName}`
+    : `Donation Confirmation – ${ngoName}`;
+
+  const textLines = [
     `Dear ${d.donorName},`,
     "",
     thanks,
     "",
     "Your payment has been successfully verified.",
     "",
+  ];
+
+  if (hasPass) {
+    textLines.push(
+      "──────────────────────────────────────────────",
+      "✦ OFFICIAL EVENT ENTRY PASS · प्रवेश पत्र ✦",
+      `Pass ID: PASS-${d.donationId}`,
+      `Devotee: ${d.donorName}`,
+      `Event: ${eventName}`,
+      `Date: ${pass?.event?.startDate ? istDate(new Date(pass.event.startDate)) : date}`,
+      pass?.event?.timeText ? `Timing: ${pass.event.timeText}` : "",
+      `Venue: ${pass?.event?.location || "Trust Ashram & Satsang Kendra"}`,
+      `Pass Link: ${pass?.url}`,
+      "Please show this pass at the Ashram gate for entry & Mahaprasad.",
+      "──────────────────────────────────────────────",
+      ""
+    );
+  }
+
+  textLines.push(
     ...rows.map(([k, v]) => `${k}: ${v}`),
     "",
     certificate.attached
@@ -54,18 +92,48 @@ function confirmationEmail(d: Donation, ngoName: string, certificate: { url: str
     "We sincerely appreciate your support.",
     "",
     "Regards,",
-    ngoName,
-  ].join("\n");
+    ngoName
+  );
+
+  const text = textLines.filter(Boolean).join("\n");
+
+  const passCardHtml = hasPass
+    ? `<tr><td style="padding:0 28px 16px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FFFDF8;border:2px dashed #B8893E;border-radius:12px;overflow:hidden">
+<tr><td style="background:#2B201A;padding:10px 16px;text-align:center">
+  <p style="margin:0;font-size:11px;font-weight:bold;letter-spacing:1.5px;color:#B8893E;text-transform:uppercase">✦ OFFICIAL EVENT ENTRY PASS · प्रवेश पत्र ✦</p>
+</td></tr>
+<tr><td style="padding:16px 20px">
+  <div style="text-align:center;margin-bottom:12px">
+    <span style="display:inline-block;background:#E86F1D;color:#ffffff;font-size:11px;font-weight:bold;padding:3px 10px;border-radius:4px;text-transform:uppercase">${escapeHtml(eventName)}</span>
+    <h2 style="margin:8px 0 2px;font-size:18px;color:#2B201A">${escapeHtml(d.donorName)}</h2>
+    <p style="margin:0;font-size:11px;color:#2F5A43;font-weight:bold">PASS ID: PASS-${escapeHtml(d.donationId)} · STATUS: VERIFIED</p>
+  </div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FBF2E7;border-radius:8px;font-size:12px;margin-bottom:14px">
+    <tr><td style="padding:7px 12px;color:#6B5B4E">Date:</td><td style="padding:7px 12px;font-weight:bold;text-align:right">${escapeHtml(pass?.event?.startDate ? istDate(new Date(pass.event.startDate)) : date)}</td></tr>
+    ${pass?.event?.timeText ? `<tr><td style="padding:7px 12px;color:#6B5B4E">Timing:</td><td style="padding:7px 12px;font-weight:bold;text-align:right">${escapeHtml(pass.event.timeText)}</td></tr>` : ""}
+    <tr><td style="padding:7px 12px;color:#6B5B4E">Venue:</td><td style="padding:7px 12px;font-weight:bold;text-align:right">${escapeHtml(pass?.event?.location || "Trust Ashram & Satsang Kendra")}</td></tr>
+    <tr><td style="padding:7px 12px;color:#6B5B4E">Contribution:</td><td style="padding:7px 12px;font-weight:bold;text-align:right;color:#2F5A43">${amount}</td></tr>
+  </table>
+  <div style="text-align:center">
+    <a href="${escapeHtml(pass?.url ?? "")}" style="display:inline-block;background:#E86F1D;color:#ffffff;text-decoration:none;font-weight:bold;font-size:13px;padding:9px 20px;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,0.15)">View & Download Entry Pass</a>
+  </div>
+  <p style="margin:10px 0 0;font-size:11px;color:#6B5B4E;text-align:center">Show this digital pass or attached PDF at the ashram gate for entry & Mahaprasad coupon.</p>
+</td></tr>
+</table>
+</td></tr>`
+    : "";
 
   const html = `<!doctype html><html><body style="margin:0;background:#FFF9F2;font-family:Arial,Helvetica,sans-serif;color:#2B201A">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:24px 12px">
 <table role="presentation" width="100%" style="max-width:560px;background:#ffffff;border:1px solid #E7D8C8;border-radius:12px" cellpadding="0" cellspacing="0">
 <tr><td style="padding:28px 28px 8px">
 <p style="margin:0 0 4px;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#B8893E;font-weight:bold">${escapeHtml(ngoName)}</p>
-<h1 style="margin:0 0 16px;font-size:22px;color:#2B201A">${member ? "Membership confirmed" : "Donation confirmed"}</h1>
+<h1 style="margin:0 0 16px;font-size:22px;color:#2B201A">${member ? "Membership confirmed" : hasPass ? "Event Pass & Confirmation" : "Donation confirmed"}</h1>
 <p style="margin:0 0 12px;font-size:15px;line-height:1.6">Dear ${escapeHtml(d.donorName)},</p>
 <p style="margin:0 0 12px;font-size:15px;line-height:1.6">${escapeHtml(thanks).replace(escapeHtml(amount), `<strong>${amount}</strong>`)} Your payment has been successfully verified.</p>
 </td></tr>
+${passCardHtml}
 <tr><td style="padding:8px 28px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FBF2E7;border-radius:8px">
 ${rows.map(([k, v]) => `<tr><td style="padding:10px 14px;font-size:13px;color:#6B5B4E">${k}</td><td style="padding:10px 14px;font-size:14px;font-weight:bold;text-align:right">${escapeHtml(v)}</td></tr>`).join("")}
@@ -214,7 +282,24 @@ export async function sendApprovalRequestEmail(donation: Donation, approveUrl: s
 // the donation's email status. Never throws; returns the outcome.
 export async function sendConfirmationEmail(donation: Donation) {
   const config = env();
-  const certificateUrl = `${publicBaseUrl()}/certificate/${donation.donationId}?k=${certificateKey(donation)}`;
+  const k = certificateKey(donation);
+  const certificateUrl = `${publicBaseUrl()}/certificate/${donation.donationId}?k=${k}`;
+  const passUrl = `${publicBaseUrl()}/pass/${donation.donationId}?k=${k}`;
+
+  // Find linked event if program is set
+  let event: Event | null = null;
+  if (donation.program) {
+    try {
+      event = await prisma.event.findFirst({
+        where: { title: { equals: donation.program, mode: "insensitive" } },
+      });
+    } catch {}
+  }
+
+  // QR Code on pass redirects directly to the event on the website:
+  const eventSlug = event?.slug || "shrimad-bhagwat-katha-2026";
+  const eventRedirectUrl = `${publicBaseUrl()}/?event=${encodeURIComponent(eventSlug)}#events`;
+
   // A certificate that fails to render must not hold up the confirmation itself.
   let pdf: Uint8Array | null = null;
   try {
@@ -222,10 +307,43 @@ export async function sendConfirmationEmail(donation: Donation) {
   } catch (e) {
     console.error(`[certificate] ${donation.donationId}:`, e instanceof Error ? e.message : e);
   }
-  const { subject, text, html } = confirmationEmail(donation, config.NGO_NAME, { url: certificateUrl, attached: Boolean(pdf) });
-  const attachments = pdf
-    ? [{ filename: `${donation.type === "MEMBERSHIP" ? "Membership" : "Donation"}-Certificate-${certificateNumber(donation.donationId).replace(/\//g, "-")}.pdf`, content: Buffer.from(pdf), contentType: "application/pdf" }]
+
+  // Generate Event Pass PDF with QR Code linking to the Event
+  let passPdf: Uint8Array | null = null;
+  if (donation.program || event) {
+    try {
+      passPdf = await generateEventPassPdf(donation, event, eventRedirectUrl);
+    } catch (e) {
+      console.error(`[event-pass] ${donation.donationId}:`, e instanceof Error ? e.message : e);
+    }
+  }
+
+  const passInfo = donation.program || event
+    ? { url: eventRedirectUrl, attached: Boolean(passPdf), event }
     : undefined;
+
+  const { subject, text, html } = confirmationEmail(
+    donation,
+    config.NGO_NAME,
+    { url: certificateUrl, attached: Boolean(pdf) },
+    passInfo
+  );
+
+  const attachments: Attachment[] = [];
+  if (passPdf) {
+    attachments.push({
+      filename: `Event-Pass-${donation.donationId}.pdf`,
+      content: Buffer.from(passPdf),
+      contentType: "application/pdf",
+    });
+  }
+  if (pdf) {
+    attachments.push({
+      filename: `${donation.type === "MEMBERSHIP" ? "Membership" : "Donation"}-Certificate-${certificateNumber(donation.donationId).replace(/\//g, "-")}.pdf`,
+      content: Buffer.from(pdf),
+      contentType: "application/pdf",
+    });
+  }
 
   let status: "SENT" | "FAILED" = "FAILED";
   let providerId: string | undefined;

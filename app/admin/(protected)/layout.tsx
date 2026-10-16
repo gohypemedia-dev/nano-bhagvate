@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Toaster } from "sonner";
 import { requireAdminPage } from "@/lib/server/auth";
 import LogoutButton from "@/components/admin/LogoutButton";
 import AdminNav from "@/components/admin/AdminNav";
@@ -8,6 +9,7 @@ export default async function ProtectedAdminLayout({ children }: { children: Rea
 
   return (
     <div className="min-h-[100dvh] bg-[#FAF6F0]">
+      <Toaster richColors position="top-right" closeButton />
       <header className="bg-white border-b border-[#E7D8C8] sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 sm:gap-6">

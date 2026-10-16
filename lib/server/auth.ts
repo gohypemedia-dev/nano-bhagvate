@@ -94,7 +94,13 @@ export function sameOrigin(request: Request) {
   const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
   if (!origin || !host) return false;
   try {
-    return new URL(origin).host === host;
+    const originHost = new URL(origin).host;
+    if (originHost === host) return true;
+    if (process.env.NODE_ENV !== "production") {
+      const isLocal = (h: string) => h.startsWith("localhost:") || h.startsWith("127.0.0.1:") || h === "localhost" || h === "127.0.0.1";
+      if (isLocal(originHost) && isLocal(host)) return true;
+    }
+    return false;
   } catch {
     return false;
   }

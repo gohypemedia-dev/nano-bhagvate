@@ -8,7 +8,6 @@ import { useApp } from "@/context/AppContext";
 import { MEMBERSHIP_PLANS, PRESET_AMOUNTS, formatINR } from "@/lib/donation-config";
 import {
   createDonationSchema,
-  parseRupees,
   sanitizeEmail,
   sanitizeMobile,
   sanitizeName,
@@ -80,8 +79,7 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
   const [session, setSession] = useState<PaymentSession | null>(null);
   const [resumed, setResumed] = useState(false);
 
-  const [selectedAmount, setSelectedAmount] = useState<number>(1100);
-  const [customAmount, setCustomAmount] = useState("");
+  const [selectedAmount, setSelectedAmount] = useState<number>(PRESET_AMOUNTS[1] ?? 999);
   const [planId, setPlanId] = useState<string>(MEMBERSHIP_PLANS[0].id);
   const [donorName, setDonorName] = useState("");
   const [donorEmail, setDonorEmail] = useState("");
@@ -102,8 +100,7 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
     donateModal.isMembership || donateModal.program?.toLowerCase().includes("membership"),
   );
   const plan = MEMBERSHIP_PLANS.find((p) => p.id === planId) ?? MEMBERSHIP_PLANS[0];
-  const typedAmount = customAmount ? parseRupees(customAmount) : null;
-  const currentAmount = isMembership ? plan.price : customAmount ? typedAmount ?? 0 : selectedAmount;
+  const currentAmount = isMembership ? plan.price : selectedAmount;
 
   // When the modal opens: resume an unfinished donation from this tab, or start fresh.
   const openKey = donateModal.isOpen ? `${donateModal.program}|${donateModal.amount}|${isMembership}` : null;
@@ -121,7 +118,6 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
       } else {
         setResumed(false);
         setStep("SELECT");
-        setCustomAmount("");
         const prefill = donateModal.prefill;
         if (prefill?.name) setDonorName(prefill.name);
         if (prefill?.email) setDonorEmail(prefill.email);
@@ -132,7 +128,7 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
           );
           setPlanId((match ?? MEMBERSHIP_PLANS[0]).id);
         } else {
-          setSelectedAmount(donateModal.amount || 1100);
+          setSelectedAmount(donateModal.amount || PRESET_AMOUNTS[1] || 999);
         }
       }
     }
@@ -233,8 +229,7 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
       if (err) setError({ message: err, field: "mobile" });
       else if (error?.field === "mobile") setError(null);
     } else if (field === "amount" && !isMembership) {
-      const amt = customAmount ? parseRupees(customAmount) : selectedAmount;
-      const err = validateAmount(amt, minAmount);
+      const err = validateAmount(selectedAmount, minAmount);
       if (err) setError({ message: err, field: "amount" });
       else if (error?.field === "amount") setError(null);
     }
@@ -247,13 +242,9 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
     setError(null);
 
     if (!isMembership) {
-      const amt = customAmount ? parseRupees(customAmount) : selectedAmount;
-      const amountErr = validateAmount(amt, minAmount);
+      const amountErr = validateAmount(selectedAmount, minAmount);
       if (amountErr) {
         setError({ message: amountErr, field: "amount" });
-        if (customAmount) {
-          document.getElementById("donate-custom-amount")?.focus();
-        }
         return;
       }
     }
@@ -478,58 +469,34 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
                     </div>
                   </div>
                 ) : (
-                  <>
-                    <div>
-                      <label className="block text-xs font-bold uppercase text-[#2B201A]/80 tracking-wider mb-2">
-                        {hi ? "योगदान की राशि चुनें" : "Select Contribution Amount"}
-                      </label>
-                      <div className="grid grid-cols-3 gap-2.5">
-                        {PRESET_AMOUNTS.map((amt) => {
-                          const selected = selectedAmount === amt && !customAmount;
-                          return (
-                            <button
-                              key={amt}
-                              type="button"
-                              aria-pressed={selected}
-                              onClick={() => {
-                                setSelectedAmount(amt);
-                                setCustomAmount("");
-                              }}
-                              className={`py-2.5 px-3 rounded-xl border text-sm font-bold transition-all ${
-                                selected
-                                  ? "bg-[#E86F1D] text-white border-[#E86F1D] shadow-warm-sm"
-                                  : "bg-[#FBF2E7] border-[#E7D8C8] text-[#2B201A] hover:border-[#E86F1D]"
-                              }`}
-                            >
-                              {formatINR(amt)}
-                            </button>
-                          );
-                        })}
-                      </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-[#2B201A]/80 tracking-wider mb-2">
+                      {hi ? "योगदान की राशि चुनें" : "Select Contribution Amount"}
+                    </label>
+                    <div className="grid grid-cols-3 gap-2.5">
+                      {PRESET_AMOUNTS.map((amt) => {
+                        const selected = selectedAmount === amt;
+                        return (
+                          <button
+                            key={amt}
+                            type="button"
+                            aria-pressed={selected}
+                            onClick={() => {
+                              setSelectedAmount(amt);
+                              if (error?.field === "amount") setError(null);
+                            }}
+                            className={`py-2.5 px-3 rounded-xl border text-sm font-bold transition-all ${
+                              selected
+                                ? "bg-[#E86F1D] text-white border-[#E86F1D] shadow-warm-sm"
+                                : "bg-[#FBF2E7] border-[#E7D8C8] text-[#2B201A] hover:border-[#E86F1D]"
+                            }`}
+                          >
+                            {formatINR(amt)}
+                          </button>
+                        );
+                      })}
                     </div>
-                    <div>
-                      <label htmlFor="donate-custom-amount" className="block text-xs font-semibold text-[#2B201A]/70 mb-1">
-                        {hi ? "अथवा अपनी इच्छानुसार राशि (₹)" : "Or enter another amount (₹)"}
-                      </label>
-                      <input
-                        id="donate-custom-amount"
-                        type="text"
-                        inputMode="numeric"
-                        autoComplete="off"
-                        maxLength={7}
-                        placeholder={`Minimum ${formatINR(minAmount)}`}
-                        value={customAmount}
-                        onChange={(e) => {
-                          const sanitized = e.target.value.replace(/\D/g, "").slice(0, 7);
-                          setCustomAmount(sanitized);
-                          if (error?.field === "amount") setError(null);
-                        }}
-                        onBlur={() => handleBlurField("amount")}
-                        className="input-warm"
-                      />
-                      {fieldError("amount")}
-                    </div>
-                  </>
+                  </div>
                 )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

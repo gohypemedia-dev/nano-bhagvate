@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -17,8 +17,10 @@ import {
   Compass,
   Sun,
   ShieldCheck,
+  Info,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+import EventDetailsModal, { EventItem } from "@/components/EventDetailsModal";
 
 export default function HomePage() {
   const { lang, openDonateModal } = useApp();
@@ -54,29 +56,129 @@ export default function HomePage() {
     },
   ];
 
-  const upcomingEvents = [
+  const defaultEvents: EventItem[] = [
     {
-      date: "25 MAY 2026",
+      id: "ev-1",
+      slug: "shrimad-bhagwat-katha-2026",
       title: "Shrimad Bhagwat Katha",
       titleHi: "श्रीमद्भागवत कथा ज्ञान यज्ञ",
-      desc: "Join us for a sacred seven-day spiritual discourse on the Shrimad Bhagwat Purana. All devotees are cordially invited.",
+      summary: "Join us for a sacred seven-day spiritual discourse on the Shrimad Bhagwat Purana. All devotees are cordially invited.",
+      summaryHi: "सात दिवसीय पावन श्रीमद्भागवत कथा ज्ञान यज्ञ में सादर आमंत्रित हैं। सभी भक्तगण पधारकर पुण्य लाभ प्राप्त करें।",
+      description: "Join us for a divine seven-day spiritual discourse diving into the sublime pastimes and teachings of Lord Krishna from the Shrimad Bhagwat Mahapuran. Accompanied by daily sankirtan, aarti, and mahaprasad distribution. Devotees may also sponsor a day's discourse or prasadam seva.",
+      startDate: "2026-05-25T10:30:00Z",
+      endDate: "2026-05-31T14:00:00Z",
+      timeText: "4:00 PM – 7:30 PM IST Daily",
       location: "Gurugram Ashram & Live Stream",
+      address: "Namo Bhagwate Vasudevaya Trust Ashram, Sector 48, Gurugram, Haryana - 122018",
+      contactPhone: "+91 9910762692",
+      isPublished: true,
     },
     {
-      date: "10 JUNE 2026",
+      id: "ev-2",
+      slug: "yoga-wellness-camp-2026",
       title: "Yoga & Wellness Camp",
       titleHi: "योग एवं प्राकृतिक चिकित्सा शिविर",
-      desc: "A three-day holistic wellness camp featuring yoga, meditation, pranayama, and Ayurvedic health consultation.",
+      summary: "A three-day holistic wellness camp featuring yoga, meditation, pranayama, and Ayurvedic health consultation.",
+      summaryHi: "योग, ध्यान, प्राणायाम एवं निःशुल्क आयुर्वेदिक स्वास्थ्य परामर्श से युक्त त्रिदिवसीय समग्र स्वास्थ्य शिविर।",
+      description: "Rejuvenate mind, body, and soul in the holy environment of Vrindavan. The camp features early morning asana and pranayama sessions, yogic satvik diet, stress-relief meditation, and personalized pulse diagnosis (Nadi Parikshan) by experienced Vaidyas.",
+      startDate: "2026-06-10T00:30:00Z",
+      endDate: "2026-06-12T13:30:00Z",
+      timeText: "6:00 AM – 9:00 AM & 4:30 PM – 7:00 PM IST",
       location: "Vrindavan Seva Kendra",
+      address: "Raman Reti Road, Near Bhaktivedanta Hospital, Vrindavan, Uttar Pradesh - 281121",
+      contactPhone: "+91 9910762692",
+      isPublished: true,
     },
     {
-      date: "21 JUNE 2026",
+      id: "ev-3",
+      slug: "gurukul-annual-celebration-2026",
       title: "Gurukul Annual Celebration",
       titleHi: "गुरुकुल वार्षिकोत्सव एवं बाल संस्कार",
-      desc: "A cultural celebration showcasing Vedic chanting, cultural performances, and academic achievements of Gurukul students.",
+      summary: "A cultural celebration showcasing Vedic chanting, cultural performances, and academic achievements of Gurukul students.",
+      summaryHi: "वेद मंत्रोच्चार, सांस्कृतिक प्रस्तुतियां एवं गुरुकुल के विद्यार्थियों की उपलब्धियों का भव्य वार्षिकोत्सव।",
+      description: "Celebrate the preservation of Sanatan values and cultural heritage. The annual function will present Vedic recitation by young Brahmacharis, classical spiritual drama depicting scriptures, prize distribution, and blessing discourses by revered saints.",
+      startDate: "2026-06-21T04:30:00Z",
+      endDate: "2026-06-21T08:30:00Z",
+      timeText: "10:00 AM – 2:00 PM IST (Followed by Mahaprasad)",
       location: "Main Auditorium",
+      address: "Trust Central Auditorium, Gurugram / Delhi NCR",
+      contactPhone: "+91 9910762692",
+      isPublished: true,
     },
   ];
+
+  const [events, setEvents] = useState<EventItem[]>(defaultEvents);
+  const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
+  const [eventModalOpen, setEventModalOpen] = useState(false);
+
+  useEffect(() => {
+    // 1. Immediately check URL params on mount without waiting for network
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const eventParam = params.get("event")?.toLowerCase();
+      const hasHash = window.location.hash === "#events";
+
+      if (eventParam) {
+        const matched = defaultEvents.find(
+          (e) =>
+            e.slug.toLowerCase() === eventParam ||
+            e.title.toLowerCase().includes(eventParam) ||
+            eventParam.includes(e.slug.toLowerCase())
+        );
+        if (matched) {
+          setSelectedEvent(matched);
+          setEventModalOpen(true);
+        }
+      }
+
+      if (eventParam || hasHash) {
+        setTimeout(() => {
+          const el = document.getElementById("events");
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 200);
+      }
+    }
+
+    // 2. Fetch live events from API
+    fetch("/api/events")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.events && Array.isArray(data.events) && data.events.length > 0) {
+          setEvents(data.events);
+          if (typeof window !== "undefined") {
+            const params = new URLSearchParams(window.location.search);
+            const eventParam = params.get("event")?.toLowerCase();
+            if (eventParam) {
+              const matched = data.events.find(
+                (e: EventItem) =>
+                  e.slug.toLowerCase() === eventParam ||
+                  e.title.toLowerCase().includes(eventParam) ||
+                  eventParam.includes(e.slug.toLowerCase())
+              );
+              if (matched) {
+                setSelectedEvent(matched);
+                setEventModalOpen(true);
+              }
+            }
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const formatCardDate = (dateVal: string | Date) => {
+    try {
+      const d = new Date(dateVal);
+      if (isNaN(d.getTime())) return String(dateVal);
+      return d.toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }).toUpperCase();
+    } catch {
+      return String(dateVal);
+    }
+  };
 
   return (
     <div className="w-full">
@@ -246,7 +348,7 @@ export default function HomePage() {
       </section>
 
       {/* UPCOMING EVENTS */}
-      <section className="section-py bg-[#FBF2E7]/60 border-y border-[#E7D8C8]">
+      <section id="events" className="section-py bg-[#FBF2E7]/60 border-y border-[#E7D8C8]">
         <div className="page-container">
           <div className="text-center max-w-2xl mx-auto section-header space-y-2">
             <p className="text-xs font-bold uppercase tracking-widest text-[#E86F1D]">Punya Seva & Satsang</p>
@@ -256,29 +358,46 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-            {upcomingEvents.map((event, idx) => (
-              <div key={idx} className="card-warm">
+            {events.map((event) => (
+              <div
+                key={event.id}
+                onClick={() => {
+                  setSelectedEvent(event);
+                  setEventModalOpen(true);
+                }}
+                className="card-warm cursor-pointer group hover:border-[#E86F1D]/50 hover:shadow-lg transition-all duration-200"
+              >
                 <div className="card-body space-y-3">
-                  <div className="inline-block px-3 py-1 bg-[#E86F1D] text-white text-xs font-bold rounded-md w-fit">
-                    {event.date}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="inline-block px-3 py-1 bg-[#E86F1D] text-white text-xs font-bold rounded-md w-fit shadow-xs">
+                      {formatCardDate(event.startDate)}
+                    </div>
+                    <span className="text-[11px] font-bold text-[#E86F1D] opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                      <span>View Details</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </span>
                   </div>
-                  <h3 className="font-editorial text-xl font-bold text-[#2B201A]">
-                    {lang === "hi" ? event.titleHi : event.title}
+                  <h3 className="font-editorial text-xl font-bold text-[#2B201A] group-hover:text-[#E86F1D] transition-colors leading-snug">
+                    {lang === "hi" && event.titleHi ? event.titleHi : event.title}
                   </h3>
                   <p className="text-xs text-[#B8893E] font-bold flex items-center gap-1.5">
                     <Calendar className="w-4 h-4 shrink-0" />
-                    <span>{event.location}</span>
+                    <span className="truncate">{event.location}</span>
                   </p>
-                  <p className="text-sm text-[#2B201A]/85 leading-relaxed">
-                    {event.desc}
+                  <p className="text-sm text-[#2B201A]/85 leading-relaxed line-clamp-3">
+                    {lang === "hi" && event.summaryHi ? event.summaryHi : event.summary}
                   </p>
                 </div>
                 <div className="card-action">
                   <button
-                    onClick={() => openDonateModal(event.title)}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openDonateModal(event.title);
+                    }}
                     className="btn-outline w-full"
                   >
-                    Register / Support Event
+                    REGISTER / SUPPORT EVENT
                   </button>
                 </div>
               </div>
@@ -457,6 +576,15 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* EVENT DETAILS POPUP MODAL */}
+      <EventDetailsModal
+        event={selectedEvent}
+        isOpen={eventModalOpen}
+        onClose={() => setEventModalOpen(false)}
+        onRegister={(title) => openDonateModal(title)}
+        lang={lang}
+      />
     </div>
   );
 }

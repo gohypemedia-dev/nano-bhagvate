@@ -1,6 +1,6 @@
 // Shared by the donate modal and the API. Contains no secrets.
 
-export const PRESET_AMOUNTS = [500, 1100, 2100, 5100, 11000];
+export const PRESET_AMOUNTS = [499, 999, 1499, 2100, 5100, 11000];
 
 // Membership prices live here so the server, not the browser, decides what a plan costs.
 // Shown on the membership page's plan cards and printed on the membership certificate:

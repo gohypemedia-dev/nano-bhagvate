@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { HeartHandshake, Images, ExternalLink } from "lucide-react";
+import { HeartHandshake, Images, Calendar, ExternalLink } from "lucide-react";
 
 export default function AdminNav() {
   const pathname = usePathname();
 
   const isDonations = pathname === "/admin" || pathname.startsWith("/admin/donations");
   const isGallery = pathname.startsWith("/admin/gallery");
+  const isEvents = pathname.startsWith("/admin/events");
 
   const links = [
     {
@@ -16,6 +17,12 @@ export default function AdminNav() {
       label: "Donations",
       active: isDonations,
       icon: HeartHandshake,
+    },
+    {
+      href: "/admin/events",
+      label: "Events",
+      active: isEvents,
+      icon: Calendar,
     },
     {
       href: "/admin/gallery",
