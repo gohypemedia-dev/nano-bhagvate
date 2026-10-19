@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Download, Calendar, Clock, MapPin, Phone, CheckCircle2, FileX2, Sparkles } from "lucide-react";
+import { Download, Calendar, Clock, MapPin, Phone, CheckCircle2, FileX2 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { certificateKey } from "@/lib/server/certificate";
 import { prisma } from "@/lib/server/prisma";

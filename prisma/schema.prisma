@@ -219,3 +219,83 @@ model Event {
 
   @@index([isPublished, startDate])
 }
+
+enum OrderStatus {
+  PLACED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum OrderPaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  name         String
+  phone        String?
+  passwordHash String
+  address      String?
+  city         String?
+  state        String?
+  pincode      String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  sessions     UserSession[]
+  orders       Order[]
+
+  @@index([email])
+}
+
+model UserSession {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
+}
+
+model Order {
+  id              String             @id @default(cuid())
+  orderNumber     String             @unique
+  userId          String
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalAmount     Float
+  currency        String             @default("INR")
+  status          OrderStatus        @default(PLACED)
+  paymentStatus   OrderPaymentStatus @default(PAID)
+  paymentMethod   String             @default("UPI_MANUAL")
+  shippingName    String
+  shippingEmail   String
+  shippingPhone   String
+  shippingAddress String
+  shippingCity    String
+  shippingState   String
+  shippingPincode String
+  items           OrderItem[]
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@index([userId, createdAt])
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  bookId    String
+  title     String
+  price     Float
+  quantity  Int
+  image     String?
+  createdAt DateTime @default(now())
+}
+

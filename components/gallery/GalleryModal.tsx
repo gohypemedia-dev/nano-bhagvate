@@ -10,7 +10,6 @@ import {
   Image as ImageIcon,
   ExternalLink,
   AlertCircle,
-  Sparkles,
 } from "lucide-react";
 import { GalleryItem } from "@/data/gallery";
 import { parseVideoSource } from "./galleryUtils";

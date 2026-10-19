@@ -8,7 +8,6 @@ import {
   Heart,
   Calendar,
   Users,
-  Sparkles,
   ArrowRight,
   ChevronLeft,
   ChevronRight,

@@ -12,9 +12,13 @@ function createClient() {
   return new PrismaClient({ adapter });
 }
 
-// Reuse one client across hot reloads in development.
+// Reuse one client across hot reloads in development, but recreate if schema updated
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
-export const prisma = globalForPrisma.prisma ?? createClient();
+export const prisma =
+  globalForPrisma.prisma && "user" in globalForPrisma.prisma
+    ? globalForPrisma.prisma
+    : (globalForPrisma.prisma = createClient());
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+

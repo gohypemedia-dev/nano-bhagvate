@@ -3,7 +3,6 @@
 import React, { useState, useMemo, useRef } from "react";
 import Image from "next/image";
 import {
-  Sparkles,
   Play,
   Film,
   Image as ImageIcon,
@@ -127,8 +126,7 @@ export default function GallerySection() {
       <div className="page-container">
         {/* SECTION HEADER */}
         <div className="text-center max-w-2xl mx-auto section-header space-y-2.5">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFF9F2] border border-[#B8893E]/35 text-[#E86F1D] text-xs font-bold uppercase tracking-widest shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 text-[#B8893E]" />
+          <div className="inline-flex items-center px-3.5 py-1.5 rounded-full bg-[#FFF9F2] border border-[#B8893E]/35 text-[#E86F1D] text-xs font-bold uppercase tracking-widest shadow-2xs">
             <span>{lang === "hi" ? "दर्शन एवं सेवा • GLIMPSES" : "GLIMPSES & MEMORIES"}</span>
           </div>
 

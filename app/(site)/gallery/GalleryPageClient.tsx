@@ -4,7 +4,6 @@ import React, { useState, useMemo, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
-  Sparkles,
   Play,
   Film,
   Image as ImageIcon,
@@ -151,8 +150,7 @@ export default function GalleryPageClient({ initialItems }: { initialItems?: Gal
 
           {/* Heading & Subtitle */}
           <div className="space-y-3 max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFF9F2] border border-[#B8893E]/35 text-[#E86F1D] text-xs font-bold uppercase tracking-widest shadow-2xs">
-              <Sparkles className="w-3.5 h-3.5 text-[#B8893E]" />
+            <div className="inline-flex items-center px-3.5 py-1.5 rounded-full bg-[#FFF9F2] border border-[#B8893E]/35 text-[#E86F1D] text-xs font-bold uppercase tracking-widest shadow-2xs">
               <span>{lang === "hi" ? "दर्शन एवं सेवा • GLIMPSES" : "GLIMPSES & MEMORIES"}</span>
             </div>
 

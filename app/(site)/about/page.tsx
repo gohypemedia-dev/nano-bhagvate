@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Sparkles, Sprout, GraduationCap, Users, Sun, ArrowRight } from "lucide-react";
+import { Sprout, GraduationCap, Users, Sun, ArrowRight } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 export default function AboutPage() {

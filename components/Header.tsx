@@ -4,14 +4,15 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { ShoppingBag, Globe, Menu, X, Heart } from "lucide-react";
+import { ShoppingBag, Globe, Menu, X, Heart, User } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 export default function Header() {
   const pathname = usePathname();
-  const { lang, setLang, cartCount, setIsCartOpen, openDonateModal } = useApp();
+  const { lang, setLang, cartCount, setIsCartOpen, openDonateModal, user } = useApp();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,11 +45,11 @@ export default function Header() {
       {/* DESKTOP 3-ZONE GRID LAYOUT (visible >= 1200px / xl) */}
       <div className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8 box-border">
         {/* DESKTOP HEADER GRID */}
-        <div className="hidden xl:grid grid-cols-[285px_minmax(0,1fr)_auto] items-center h-[80px] gap-7">
+        <div className="hidden xl:grid grid-cols-[auto_1fr_auto] items-center h-[80px] gap-3 2xl:gap-6">
           
-          {/* 1. LEFT: Trust Logo + Brand Name (285px width) */}
-          <Link href="/" className="flex items-center gap-3 shrink-0 min-w-0 group whitespace-nowrap">
-            <div className="relative w-[54px] h-[54px] rounded-full overflow-hidden border-2 border-[#B8893E] shadow-sm transition-transform group-hover:scale-105 shrink-0 bg-white">
+          {/* 1. LEFT: Trust Logo + Brand Name */}
+          <Link href="/" className="flex items-center gap-2.5 shrink-0 min-w-0 group whitespace-nowrap pr-2">
+            <div className="relative w-[48px] h-[48px] 2xl:w-[54px] 2xl:h-[54px] rounded-full overflow-hidden border-2 border-[#B8893E] shadow-sm transition-transform group-hover:scale-105 shrink-0 bg-white">
               <Image
                 src="/images/logo.jpg"
                 alt="Namo Bhagwate Vasudevaya Trust Logo"
@@ -58,24 +59,24 @@ export default function Header() {
               />
             </div>
             <div className="flex flex-col shrink-0 min-w-0">
-              <span className="font-editorial text-lg sm:text-xl font-bold tracking-tight text-[#2B201A] leading-tight group-hover:text-[#E86F1D] transition-colors whitespace-nowrap">
+              <span className="font-editorial text-base 2xl:text-xl font-bold tracking-tight text-[#2B201A] leading-tight group-hover:text-[#E86F1D] transition-colors whitespace-nowrap">
                 NAMO BHAGWATE
               </span>
-              <span className="text-[10px] sm:text-xs font-semibold tracking-wider text-[#B8893E] uppercase whitespace-nowrap">
+              <span className="text-[9px] 2xl:text-xs font-semibold tracking-wider text-[#B8893E] uppercase whitespace-nowrap">
                 VASUDEVAYA TRUST
               </span>
             </div>
           </Link>
 
-          {/* 2. CENTER: Navigation Menu (Centered in middle grid column) */}
-          <nav className="flex items-center justify-center gap-1.5 xl:gap-2 2xl:gap-4 min-w-0 whitespace-nowrap">
+          {/* 2. CENTER: Navigation Menu */}
+          <nav className="flex items-center justify-center gap-1 xl:gap-1.5 2xl:gap-3 min-w-0 whitespace-nowrap px-1">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`px-2 xl:px-2.5 2xl:px-3 py-1.5 rounded-lg text-xs 2xl:text-sm font-semibold transition-all duration-200 whitespace-nowrap shrink-0 ${
+                  className={`px-2 2xl:px-3 py-1.5 rounded-lg text-xs 2xl:text-sm font-semibold transition-all duration-200 whitespace-nowrap shrink-0 ${
                     isActive
                       ? "text-[#E86F1D] bg-[#FBF2E7] font-bold"
                       : "text-[#2B201A]/85 hover:text-[#E86F1D] hover:bg-[#FBF2E7]/60"
@@ -87,12 +88,12 @@ export default function Header() {
             })}
           </nav>
 
-          {/* 3. RIGHT: Language Selector + Cart + Orange Donate Button */}
-          <div className="flex items-center justify-end gap-3.5 shrink-0 whitespace-nowrap">
+          {/* 3. RIGHT: Language Selector + Cart + (Only If Logged In: Account Icon) + Orange Donate Button */}
+          <div className="flex items-center justify-end gap-2.5 2xl:gap-3 shrink-0 whitespace-nowrap">
             {/* Language Selector */}
             <button
               onClick={() => setLang(lang === "en" ? "hi" : "en")}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[#E7D8C8] text-xs font-bold text-[#2B201A] hover:bg-[#FBF2E7] transition-colors min-h-[44px]"
+              className="flex items-center gap-1.5 px-2.5 2xl:px-3 py-2 rounded-xl border border-[#E7D8C8] text-xs font-bold text-[#2B201A] hover:bg-[#FBF2E7] transition-colors min-h-[44px]"
               title="Change Language"
             >
               <Globe className="w-4 h-4 text-[#B8893E]" />
@@ -102,7 +103,7 @@ export default function Header() {
             {/* Cart Icon */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2.5 text-[#2B201A] hover:text-[#E86F1D] rounded-xl hover:bg-[#FBF2E7] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="relative p-2.5 text-[#2B201A] hover:text-[#E86F1D] rounded-xl hover:bg-[#FBF2E7] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center border border-transparent hover:border-[#E7D8C8]"
               aria-label="View Cart"
             >
               <ShoppingBag className="w-5 h-5" />
@@ -113,10 +114,22 @@ export default function Header() {
               )}
             </button>
 
+            {/* Account Icon (ONLY shown when logged in) */}
+            {user && (
+              <Link
+                href="/account"
+                className="relative p-2.5 text-[#E86F1D] hover:text-[#D25E12] rounded-xl border border-[#B8893E] bg-[#FBF2E7] hover:bg-[#E7D8C8]/60 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label="My Account & Orders"
+                title={`Signed in as ${user.name}`}
+              >
+                <User className="w-5 h-5" />
+              </Link>
+            )}
+
             {/* Orange Donate CTA Button */}
             <button
               onClick={() => openDonateModal("General Donation")}
-              className="flex items-center gap-1.5 h-[48px] px-5 bg-[#E86F1D] hover:bg-[#D25E12] text-white text-xs font-bold uppercase tracking-wider rounded-[14px] shadow-warm-sm hover:shadow-warm-md transition-all shrink-0"
+              className="flex items-center gap-1.5 h-[44px] 2xl:h-[48px] px-4 2xl:px-5 bg-[#E86F1D] hover:bg-[#D25E12] text-white text-xs font-bold uppercase tracking-wider rounded-[14px] shadow-warm-sm hover:shadow-warm-md transition-all shrink-0"
             >
               <Heart className="w-4 h-4 fill-current text-white" />
               <span>{lang === "hi" ? "दान करें" : "Donate"}</span>
@@ -148,7 +161,7 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* Mobile Controls: Language + Cart + Hamburger */}
+          {/* Mobile Controls: Language + Cart + Account + Hamburger */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               onClick={() => setLang(lang === "en" ? "hi" : "en")}
@@ -170,6 +183,18 @@ export default function Header() {
                 </span>
               )}
             </button>
+
+            {/* Account Icon (ONLY shown when logged in) */}
+            {user && (
+              <Link
+                href="/account"
+                className="p-2 rounded-xl min-h-[40px] min-w-[40px] flex items-center justify-center border border-[#B8893E] bg-[#FBF2E7] text-[#E86F1D]"
+                aria-label="Account"
+                title={user.name}
+              >
+                <User className="w-4 h-4" />
+              </Link>
+            )}
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -200,6 +225,21 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
+
+            {user && (
+              <Link
+                href="/account"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`px-4 py-3 rounded-xl text-base font-semibold transition-colors flex items-center gap-2 min-h-[44px] ${
+                  pathname === "/account"
+                    ? "bg-[#FBF2E7] text-[#E86F1D] font-bold"
+                    : "text-[#2B201A] hover:bg-[#FBF2E7]"
+                }`}
+              >
+                <User className="w-4 h-4 text-[#E86F1D]" />
+                <span>{lang === "hi" ? "मेरा खाता एवं आर्डर्स" : "My Account & Orders"}</span>
+              </Link>
+            )}
           </div>
 
           <div className="pt-2 border-t border-[#E7D8C8]/60">
@@ -216,6 +256,7 @@ export default function Header() {
           </div>
         </div>
       )}
+
     </header>
   );
 }

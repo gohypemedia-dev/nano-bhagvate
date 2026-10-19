@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Calendar, Clock, MapPin, Phone, Heart, ArrowLeft, ExternalLink, Sparkles } from "lucide-react";
+import { Calendar, Clock, MapPin, Phone, Heart, ArrowLeft, ExternalLink } from "lucide-react";
 import { prisma } from "@/lib/server/prisma";
 
 export const dynamic = "force-dynamic";

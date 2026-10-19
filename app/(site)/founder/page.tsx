@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { Quote, Sparkles, Sun, Feather, CheckCircle2 } from "lucide-react";
+import { Quote, Sun, Feather, CheckCircle2 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 export default function FounderPage() {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 
 // Details already typed elsewhere (e.g. the membership registration form), used to fill the donate modal.
 export interface DonorPrefill {
@@ -25,20 +25,44 @@ export interface CartItem {
   image: string;
 }
 
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  pincode?: string | null;
+  createdAt?: string;
+}
+
 interface AppContextType {
   lang: "en" | "hi";
   setLang: (lang: "en" | "hi") => void;
+  // Cart
   cart: CartItem[];
   addToCart: (item: Omit<CartItem, "quantity">, quantity?: number) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, delta: number) => void;
+  clearCart: () => void;
   cartCount: number;
   cartTotal: number;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
+  // Donate modal
   donateModal: DonateModalState;
   openDonateModal: (program?: string, amount?: number, isMembership?: boolean, prefill?: DonorPrefill) => void;
   closeDonateModal: () => void;
+  // User Auth
+  user: UserProfile | null;
+  isLoadingUser: boolean;
+  refreshUser: () => Promise<void>;
+  logout: () => Promise<void>;
+  isAuthModalOpen: boolean;
+  openAuthModal: (onSuccess?: () => void) => void;
+  closeAuthModal: () => void;
+  authModalSuccessCallback?: (() => void) | null;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -48,6 +72,51 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [donateModal, setDonateModal] = useState<DonateModalState>({ isOpen: false });
+
+  // User auth state
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authSuccessCb, setAuthSuccessCb] = useState<(() => void) | null>(null);
+
+  const refreshUser = useCallback(async () => {
+    try {
+      const res = await fetch("/api/auth/me");
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data.user || null);
+      } else {
+        setUser(null);
+      }
+    } catch {
+      setUser(null);
+    } finally {
+      setIsLoadingUser(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshUser();
+  }, [refreshUser]);
+
+  const logout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      // ignore
+    }
+    setUser(null);
+  };
+
+  const openAuthModal = (onSuccess?: () => void) => {
+    setAuthSuccessCb(() => onSuccess || null);
+    setIsAuthModalOpen(true);
+  };
+
+  const closeAuthModal = () => {
+    setIsAuthModalOpen(false);
+    setAuthSuccessCb(null);
+  };
 
   const addToCart = (item: Omit<CartItem, "quantity">, quantity = 1) => {
     setCart((prev) => {
@@ -62,6 +131,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const removeFromCart = (id: string) => {
     setCart((prev) => prev.filter((i) => i.id !== id));
+  };
+
+  const clearCart = () => {
+    setCart([]);
   };
 
   const updateQuantity = (id: string, delta: number) => {
@@ -98,6 +171,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         addToCart,
         removeFromCart,
         updateQuantity,
+        clearCart,
         cartCount,
         cartTotal,
         isCartOpen,
@@ -105,6 +179,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         donateModal,
         openDonateModal,
         closeDonateModal,
+        user,
+        isLoadingUser,
+        refreshUser,
+        logout,
+        isAuthModalOpen,
+        openAuthModal,
+        closeAuthModal,
+        authModalSuccessCallback: authSuccessCb,
       }}
     >
       {children}
