@@ -53,3 +53,37 @@ export function sniffMedia(bytes: Uint8Array, fallbackExt?: string): { isVideo: 
   return null;
 }
 
+export function getBaseUrl(request: Request): string {
+  // 1. Explicitly configured app URL
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    const custom = process.env.NEXT_PUBLIC_APP_URL.trim().replace(/\/$/, "");
+    if (custom) return custom;
+  }
+
+  // 2. Vercel Forwarded Headers (Standard for Vercel Serverless Functions)
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  const forwardedProto = request.headers.get("x-forwarded-proto") || "https";
+  if (forwardedHost) {
+    return `${forwardedProto}://${forwardedHost}`;
+  }
+
+  // 3. Vercel System Environment Variables
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+
+  // 4. Fallback to request origin with HTTPS enforcement for non-local hosts
+  try {
+    const origin = new URL(request.url).origin;
+    const isLocal = origin.includes("localhost") || origin.includes("127.0.0.1");
+    if (!isLocal && origin.startsWith("http://")) {
+      return origin.replace("http://", "https://");
+    }
+    return origin;
+  } catch {
+    return "http://localhost:3000";
+  }
+}

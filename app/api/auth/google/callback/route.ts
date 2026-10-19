@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { randomBytes } from "node:crypto";
 import { prisma } from "@/lib/server/prisma";
 import { createUserSession } from "@/lib/server/user-auth";
+import { getBaseUrl } from "@/lib/server/http";
 
 export const dynamic = "force-dynamic";
 
@@ -12,8 +13,7 @@ export async function GET(request: Request) {
   const state = url.searchParams.get("state");
   const error = url.searchParams.get("error");
 
-  const isLocalhost = url.origin.includes("localhost") || url.origin.includes("127.0.0.1");
-  const appUrl = isLocalhost ? url.origin : (process.env.NEXT_PUBLIC_APP_URL || url.origin);
+  const appUrl = getBaseUrl(request);
 
   if (error || !code) {
     return NextResponse.redirect(

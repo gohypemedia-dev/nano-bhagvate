@@ -1,20 +1,20 @@
 import { NextResponse } from "next/server";
 import { randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
+import { getBaseUrl } from "@/lib/server/http";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
   const clientId = process.env.GOOGLE_CLIENT_ID;
 
+  const appUrl = getBaseUrl(request);
+
   if (!clientId) {
-    const errorMsg = "Google OAuth is not configured yet. Please add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to .env";
-    return NextResponse.redirect(new URL(`/login?error=${encodeURIComponent(errorMsg)}`, request.url));
+    const errorMsg = "Google OAuth is not configured yet. Please add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in Vercel Environment Variables.";
+    return NextResponse.redirect(new URL(`/login?error=${encodeURIComponent(errorMsg)}`, appUrl));
   }
 
-  const requestOrigin = new URL(request.url).origin;
-  const isLocalhost = requestOrigin.includes("localhost") || requestOrigin.includes("127.0.0.1");
-  const appUrl = isLocalhost ? requestOrigin : (process.env.NEXT_PUBLIC_APP_URL || requestOrigin);
   const redirectUri = `${appUrl}/api/auth/google/callback`;
 
   const requestUrl = new URL(request.url);
