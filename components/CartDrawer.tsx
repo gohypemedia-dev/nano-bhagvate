@@ -77,10 +77,31 @@ export default function CartDrawer() {
     }
   }, [user]);
 
+  // Guard: If cart is empty, never stay in shipping or payment steps
+  useEffect(() => {
+    if (cart.length === 0 && step !== "SUCCESS") {
+      setStep("CART");
+    }
+  }, [cart.length, step]);
+
+  // Clean up any legacy params without forcing checkout
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    if (url.searchParams.has("openCart")) {
+      url.searchParams.delete("openCart");
+      window.history.replaceState({}, "", url.pathname + (url.search ? url.search : ""));
+    }
+    sessionStorage.removeItem("nbvt_checkout_pending");
+  }, []);
+
   if (!isCartOpen) return null;
 
   const handleProceedToCheckout = () => {
     if (!user) {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("nbvt_checkout_pending", "true");
+      }
       // User must log in or register first
       openAuthModal(() => {
         setStep("SHIPPING");
@@ -700,11 +721,22 @@ export default function CartDrawer() {
                 <span className="text-[#2B201A]/80">{hi ? "उप-योग (Subtotal)" : "Subtotal"}</span>
                 <span className="font-bold text-lg text-[#2B201A]">₹{cartTotal.toFixed(2)} INR</span>
               </div>
-              <p className="text-xs text-[#2B201A]/60">
-                {hi
-                  ? "चेकआउट के लिए लॉगिन या पंजीकरण अनिवार्य है।"
-                  : "Login or registration is required to complete book purchase."}
-              </p>
+              {!user ? (
+                <p className="text-xs text-[#2B201A]/60">
+                  {hi
+                    ? "चेकआउट के लिए लॉगिन या पंजीकरण अनिवार्य है।"
+                    : "Login or registration is required to complete book purchase."}
+                </p>
+              ) : (
+                <p className="text-xs text-[#2F5A43] font-medium flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>
+                    {hi
+                      ? `लॉगिन स्थिति: ${user.name || user.email}`
+                      : `Signed in as ${user.name || user.email}`}
+                  </span>
+                </p>
+              )}
               <button
                 onClick={handleProceedToCheckout}
                 className="w-full py-3 bg-[#E86F1D] hover:bg-[#D25E12] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-warm-md flex items-center justify-center gap-2 transition-all"
@@ -716,7 +748,7 @@ export default function CartDrawer() {
                   </>
                 ) : (
                   <>
-                    <span>{hi ? "चेकआउट करें (Proceed to Checkout)" : "Proceed to Checkout"}</span>
+                    <span>{hi ? "चेकआउट करें" : "Proceed to Checkout"}</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}

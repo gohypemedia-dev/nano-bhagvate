@@ -73,6 +73,27 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [donateModal, setDonateModal] = useState<DonateModalState>({ isOpen: false });
 
+  // Load cart from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("nbvt_cart");
+      if (saved) {
+        setCart(JSON.parse(saved));
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  // Save cart to localStorage on change
+  useEffect(() => {
+    try {
+      localStorage.setItem("nbvt_cart", JSON.stringify(cart));
+    } catch {
+      // ignore
+    }
+  }, [cart]);
+
   // User auth state
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);

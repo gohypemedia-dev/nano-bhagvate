@@ -240,6 +240,8 @@ model User {
   name         String
   phone        String?
   passwordHash String
+  image        String?
+  googleId     String?       @unique
   address      String?
   city         String?
   state        String?
