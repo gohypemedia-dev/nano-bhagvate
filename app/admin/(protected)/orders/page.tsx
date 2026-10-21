@@ -36,6 +36,9 @@ export default async function AdminOrdersPage() {
     shippingCity: o.shippingCity,
     shippingState: o.shippingState,
     shippingPincode: o.shippingPincode,
+    refundStatus: o.refundStatus,
+    refundReference: o.refundReference,
+    refundedAt: o.refundedAt?.toISOString() ?? null,
     createdAt: o.createdAt.toISOString(),
     items: o.items.map((i) => ({
       id: i.id,

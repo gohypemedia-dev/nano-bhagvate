@@ -234,6 +234,12 @@ enum OrderPaymentStatus {
   FAILED
 }
 
+// Set when a paid online (UPI) order is cancelled: PENDING until the admin sends the money back.
+enum RefundStatus {
+  PENDING
+  COMPLETED
+}
+
 model User {
   id           String        @id @default(cuid())
   email        String        @unique
@@ -282,6 +288,9 @@ model Order {
   shippingCity    String
   shippingState   String
   shippingPincode String
+  refundStatus    RefundStatus?
+  refundReference String? // UPI reference / UTR of the refund transfer
+  refundedAt      DateTime?
   items           OrderItem[]
   createdAt       DateTime           @default(now())
   updatedAt       DateTime           @updatedAt

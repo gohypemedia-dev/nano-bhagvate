@@ -12,11 +12,12 @@ function createClient() {
   return new PrismaClient({ adapter });
 }
 
-// Reuse one client across hot reloads in development, but recreate if schema updated
+// Reuse one client across hot reloads in development. After `prisma generate` the PrismaClient
+// class is a new one, so a client cached from the old generation fails instanceof and is replaced.
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
 export const prisma =
-  globalForPrisma.prisma && "user" in globalForPrisma.prisma
+  globalForPrisma.prisma instanceof PrismaClient
     ? globalForPrisma.prisma
     : (globalForPrisma.prisma = createClient());
 

@@ -22,6 +22,8 @@ import {
   Save,
   QrCode,
   Banknote,
+  RotateCcw,
+  XCircle,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
@@ -49,6 +51,9 @@ interface Order {
   shippingCity: string;
   shippingState: string;
   shippingPincode: string;
+  refundStatus?: "PENDING" | "COMPLETED" | null;
+  refundReference?: string | null;
+  refundedAt?: string | null;
   items: OrderItem[];
   createdAt: string;
 }
@@ -353,7 +358,21 @@ export default function AccountPage() {
                           </span>
 
                           {/* Payment Status Badge */}
-                          {order.paymentStatus === "PAID" ? (
+                          {order.refundStatus === "COMPLETED" ? (
+                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-emerald-50 text-emerald-800 border-emerald-300 inline-flex items-center gap-1">
+                              <RotateCcw className="w-3 h-3 text-emerald-600" />
+                              <span>{hi ? "रिफंड हो गया (Refunded)" : "Refunded"}</span>
+                            </span>
+                          ) : order.refundStatus === "PENDING" ? (
+                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-amber-50 text-amber-900 border-amber-300 inline-flex items-center gap-1">
+                              <RotateCcw className="w-3 h-3 text-amber-700" />
+                              <span>{hi ? "रिफंड प्रक्रिया में (Refund in progress)" : "Refund in progress"}</span>
+                            </span>
+                          ) : order.status === "CANCELLED" && order.paymentStatus !== "PAID" ? (
+                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-[#FAF6F0] text-[#6B5B4E] border-[#E7D8C8]">
+                              <span>{hi ? "कोई भुगतान देय नहीं (No payment due)" : "No payment due"}</span>
+                            </span>
+                          ) : order.paymentStatus === "PAID" ? (
                             <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-emerald-50 text-emerald-800 border-emerald-300 inline-flex items-center gap-1">
                               <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                               <span>{hi ? "भुगतान स्वीकृत (Paid)" : "Payment Verified (Paid)"}</span>
@@ -391,8 +410,56 @@ export default function AccountPage() {
                       </div>
                     </div>
 
+                    {/* Refund notice for cancelled orders paid online */}
+                    {order.refundStatus === "PENDING" && (
+                      <div className="mx-4 sm:mx-6 my-3 p-3 bg-amber-50/80 border border-amber-200 rounded-2xl text-xs text-amber-900 flex items-start gap-2.5">
+                        <RotateCcw className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                        <div className="space-y-0.5">
+                          <p className="font-bold">
+                            {hi
+                              ? `₹${order.totalAmount.toFixed(2)} का रिफंड प्रक्रिया में है`
+                              : `Refund of ₹${order.totalAmount.toFixed(2)} in progress`}
+                          </p>
+                          <p className="text-[11px] text-amber-800 leading-relaxed">
+                            {hi
+                              ? "यह ऑर्डर रद्द कर दिया गया है। राशि उसी UPI खाते में वापस भेजी जाएगी जिससे आपने भुगतान किया था। रिफंड भेजे जाने पर आपको ईमेल मिलेगा और यहाँ स्थिति अपडेट होगी।"
+                              : "This order was cancelled. The amount will be sent back to the UPI account you paid from. You'll get an email and this page will update once the refund is sent."}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    {order.refundStatus === "COMPLETED" && (
+                      <div className="mx-4 sm:mx-6 my-3 p-3 bg-emerald-50/80 border border-emerald-200 rounded-2xl text-xs text-emerald-900 flex items-start gap-2.5">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                        <div className="space-y-0.5">
+                          <p className="font-bold">
+                            {hi
+                              ? `₹${order.totalAmount.toFixed(2)} का रिफंड भेज दिया गया`
+                              : `Refund of ₹${order.totalAmount.toFixed(2)} sent`}
+                          </p>
+                          <p className="text-[11px] text-emerald-800 leading-relaxed">
+                            {hi ? "आपके UPI खाते में भेजा गया" : "Sent to the UPI account you paid from"}
+                            {order.refundedAt &&
+                              ` ${hi ? "दिनांक" : "on"} ${new Date(order.refundedAt).toLocaleDateString("en-IN", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              })}`}
+                            .
+                            {order.refundReference && (
+                              <>
+                                {" "}
+                                {hi ? "UPI संदर्भ:" : "UPI reference:"}{" "}
+                                <span className="font-mono font-bold">{order.refundReference}</span>
+                              </>
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Notice when UPI Payment is pending admin approval */}
-                    {order.paymentStatus === "PENDING" && order.paymentMethod === "PREPAID" && (
+                    {order.status !== "CANCELLED" && order.paymentStatus === "PENDING" && order.paymentMethod === "PREPAID" && (
                       <div className="mx-4 sm:mx-6 my-3 p-3 bg-amber-50/80 border border-amber-200 rounded-2xl text-xs text-amber-900 flex items-start gap-2.5">
                         <Clock className="w-4 h-4 text-amber-700 shrink-0 mt-0.5 animate-pulse" />
                         <div className="space-y-0.5">
@@ -446,10 +513,17 @@ export default function AccountPage() {
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-2 text-[#2F5A43] font-bold bg-[#2F5A43]/10 px-3.5 py-2 rounded-xl self-start sm:self-center">
-                        <Truck className="w-4 h-4 shrink-0" />
-                        <span>{hi ? "स्पीड पोस्ट / कूरियर द्वारा प्रेषित" : "Pan-India Courier Dispatch"}</span>
-                      </div>
+                      {order.status === "CANCELLED" ? (
+                        <div className="flex items-center gap-2 text-red-700 font-bold bg-red-50 px-3.5 py-2 rounded-xl self-start sm:self-center">
+                          <XCircle className="w-4 h-4 shrink-0" />
+                          <span>{hi ? "ऑर्डर रद्द — भेजा नहीं जाएगा" : "Order cancelled — will not be shipped"}</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 text-[#2F5A43] font-bold bg-[#2F5A43]/10 px-3.5 py-2 rounded-xl self-start sm:self-center">
+                          <Truck className="w-4 h-4 shrink-0" />
+                          <span>{hi ? "स्पीड पोस्ट / कूरियर द्वारा प्रेषित" : "Pan-India Courier Dispatch"}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );

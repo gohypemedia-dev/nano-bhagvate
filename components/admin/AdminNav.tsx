@@ -1,8 +1,15 @@
 "use client";
 
-import Link from "next/link";
+import Link, { useLinkStatus } from "next/link";
 import { usePathname } from "next/navigation";
-import { HeartHandshake, Images, Calendar, ExternalLink, Package } from "lucide-react";
+import { HeartHandshake, Images, Calendar, ExternalLink, Package, Loader2, type LucideIcon } from "lucide-react";
+
+// Swaps the tab icon for a spinner (same size, so no layout shift) while the clicked page loads.
+function NavIcon({ icon: Icon }: { icon: LucideIcon }) {
+  const { pending } = useLinkStatus();
+  const cls = "w-3.5 h-3.5 sm:w-4 sm:h-4";
+  return pending ? <Loader2 className={`${cls} animate-spin`} aria-label="Loading" /> : <Icon className={cls} />;
+}
 
 export default function AdminNav() {
   const pathname = usePathname();
@@ -42,7 +49,6 @@ export default function AdminNav() {
   return (
     <nav className="flex items-center gap-1.5 sm:gap-2">
       {links.map((link) => {
-        const Icon = link.icon;
         return (
           <Link
             key={link.href}
@@ -53,7 +59,7 @@ export default function AdminNav() {
                 : "text-[#2B201A]/70 hover:text-[#2B201A] hover:bg-[#FBF2E7]"
             }`}
           >
-            <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <NavIcon icon={link.icon} />
             <span>{link.label}</span>
           </Link>
         );

@@ -55,9 +55,15 @@ export function sniffMedia(bytes: Uint8Array, fallbackExt?: string): { isVideo: 
 
 export function getBaseUrl(request: Request): string {
   // 1. Explicitly configured app URL
-  if (process.env.NEXT_PUBLIC_APP_URL) {
-    const custom = process.env.NEXT_PUBLIC_APP_URL.trim().replace(/\/$/, "");
-    if (custom) return custom;
+  // Ignored unless it is a single absolute http(s) URL — a malformed value (e.g. two URLs pasted
+  // on separate lines) would otherwise end up inside the OAuth redirect_uri and Google rejects it.
+  const custom = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/$/, "");
+  if (custom) {
+    try {
+      const parsed = new URL(custom);
+      if (!/\s/.test(custom) && (parsed.protocol === "https:" || parsed.protocol === "http:")) return parsed.origin;
+    } catch {}
+    console.error("Ignoring malformed NEXT_PUBLIC_APP_URL:", JSON.stringify(custom));
   }
 
   // 2. Vercel Forwarded Headers (Standard for Vercel Serverless Functions)

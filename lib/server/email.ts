@@ -1,5 +1,5 @@
 import "server-only";
-import type { Donation, Event } from "@prisma/client";
+import type { Donation, Event, Order } from "@prisma/client";
 import nodemailer, { type Transporter } from "nodemailer";
 import { membershipValidUntil, planForProgram } from "@/lib/donation-config";
 import { certificateKey, certificateNumber, generateCertificatePdf } from "./certificate";
@@ -377,6 +377,51 @@ export async function sendConfirmationEmail(donation: Donation) {
 }
 
 type Attachment = { filename: string; content: Buffer; contentType: string };
+// Tells the customer that a refund for their cancelled book order was started or has been sent. Never throws.
+export async function sendOrderRefundEmail(order: Order, stage: "initiated" | "completed") {
+  const config = env();
+  const amount = `₹${order.totalAmount.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
+  const done = stage === "completed";
+  const subject = done
+    ? `Refund sent for order ${order.orderNumber} – ${config.NGO_NAME}`
+    : `Order ${order.orderNumber} cancelled – refund in progress`;
+  const intro = done
+    ? `We have sent your refund of ${amount} for the cancelled order ${order.orderNumber} to the UPI account you paid from.`
+    : `Your order ${order.orderNumber} has been cancelled. A refund of ${amount} will be sent to the UPI account you paid from. We will email you again once it has been sent.`;
+  const rows: [string, string][] = [
+    ["Order", order.orderNumber],
+    ["Refund amount", amount],
+    ["Refund status", done ? "Refunded" : "In progress"],
+    ...(done && order.refundedAt ? [["Refunded on", istDate(order.refundedAt)] as [string, string]] : []),
+    ...(done && order.refundReference ? [["UPI reference", order.refundReference] as [string, string]] : []),
+  ];
+  const accountUrl = `${publicBaseUrl()}/account`;
+  const text = [`Dear ${order.shippingName},`, "", intro, "", ...rows.map(([k, v]) => `${k}: ${v}`), "", `Track your orders: ${accountUrl}`].join("\n");
+  const html = `<!doctype html><html><body style="margin:0;background:#FFF9F2;font-family:Arial,Helvetica,sans-serif;color:#2B201A">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:24px 12px">
+<table role="presentation" width="100%" style="max-width:560px;background:#ffffff;border:1px solid #E7D8C8;border-radius:12px" cellpadding="0" cellspacing="0">
+<tr><td style="padding:28px 28px 8px">
+<p style="margin:0 0 4px;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#B8893E;font-weight:bold">${escapeHtml(config.NGO_NAME)}</p>
+<h1 style="margin:0 0 16px;font-size:22px;color:${done ? "#2F5A43" : "#B45309"}">${done ? "Refund sent" : "Refund in progress"}</h1>
+<p style="margin:0 0 12px;font-size:15px;line-height:1.6">Dear ${escapeHtml(order.shippingName)},</p>
+<p style="margin:0 0 12px;font-size:15px;line-height:1.6">${escapeHtml(intro)}</p>
+</td></tr>
+<tr><td style="padding:8px 28px 8px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FBF2E7;border-radius:8px">
+${rows.map(([k, v]) => `<tr><td style="padding:10px 14px;font-size:13px;color:#6B5B4E">${k}</td><td style="padding:10px 14px;font-size:14px;font-weight:bold;text-align:right">${escapeHtml(v)}</td></tr>`).join("")}
+</table>
+</td></tr>
+<tr><td style="padding:16px 28px 28px"><a href="${accountUrl}" style="display:inline-block;background:#E86F1D;color:#ffffff;text-decoration:none;font-weight:bold;font-size:14px;padding:10px 18px;border-radius:8px">View my orders</a></td></tr>
+</table></td></tr></table></body></html>`;
+
+  try {
+    const sent = await deliver(config, { to: order.shippingEmail, subject, text, html });
+    if (!sent.ok) console.warn(`[email] ${sent.error} (refund ${stage} for ${order.orderNumber})`);
+  } catch (e) {
+    console.error(`[email] refund ${stage} for ${order.orderNumber} failed:`, e instanceof Error ? e.message : e);
+  }
+}
+
 type Message = { to: string; subject: string; text: string; html: string; attachments?: Attachment[] };
 type Delivery = { ok: true; id?: string } | { ok: false; error: string };
 

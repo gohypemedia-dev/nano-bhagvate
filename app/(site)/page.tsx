@@ -140,7 +140,11 @@ export default function HomePage() {
 
     // 2. Fetch live events from API
     fetch("/api/events")
-      .then((res) => (res.ok ? res.json() : null))
+      .then((res) => {
+        // On failure the built-in sample events stay on screen, so make the failure visible.
+        if (!res.ok) console.warn(`[events] /api/events failed (${res.status}); showing built-in sample events.`);
+        return res.ok ? res.json() : null;
+      })
       .then((data) => {
         if (data?.events && Array.isArray(data.events) && data.events.length > 0) {
           setEvents(data.events);

@@ -4,6 +4,9 @@ import { galleryData } from "@/data/gallery";
 
 export const dynamic = "force-dynamic";
 
+// Not cached: a CDN copy would keep showing photos for minutes after the admin changes or deletes them.
+const NO_STORE = { "Cache-Control": "no-store" };
+
 export async function GET() {
   try {
     const items = await prisma.galleryItem.findMany({
@@ -29,24 +32,18 @@ export async function GET() {
         date: item.date ?? undefined,
       }));
       return NextResponse.json(formatted, {
-        headers: {
-          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
-        },
+        headers: NO_STORE,
       });
     }
 
     return NextResponse.json(galleryData, {
-      headers: {
-        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
-      },
+      headers: NO_STORE,
     });
   } catch (error) {
     console.error("Failed to load gallery items from database:", error);
     return NextResponse.json(galleryData, {
       status: 200,
-      headers: {
-        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
-      },
+      headers: NO_STORE,
     });
   }
 }
