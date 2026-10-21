@@ -122,7 +122,7 @@ function LoginFormContent() {
     <div className="min-h-screen bg-gradient-to-b from-[#FFFDF9] via-[#FAF6EE] to-[#FFF9F2] py-10 sm:py-16 px-4 flex items-center justify-center">
       <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-stretch relative">
         {/* ================= LEFT CARD: VEDIC GURUKUL & SACRED VISUAL BRANDING ================= */}
-        <div className="relative md:col-span-6 bg-[#FCF9F2] rounded-3xl border-2 border-[#C9A24B] shadow-xl overflow-hidden p-5 sm:p-7 flex flex-col justify-between min-h-[420px] md:min-h-[580px]">
+        <div className="relative md:col-span-6 bg-[#FCF9F2] rounded-3xl border-2 border-[#C9A24B] shadow-xl overflow-hidden pt-5 pb-5 px-4 sm:p-7 flex flex-col justify-between min-h-[420px] md:min-h-[580px]">
           {/* Sacred Divine Art: Vedic Gurukul / Vasudeva / Krishna */}
           <Image
             src={
@@ -141,21 +141,21 @@ function LoginFormContent() {
 
           {/* Top Bar: Luminous White & Gold Trust Badge & Art Switcher */}
           <div className="relative z-10 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2.5 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-[#C9A24B]/50 shadow-md">
-              <div className="relative w-8 h-8 rounded-full border border-[#C9A24B] bg-white overflow-hidden shrink-0">
+            <div className="flex items-center gap-2.5 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-[#B8893E]/50 shadow-md">
+              <div className="relative w-8 h-8 rounded-full border-2 border-[#B8893E] bg-white overflow-hidden shrink-0">
                 <Image
                   src="/images/logo.jpg"
-                  alt="Logo"
+                  alt="Namo Bhagwate Vasudevaya Trust Logo"
                   fill
-                  className="object-cover"
+                  className="object-contain p-0.5"
                 />
               </div>
-              <div className="pr-1">
-                <span className="text-[8px] font-extrabold tracking-[0.15em] uppercase text-[#B8893E] block leading-none">
+              <div className="flex flex-col shrink-0 min-w-0 pr-1">
+                <span className="font-editorial text-xs sm:text-sm font-bold tracking-tight text-[#2B201A] leading-tight whitespace-nowrap">
                   NAMO BHAGWATE
                 </span>
-                <span className="font-editorial text-xs font-bold text-[#2B201A] tracking-tight leading-tight block">
-                  Vasudevaya Trust
+                <span className="text-[7.5px] sm:text-[8px] font-semibold tracking-wider text-[#B8893E] uppercase whitespace-nowrap">
+                  VASUDEVAYA TRUST
                 </span>
               </div>
             </div>
@@ -238,13 +238,13 @@ function LoginFormContent() {
                 setTab("login");
                 setError(null);
               }}
-              className={`flex-1 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all ${
+              className={`flex-1 py-2 sm:py-2.5 px-2 sm:px-3 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all whitespace-nowrap ${
                 tab === "login"
                   ? "bg-white text-[#E86F1D] shadow-xs"
                   : "text-[#2B201A]/70 hover:text-[#2B201A]"
               }`}
             >
-              <LogIn className="w-3.5 h-3.5" />
+              <LogIn className="w-3.5 h-3.5 shrink-0" />
               <span>{hi ? "लॉग इन" : "Sign In"}</span>
             </button>
             <button
@@ -253,14 +253,15 @@ function LoginFormContent() {
                 setTab("register");
                 setError(null);
               }}
-              className={`flex-1 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all ${
+              className={`flex-1 py-2 sm:py-2.5 px-2 sm:px-3 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all whitespace-nowrap ${
                 tab === "register"
                   ? "bg-white text-[#E86F1D] shadow-xs"
                   : "text-[#2B201A]/70 hover:text-[#2B201A]"
               }`}
             >
-              <UserPlus className="w-3.5 h-3.5" />
-              <span>{hi ? "रजिस्टर (नया खाता)" : "Register (New User)"}</span>
+              <UserPlus className="w-3.5 h-3.5 shrink-0" />
+              <span>{hi ? "रजिस्टर" : "Register"}</span>
+              <span className="hidden sm:inline font-normal lowercase text-[10px] opacity-75">({hi ? "नया" : "new"})</span>
             </button>
           </div>
 
