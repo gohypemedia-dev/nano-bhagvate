@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink, TriangleAlert } from "lucide-react";
 import { requireAdminPage } from "@/lib/server/auth";
 import { certificateKey } from "@/lib/server/certificate";
+import { donationCategory } from "@/lib/server/donation-category";
 import { prisma } from "@/lib/server/prisma";
 import { formatIST, rupeesFromPaise } from "@/lib/admin-format";
 import StatusBadge from "@/components/admin/StatusBadge";
@@ -29,6 +30,7 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
       })
     : [];
 
+  const category = await donationCategory(donation);
   const screenshotUrl = `/api/admin/donations/${donation.donationId}/screenshot`;
   const rows: [string, React.ReactNode][] = [
     ["Donation ID", <span key="id" className="font-mono">{donation.donationId}</span>],
@@ -36,16 +38,17 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
     ["Email", <a key="e" href={`mailto:${donation.donorEmail}`} className="text-[#E86F1D] hover:underline break-all">{donation.donorEmail}</a>],
     ["Mobile", donation.donorMobile ?? "—"],
     ["Amount", <span key="a" className="font-extrabold tabular-nums">{rupeesFromPaise(donation.amountPaise)}</span>],
-    ["Type", donation.type === "MEMBERSHIP" ? "Membership" : "Donation"],
-    [donation.type === "MEMBERSHIP" ? "Membership plan" : "Towards", donation.program ?? "—"],
+    ["Type", category.kind === "membership" ? "Membership" : category.kind === "event" ? "Event registration" : "Donation"],
+    [category.kind === "membership" ? "Membership plan" : category.kind === "event" ? "Event" : "Towards", donation.program ?? "—"],
     ["UTR", donation.utr ? <span key="u" className="font-mono">{donation.utr}</span> : "—"],
     ["Created", formatIST(donation.createdAt)],
     ["Marked as paid", donation.proofSubmittedAt ? formatIST(donation.proofSubmittedAt) : "—"],
   ];
   if (donation.status === "VERIFIED") {
+    const isEvent = category.kind === "event";
     rows.push([
-      "Certificate",
-      <a key="c" href={`/certificate/${donation.donationId}?k=${certificateKey(donation)}`} target="_blank" rel="noopener" className="inline-flex items-center gap-1 text-[#E86F1D] hover:underline">
+      isEvent ? "Entry pass" : "Certificate",
+      <a key="c" href={`/${isEvent ? "pass" : "certificate"}/${donation.donationId}?k=${certificateKey(donation)}`} target="_blank" rel="noopener" className="inline-flex items-center gap-1 text-[#E86F1D] hover:underline">
         View / download <ExternalLink className="w-3.5 h-3.5" />
       </a>,
     ]);

@@ -129,6 +129,10 @@ export default function MembershipPage() {
       email: sanitizeEmail(formData.email),
       mobile: sanitizeMobile(formData.phone),
     });
+    // The payment popup now holds the details, so clear the form for the next registration.
+    setFormData({ fullName: "", email: "", phone: "" });
+    setErrors({});
+    setTouched({});
   };
 
   return (

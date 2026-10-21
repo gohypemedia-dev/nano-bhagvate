@@ -90,6 +90,7 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
 
   const [emailSent, setEmailSent] = useState(false);
   const [certificateUrl, setCertificateUrl] = useState<string | null>(null);
+  const [passUrl, setPassUrl] = useState<string | null>(null);
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<{ message: string; field?: string } | null>(null);
@@ -110,23 +111,35 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
       setError(null);
       setTouched({});
       setSubmitted(false);
+      const requestedPlan = isMembership
+        ? MEMBERSHIP_PLANS.find(
+            (p) => p.name.toLowerCase() === donateModal.program?.toLowerCase() || p.price === donateModal.amount,
+          ) ?? MEMBERSHIP_PLANS[0]
+        : null;
+      const requestedProgram = requestedPlan ? requestedPlan.name : donateModal.program || "General Donation";
       const saved = loadSaved();
-      if (saved) {
+      // Resume only the same donation / plan. A different one, or details just entered in a form
+      // (e.g. the membership registration form), starts fresh instead of showing an old QR.
+      const resumable =
+        saved &&
+        !donateModal.prefill &&
+        Boolean(saved.session.membership) === isMembership &&
+        saved.session.program === requestedProgram;
+      if (saved && !resumable) clearSaved();
+      if (resumable) {
         setSession(saved.session);
         setStep(saved.step);
         setResumed(true);
       } else {
+        setSession(null);
         setResumed(false);
         setStep("SELECT");
         const prefill = donateModal.prefill;
         if (prefill?.name) setDonorName(prefill.name);
         if (prefill?.email) setDonorEmail(prefill.email);
         if (prefill?.mobile) setDonorPhone(prefill.mobile);
-        if (isMembership) {
-          const match = MEMBERSHIP_PLANS.find(
-            (p) => p.name.toLowerCase() === donateModal.program?.toLowerCase() || p.price === donateModal.amount,
-          );
-          setPlanId((match ?? MEMBERSHIP_PLANS[0]).id);
+        if (requestedPlan) {
+          setPlanId(requestedPlan.id);
         } else {
           setSelectedAmount(donateModal.amount || PRESET_AMOUNTS[1] || 999);
         }
@@ -170,6 +183,7 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
           clearSaved();
           setEmailSent(data.emailStatus === "SENT");
           setCertificateUrl(data.certificateUrl ?? null);
+          setPassUrl(data.passUrl ?? null);
           setStep("DONE");
         } else if (data.status === "CANCELLED" || data.status === "REJECTED") {
           clearSaved();
@@ -203,6 +217,7 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
     setResumed(false);
     setEmailSent(false);
     setCertificateUrl(null);
+    setPassUrl(null);
     setError(null);
     setTouched({});
     setSubmitted(false);
@@ -730,6 +745,12 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
                     <a href={certificateUrl} target="_blank" rel="noopener" className="btn-secondary">
                       <Award className="w-4 h-4" />
                       <span>View certificate</span>
+                    </a>
+                  )}
+                  {passUrl && (
+                    <a href={passUrl} target="_blank" rel="noopener" className="btn-secondary">
+                      <Award className="w-4 h-4" />
+                      <span>View entry pass</span>
                     </a>
                   )}
                   <button onClick={handleClose} className="btn-primary px-8">Close</button>

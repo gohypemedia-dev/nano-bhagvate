@@ -248,8 +248,9 @@ export async function generateEventPassPdf(
   });
 
   // Table rows in Venue Box
-  const rowH = 26;
-  const startRowY = venueBoxY + 105;
+  // Five rows must fit inside the 135pt box: first baseline at +110, last at +22.
+  const rowH = 22;
+  const startRowY = venueBoxY + 110;
 
   const eventDateStr = event?.startDate
     ? new Date(event.startDate).toLocaleDateString("en-IN", {
@@ -324,7 +325,7 @@ export async function generateEventPassPdf(
     height: qrSize,
   });
 
-  centeredAt("SCAN FOR EVENT DETAILS", qrBoxX + qrBoxW / 2, qrBoxY + 36, f.bold, 8.5, C.saffronLight);
+  centeredAt("SCAN TO VERIFY PASS", qrBoxX + qrBoxW / 2, qrBoxY + 36, f.bold, 8.5, C.saffronLight);
   centeredAt("Verified Official Pass", qrBoxX + qrBoxW / 2, qrBoxY + 22, f.italic, 8, C.muted);
 
   // Security & Instructions Footer Strip

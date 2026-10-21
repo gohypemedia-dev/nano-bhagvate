@@ -4,6 +4,7 @@ import { donationIdSchema } from "@/lib/validation/donation";
 import { syncBankAlerts } from "@/lib/server/bank-alerts";
 import { certificateKey } from "@/lib/server/certificate";
 import { tokenMatchesHash } from "@/lib/server/donation";
+import { donationCategory } from "@/lib/server/donation-category";
 import { jsonError } from "@/lib/server/http";
 import { prisma } from "@/lib/server/prisma";
 import { clientIp, rateLimit, tooManyRequests } from "@/lib/server/rate-limit";
@@ -25,7 +26,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ don
   const body = schema.safeParse(await request.json().catch(() => null));
   const donation = await prisma.donation.findUnique({
     where: { donationId },
-    select: { donationId: true, status: true, emailStatus: true, submitTokenHash: true },
+    select: { donationId: true, status: true, emailStatus: true, submitTokenHash: true, type: true, program: true },
   });
   if (!donation || !body.success || !tokenMatchesHash(body.data.submitToken, donation.submitTokenHash)) {
     return jsonError("Donation not found.", 404);
@@ -47,7 +48,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ don
     {
       status: donation.status,
       emailStatus: donation.emailStatus,
-      ...(donation.status === "VERIFIED" ? { certificateUrl: `/certificate/${donation.donationId}?k=${certificateKey(donation)}` } : {}),
+      // The approved payment's document: an entry pass for event registrations, otherwise a certificate.
+      ...(donation.status === "VERIFIED"
+        ? (await donationCategory(donation)).kind === "event"
+          ? { passUrl: `/pass/${donation.donationId}?k=${certificateKey(donation)}` }
+          : { certificateUrl: `/certificate/${donation.donationId}?k=${certificateKey(donation)}` }
+        : {}),
     },
     { headers: { "Cache-Control": "no-store" } },
   );

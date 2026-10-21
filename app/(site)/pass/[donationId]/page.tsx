@@ -4,6 +4,8 @@ import { Download, Calendar, Clock, MapPin, Phone, CheckCircle2, FileX2 } from "
 import { QRCodeSVG } from "qrcode.react";
 import { certificateKey } from "@/lib/server/certificate";
 import { prisma } from "@/lib/server/prisma";
+import { donationCategory } from "@/lib/server/donation-category";
+import { publicBaseUrl } from "@/lib/server/donation";
 import { donationIdSchema } from "@/lib/validation/donation";
 import { formatINR } from "@/lib/donation-config";
 
@@ -57,16 +59,29 @@ export default async function EventPassPage({
     );
   }
 
-  let event = null;
-  if (donation.program) {
-    event = await prisma.event.findFirst({
-      where: { title: { equals: donation.program, mode: "insensitive" } },
-    });
+  // Entry passes exist only for event registrations; members and donors get a certificate instead.
+  const category = await donationCategory(donation);
+  if (category.kind !== "event") {
+    return (
+      <div className="min-h-[70vh] flex items-center justify-center p-4">
+        <div className="max-w-md w-full text-center bg-white p-8 rounded-2xl border border-[#E7D8C8] shadow-sm space-y-4">
+          <FileX2 className="w-12 h-12 text-[#B8893E] mx-auto" />
+          <h1 className="font-editorial text-2xl font-bold text-[#2B201A]">No Entry Pass for This Payment</h1>
+          <p className="text-sm text-[#2B201A]/70">
+            This {category.kind === "membership" ? "membership" : "donation"} is not an event registration, so it has a
+            certificate instead of an entry pass.
+          </p>
+          <Link href={`/certificate/${donation.donationId}?k=${k}`} className="btn-primary inline-flex">
+            View {category.kind === "membership" ? "membership" : "donation"} certificate
+          </Link>
+        </div>
+      </div>
+    );
   }
 
-  const eventName = event?.title || donation.program || "Spiritual Gathering";
-  const eventSlug = event?.slug || "shrimad-bhagwat-katha-2026";
-  const eventRedirectUrl = `https://nano-bhagvate.vercel.app/?event=${encodeURIComponent(eventSlug)}#events`;
+  const event = category.event;
+  const eventName = event.title;
+  const eventRedirectUrl = `${publicBaseUrl()}/?event=${encodeURIComponent(event.slug)}#events`;
   const pdfDownloadUrl = `/api/pass/${donation.donationId}?k=${k}`;
 
   const eventDateStr = event?.startDate

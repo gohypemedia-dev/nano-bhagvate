@@ -2,6 +2,7 @@ import { prisma } from "@/lib/server/prisma";
 import { certificateKey } from "@/lib/server/certificate";
 import { generateEventPassPdf } from "@/lib/server/pass";
 import { publicBaseUrl } from "@/lib/server/donation";
+import { donationCategory } from "@/lib/server/donation-category";
 
 export async function GET(
   request: Request,
@@ -23,15 +24,14 @@ export async function GET(
     return new Response("Payment not yet approved by the Trust.", { status: 400 });
   }
 
-  let event = null;
-  if (donation.program) {
-    event = await prisma.event.findFirst({
-      where: { title: { equals: donation.program, mode: "insensitive" } },
-    });
+  // Entry passes exist only for event registrations; members and donors get a certificate instead.
+  const category = await donationCategory(donation);
+  if (category.kind !== "event") {
+    return new Response("This payment is not an event registration, so it has no entry pass.", { status: 404 });
   }
 
   const passUrl = `${publicBaseUrl()}/pass/${donation.donationId}?k=${k}`;
-  const pdfBytes = await generateEventPassPdf(donation, event, passUrl);
+  const pdfBytes = await generateEventPassPdf(donation, category.event, passUrl);
 
   return new Response(Buffer.from(pdfBytes), {
     status: 200,
