@@ -237,15 +237,15 @@ export default function EventDetailsModal({
         </div>
 
         {/* Action Footer */}
-        <div className="bg-[#FBF2E7] px-5 py-4 border-t border-[#E7D8C8] flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
+        <div className="bg-[#FBF2E7] px-3.5 sm:px-5 py-3 sm:py-4 border-t border-[#E7D8C8] flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
           <p className="text-xs text-[#2B201A]/70 text-center sm:text-left">
             Join the sacred discourse or contribute for prasadam seva.
           </p>
-          <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <div className="flex items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
             <button
               type="button"
               onClick={onClose}
-              className="btn-outline flex-1 sm:flex-initial text-xs py-2 px-4"
+              className="btn-outline shrink-0 text-xs !min-h-[40px] !py-2 !px-3 sm:!px-4"
             >
               Close
             </button>
@@ -255,10 +255,11 @@ export default function EventDetailsModal({
                 onClose();
                 onRegister(event.title);
               }}
-              className="btn-primary flex-1 sm:flex-initial text-xs py-2 px-5 inline-flex items-center justify-center gap-1.5 shadow-sm"
+              className="btn-primary flex-1 sm:flex-initial text-xs !min-h-[40px] !py-2 !px-3 sm:!px-5 inline-flex items-center justify-center gap-1.5 shadow-sm whitespace-nowrap tracking-normal sm:tracking-wider"
             >
-              <Heart className="w-3.5 h-3.5 fill-current" />
-              <span>Register / Support Event</span>
+              <Heart className="w-3.5 h-3.5 fill-current shrink-0" />
+              <span className="inline sm:hidden">Register / Support</span>
+              <span className="hidden sm:inline">Register / Support Event</span>
             </button>
           </div>
         </div>
