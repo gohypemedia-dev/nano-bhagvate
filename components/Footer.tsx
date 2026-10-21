@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Mail, Phone, MapPin, Heart, ArrowUp } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+import { POLICY_LINKS } from "@/lib/legal";
 
 export default function Footer() {
   const { lang, openDonateModal } = useApp();
@@ -114,8 +115,13 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/privacy-policy" className="hover:text-[#E86F1D] transition-colors">
-                  {lang === "hi" ? "गोपनीयता नीति (Privacy Policy)" : "Privacy Policy"}
+                <Link href="/shipping-policy" className="hover:text-[#E86F1D] transition-colors">
+                  {lang === "hi" ? "शिपिंग नीति (Shipping Policy)" : "Shipping Policy"}
+                </Link>
+              </li>
+              <li>
+                <Link href="/refund-policy" className="hover:text-[#E86F1D] transition-colors">
+                  {lang === "hi" ? "रिफंड एवं रद्दीकरण (Refunds)" : "Refunds & Cancellations"}
                 </Link>
               </li>
             </ul>
@@ -153,10 +159,14 @@ export default function Footer() {
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#2B201A]/75 font-medium text-center sm:text-left">
           <p>© {new Date().getFullYear()} Namo Bhagwate Vasudevaya Trust. All rights reserved.</p>
           <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2.5 sm:gap-4">
-            <Link href="/privacy-policy" className="hover:text-[#E86F1D] transition-colors">
-              Privacy Policy
-            </Link>
-            <span>•</span>
+            {POLICY_LINKS.map((p) => (
+              <React.Fragment key={p.href}>
+                <Link href={p.href} className="hover:text-[#E86F1D] transition-colors">
+                  {p.label}
+                </Link>
+                <span>•</span>
+              </React.Fragment>
+            ))}
             <span>Reg. No: Trust/2019/NBVT</span>
             <button
               onClick={scrollToTop}

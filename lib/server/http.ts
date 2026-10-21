@@ -53,35 +53,22 @@ export function sniffMedia(bytes: Uint8Array, fallbackExt?: string): { isVideo: 
   return null;
 }
 
+// The origin the browser actually used for this request (e.g. http://localhost:3000 or
+// https://nano-bhagvate.vercel.app). Google OAuth must return to this same origin, because the
+// state cookie was set there — so NEXT_PUBLIC_APP_URL is deliberately not used: a production
+// URL in a local .env would send a localhost login to the live site and fail with "Invalid OAuth state".
 export function getBaseUrl(request: Request): string {
-  // 1. Explicitly configured app URL
-  // Ignored unless it is a single absolute http(s) URL — a malformed value (e.g. two URLs pasted
-  // on separate lines) would otherwise end up inside the OAuth redirect_uri and Google rejects it.
-  const custom = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/$/, "");
-  if (custom) {
-    try {
-      const parsed = new URL(custom);
-      if (!/\s/.test(custom) && (parsed.protocol === "https:" || parsed.protocol === "http:")) return parsed.origin;
-    } catch {}
-    console.error("Ignoring malformed NEXT_PUBLIC_APP_URL:", JSON.stringify(custom));
-  }
+  const isLocalHost = (host: string) => /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(host);
 
-  // 2. Vercel Forwarded Headers (Standard for Vercel Serverless Functions)
-  const forwardedHost = request.headers.get("x-forwarded-host");
-  const forwardedProto = request.headers.get("x-forwarded-proto") || "https";
+  // Behind Vercel or another reverse proxy, the public host is in the forwarded headers.
+  const forwardedHost = request.headers.get("x-forwarded-host")?.split(",")[0].trim();
   if (forwardedHost) {
-    return `${forwardedProto}://${forwardedHost}`;
+    const proto =
+      request.headers.get("x-forwarded-proto")?.split(",")[0].trim() || (isLocalHost(forwardedHost) ? "http" : "https");
+    return `${proto}://${forwardedHost}`;
   }
 
-  // 3. Vercel System Environment Variables
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
-  }
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-
-  // 4. Fallback to request origin with HTTPS enforcement for non-local hosts
+  // Otherwise the request URL, upgraded to HTTPS for anything that is not local.
   try {
     const origin = new URL(request.url).origin;
     const isLocal = origin.includes("localhost") || origin.includes("127.0.0.1");

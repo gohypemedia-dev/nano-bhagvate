@@ -789,6 +789,21 @@ export default function CartDrawer() {
                   </>
                 )}
               </button>
+              <p className="text-[11px] text-center text-[#2B201A]/60 leading-relaxed">
+                {hi ? "ऑर्डर देकर आप हमारी " : "By placing this order you agree to our "}
+                <Link href="/terms" onClick={() => setIsCartOpen(false)} className="underline hover:text-[#E86F1D]">
+                  {hi ? "सेवा की शर्तें" : "Terms"}
+                </Link>
+                {", "}
+                <Link href="/shipping-policy" onClick={() => setIsCartOpen(false)} className="underline hover:text-[#E86F1D]">
+                  {hi ? "शिपिंग नीति" : "Shipping"}
+                </Link>
+                {hi ? " एवं " : " and "}
+                <Link href="/refund-policy" onClick={() => setIsCartOpen(false)} className="underline hover:text-[#E86F1D]">
+                  {hi ? "रिफंड नीति" : "Refund Policy"}
+                </Link>
+                {hi ? " से सहमत हैं।" : "."}
+              </p>
             </div>
           )}
         </div>

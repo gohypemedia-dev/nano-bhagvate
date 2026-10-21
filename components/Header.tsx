@@ -9,7 +9,7 @@ import { useApp } from "@/context/AppContext";
 
 export default function Header() {
   const pathname = usePathname();
-  const { lang, setLang, cartCount, setIsCartOpen, openDonateModal, user } = useApp();
+  const { lang, setLang, cartCount, setIsCartOpen, openDonateModal, user, isLoadingUser, openAuthModal } = useApp();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -114,8 +114,19 @@ export default function Header() {
               )}
             </button>
 
-            {/* Account Icon (ONLY shown when logged in) */}
-            {user && (
+            {/* Account Icon: My Account when signed in, sign-in popup when signed out */}
+            {isLoadingUser ? (
+              <span className="min-h-[44px] min-w-[44px]" aria-hidden />
+            ) : !user ? (
+              <button
+                onClick={() => openAuthModal()}
+                className="p-2.5 text-[#2B201A] hover:text-[#E86F1D] rounded-xl border border-[#E7D8C8] hover:bg-[#FBF2E7] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label={lang === "hi" ? "साइन इन करें" : "Sign in"}
+                title={lang === "hi" ? "साइन इन करें" : "Sign in"}
+              >
+                <User className="w-5 h-5" />
+              </button>
+            ) : (
               <Link
                 href="/account"
                 className="relative p-2.5 text-[#E86F1D] hover:text-[#D25E12] rounded-xl border border-[#B8893E] bg-[#FBF2E7] hover:bg-[#E7D8C8]/60 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
@@ -184,8 +195,18 @@ export default function Header() {
               )}
             </button>
 
-            {/* Account Icon (ONLY shown when logged in) */}
-            {user && (
+            {/* Account Icon: My Account when signed in, sign-in popup when signed out */}
+            {isLoadingUser ? (
+              <span className="min-h-[40px] min-w-[40px]" aria-hidden />
+            ) : !user ? (
+              <button
+                onClick={() => openAuthModal()}
+                className="p-2 rounded-xl min-h-[40px] min-w-[40px] flex items-center justify-center border border-[#E7D8C8] text-[#2B201A]"
+                aria-label={lang === "hi" ? "साइन इन करें" : "Sign in"}
+              >
+                <User className="w-4 h-4" />
+              </button>
+            ) : (
               <Link
                 href="/account"
                 className="p-2 rounded-xl min-h-[40px] min-w-[40px] flex items-center justify-center border border-[#B8893E] bg-[#FBF2E7] text-[#E86F1D]"
@@ -226,6 +247,18 @@ export default function Header() {
               </Link>
             ))}
 
+            {!user && !isLoadingUser && (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  openAuthModal();
+                }}
+                className="px-4 py-3 rounded-xl text-base font-semibold transition-colors flex items-center gap-2 min-h-[44px] text-[#2B201A] hover:bg-[#FBF2E7] text-left"
+              >
+                <User className="w-4 h-4 text-[#E86F1D]" />
+                <span>{lang === "hi" ? "साइन इन करें" : "Sign in"}</span>
+              </button>
+            )}
             {user && (
               <Link
                 href="/account"

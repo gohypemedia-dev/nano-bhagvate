@@ -1,146 +1,160 @@
-"use client";
+import type { Metadata } from "next";
+import Link from "next/link";
+import LegalPage, { Section } from "@/components/LegalPage";
+import { LEGAL } from "@/lib/legal";
 
-import React from "react";
-import { ShieldCheck, Lock } from "lucide-react";
-import { useApp } from "@/context/AppContext";
+export const metadata: Metadata = {
+  title: `Privacy Policy | ${LEGAL.trustName}`,
+  description: `How ${LEGAL.trustName} collects, uses, stores and protects your personal information.`,
+};
 
 export default function PrivacyPolicyPage() {
-  const { lang } = useApp();
-
   return (
-    <div className="w-full space-y-0">
-      {/* HERO SECTION */}
-      <section className="py-14 bg-[#FBF2E7] border-b border-[#E7D8C8]">
-        <div className="page-container text-center space-y-3 max-w-4xl">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-[#FFF9F2] border border-[#B8893E]/30 rounded-full text-xs font-bold text-[#B8893E] uppercase tracking-widest mx-auto">
-            <ShieldCheck className="w-4 h-4 text-[#2F5A43]" />
-            <span>LEGAL DOCUMENTATION</span>
-          </div>
-          <h1 className="font-editorial text-4xl sm:text-5xl font-bold text-[#2B201A]">
-            Privacy Policy
-          </h1>
-          <p className="text-xs text-[#2B201A]/60 font-semibold">
-            Last Updated: October 1, 2026 • Namo Bhagwate Vasudevaya Trust
-          </p>
-        </div>
-      </section>
+    <LegalPage
+      title="Privacy Policy"
+      current="/privacy-policy"
+      intro={
+        <>
+          {LEGAL.trustName} (&quot;the Trust&quot;, &quot;we&quot;) respects your privacy. This policy explains what
+          personal information we collect through this website, why we collect it, who we share it with, and the
+          choices and rights you have. It is published under the Information Technology Act, 2000 and its rules, and
+          the Digital Personal Data Protection Act, 2023.
+        </>
+      }
+    >
+      <Section n={1} title="Information we collect">
+        <p>We only collect information you give us, or that is created when you use the site:</p>
+        <ul>
+          <li>
+            <strong>Account:</strong> name, email address, phone number and, if you save it, your delivery address. If
+            you register with email, we store your password only in an encrypted (hashed) form.
+          </li>
+          <li>
+            <strong>Google sign-in:</strong> if you choose &quot;Continue with Google&quot;, Google shares your name,
+            email address, profile photo and Google account ID with us. We do not receive your Google password.
+          </li>
+          <li>
+            <strong>Book orders:</strong> the books you order, amounts, payment method (UPI or cash on delivery),
+            payment and refund status, and the delivery name, phone, email and address you enter.
+          </li>
+          <li>
+            <strong>Donations and memberships:</strong> your name, email, mobile number (optional), amount, chosen
+            programme or plan, the UPI transaction reference (UTR) and any payment screenshot you upload.
+          </li>
+          <li>
+            <strong>Payment confirmations:</strong> to confirm UPI payments, we match them against the payment alerts our
+            bank sends us, which may include the payer&apos;s name or UPI ID and the amount.
+          </li>
+          <li>
+            <strong>Messages:</strong> anything you send us through the contact form, email or phone.
+          </li>
+        </ul>
+        <p>
+          We do not collect card numbers, UPI PINs or bank passwords. UPI payments are made in your own UPI app,
+          directly to the Trust&apos;s account.
+        </p>
+      </Section>
 
-      {/* PRIVACY CONTENT CONTAINER */}
-      <section className="section-py">
-        <div className="page-container max-w-4xl">
-          <div className="card-warm p-8 sm:p-12 space-y-8 font-sans text-base text-[#2B201A]/85 leading-relaxed">
-            <div className="p-4 bg-[#FFF9F2] rounded-2xl border border-[#E7D8C8] flex items-center gap-3 text-xs text-[#2B201A]/80 font-medium">
-              <Lock className="w-5 h-5 text-[#E86F1D] shrink-0" />
-              <span>
-                Namo Bhagwate Vasudevaya Trust is committed to protecting your personal privacy. This Privacy Policy explains how your information is collected, used, and safeguarded when you visit namobhagwatevasudevaya.com.
-              </span>
-            </div>
+      <Section n={2} title="How we use it">
+        <ul>
+          <li>To create and manage your account and keep you signed in.</li>
+          <li>To process, dispatch and deliver book orders, and to handle cancellations, returns and refunds.</li>
+          <li>To verify donations and membership payments and send receipts, certificates and event passes.</li>
+          <li>To send you emails about your orders, donations, memberships and refunds.</li>
+          <li>To reply to your questions and complaints.</li>
+          <li>To keep the website secure, prevent fraud and misuse, and meet our legal and accounting obligations.</li>
+        </ul>
+        <p>We do not sell or rent your personal information, and we do not use it for third-party advertising.</p>
+      </Section>
 
-            <div className="space-y-4">
-              <h2 className="font-editorial text-2xl font-bold text-[#2B201A] border-b border-[#E7D8C8] pb-2">
-                1. Information We Collect
-              </h2>
-              <p>
-                We collect information that you voluntarily provide to us when registering for membership, making a donation, ordering publications, subscribing to newsletters, or contacting us for general enquiries:
-              </p>
-              <ul className="list-disc pl-6 space-y-2 text-sm">
-                <li><strong>Personal Identification Data:</strong> Full name, age, city, state, postal address, and contact details.</li>
-                <li><strong>Contact Information:</strong> Email address and phone/WhatsApp number.</li>
-                <li><strong>Donation & Transaction Information:</strong> Contribution history, program preference, and transaction reference numbers.</li>
-                <li><strong>Communications Data:</strong> Messages, feedback, and form enquiry submissions.</li>
-              </ul>
-            </div>
+      <Section n={3} title="Who we share it with">
+        <p>We share personal information only with service providers who help us run the website, and only as needed:</p>
+        <ul>
+          <li>
+            <strong>Website hosting and storage:</strong> Vercel (hosting), Neon (database) and Cloudflare R2 (file
+            storage, e.g. payment screenshots and images).
+          </li>
+          <li>
+            <strong>Email:</strong> our email provider (Google Gmail and/or Resend) to send you order, donation and refund
+            emails.
+          </li>
+          <li>
+            <strong>Google:</strong> only if you use Google sign-in.
+          </li>
+          <li>
+            <strong>Courier / India Post:</strong> your delivery name, phone and address, to deliver your books.
+          </li>
+          <li>
+            <strong>Authorities:</strong> when required by law, a court order or a government authority.
+          </li>
+        </ul>
+        <p>
+          Some of these providers may store data on servers outside India. They process it on our behalf and may not
+          use it for their own purposes.
+        </p>
+      </Section>
 
-            <div className="space-y-4">
-              <h2 className="font-editorial text-2xl font-bold text-[#2B201A] border-b border-[#E7D8C8] pb-2">
-                2. Use of Information
-              </h2>
-              <p>
-                Namo Bhagwate Vasudevaya Trust uses collected information strictly for legitimate charitable, spiritual, and administrative purposes:
-              </p>
-              <ul className="list-disc pl-6 space-y-2 text-sm">
-                <li>Processing membership applications and issuing official membership certificates.</li>
-                <li>Processing donation contributions and generating tax/payment receipts.</li>
-                <li>Dispatching ordered agricultural books and spiritual publications.</li>
-                <li>Sending important notifications regarding upcoming Shrimad Bhagwat Katha, Yoga camps, and Gurukul events.</li>
-                <li>Responding to donor and devotee enquiries in a timely manner.</li>
-              </ul>
-            </div>
+      <Section n={4} title="Cookies and local storage">
+        <p>We use only the cookies the website needs to work:</p>
+        <ul>
+          <li>
+            <strong>Sign-in cookie</strong> that keeps you logged in to your account.
+          </li>
+          <li>
+            <strong>Security cookie</strong> used for a few minutes during Google sign-in to protect against fraudulent
+            login attempts.
+          </li>
+          <li>
+            <strong>Local storage</strong> in your browser to remember the books in your cart.
+          </li>
+        </ul>
+        <p>We do not use advertising or third-party tracking cookies.</p>
+      </Section>
 
-            <div className="space-y-4">
-              <h2 className="font-editorial text-2xl font-bold text-[#2B201A] border-b border-[#E7D8C8] pb-2">
-                3. Payment Information & Gateway Security
-              </h2>
-              <p>
-                We do not store your confidential payment credentials (such as credit/debit card numbers, CVV, or banking passwords) on our servers. All online monetary transactions are securely processed through PCI-DSS compliant third-party payment gateways (such as Razorpay and BHIM UPI).
-              </p>
-            </div>
+      <Section n={5} title="How long we keep it">
+        <p>
+          We keep your account information while your account is active. Order, donation and payment records are kept
+          for as long as Indian tax, accounting and trust laws require, even if you close your account. Other
+          information is deleted when it is no longer needed.
+        </p>
+      </Section>
 
-            <div className="space-y-4">
-              <h2 className="font-editorial text-2xl font-bold text-[#2B201A] border-b border-[#E7D8C8] pb-2">
-                4. Information Sharing & Disclosure
-              </h2>
-              <p>
-                Namo Bhagwate Vasudevaya Trust strictly respects your confidentiality. We <strong>never sell, trade, rent, or lease</strong> your personal information to commercial third parties. We may disclose personal data only:
-              </p>
-              <ul className="list-disc pl-6 space-y-2 text-sm">
-                <li>To trusted service providers (e.g., courier partners for book dispatch) who assist in Trust operations under strict confidentiality obligations.</li>
-                <li>To comply with applicable Indian laws, legal processes, or government regulatory requirements.</li>
-              </ul>
-            </div>
+      <Section n={6} title="Your rights">
+        <p>You can ask us to:</p>
+        <ul>
+          <li>tell you what personal information we hold about you;</li>
+          <li>correct or update it (you can also edit your profile and address on the My Account page);</li>
+          <li>delete your account and personal information, except records we must keep by law;</li>
+          <li>withdraw your consent to us using your information (this may mean we cannot serve you further).</li>
+        </ul>
+        <p>
+          To make a request, email <a href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a> from the email address on your
+          account. If you are not satisfied with our response, you may complain to the Data Protection Board of India.
+        </p>
+      </Section>
 
-            <div className="space-y-4">
-              <h2 className="font-editorial text-2xl font-bold text-[#2B201A] border-b border-[#E7D8C8] pb-2">
-                5. Cookies & Website Analytics
-              </h2>
-              <p>
-                Our website may use essential cookies and basic session analytics to enhance site navigation, remember language preferences, and analyze aggregate traffic patterns. You can adjust your browser settings to decline non-essential cookies.
-              </p>
-            </div>
+      <Section n={7} title="Security">
+        <p>
+          The website uses HTTPS encryption, passwords are stored hashed, and access to admin tools is restricted to
+          authorised Trust staff. No method of storing or sending data is completely secure, but we take reasonable
+          steps to protect your information and will inform you and the authorities of a data breach as required by law.
+        </p>
+      </Section>
 
-            <div className="space-y-4">
-              <h2 className="font-editorial text-2xl font-bold text-[#2B201A] border-b border-[#E7D8C8] pb-2">
-                6. Data Security Measures
-              </h2>
-              <p>
-                We implement industry-standard physical, technical, and administrative security measures (including SSL encryption and secure server architecture) to protect your personal information against unauthorized access, alteration, or loss.
-              </p>
-            </div>
+      <Section n={8} title="Children">
+        <p>
+          The website is meant for adults. If you are under 18, please use it with the involvement and consent of a
+          parent or guardian.
+        </p>
+      </Section>
 
-            <div className="space-y-4">
-              <h2 className="font-editorial text-2xl font-bold text-[#2B201A] border-b border-[#E7D8C8] pb-2">
-                7. External & Third-Party Links
-              </h2>
-              <p>
-                Our website may contain links to external payment portals or social media pages. Namo Bhagwate Vasudevaya Trust is not responsible for the privacy practices or content of third-party websites. We encourage you to review their respective privacy policies.
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <h2 className="font-editorial text-2xl font-bold text-[#2B201A] border-b border-[#E7D8C8] pb-2">
-                8. Changes to This Privacy Policy
-              </h2>
-              <p>
-                We reserve the right to update this Privacy Policy periodically. Any modifications will be posted on this page with an updated revision date.
-              </p>
-            </div>
-
-            <div className="p-6 bg-[#FFF9F2] rounded-2xl border border-[#E7D8C8] space-y-3">
-              <h3 className="font-editorial text-xl font-bold text-[#2B201A]">
-                9. Contact Details for Privacy Enquiries
-              </h3>
-              <p className="text-xs text-[#2B201A]/80">
-                If you have any questions or requests regarding your personal data under this Privacy Policy, please contact our administrative office:
-              </p>
-              <div className="text-xs space-y-1 font-semibold text-[#2B201A]">
-                <p><strong>Namo Bhagwate Vasudevaya Trust</strong></p>
-                <p>Address: P6/10, 4th Floor, DLF Phase 2, Gurugram, Haryana 122008, India</p>
-                <p>Email: help@namobhagwatevasudevaya.com | Phone: +91 88606 65000</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
+      <Section n={9} title="Changes to this policy">
+        <p>
+          We may update this policy from time to time. The &quot;Last updated&quot; date at the top shows when it last
+          changed. See also our <Link href="/terms">Terms of Service</Link> and{" "}
+          <Link href="/refund-policy">Refund &amp; Cancellation Policy</Link>.
+        </p>
+      </Section>
+    </LegalPage>
   );
 }
