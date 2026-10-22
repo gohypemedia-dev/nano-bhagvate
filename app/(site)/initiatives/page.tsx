@@ -74,26 +74,122 @@ export default function InitiativesPage() {
 
   return (
     <div className="w-full space-y-0">
-      {/* HERO SECTION */}
-      <section className="relative py-14 md:py-20 bg-[#FBF2E7] border-b border-[#E7D8C8]">
-        <div className="page-container text-center space-y-4 max-w-4xl">
-          <p className="text-xs font-bold uppercase tracking-widest text-[#E86F1D]">SEVA IN ACTION</p>
-          <h1 className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2B201A]">
-            Transforming Lives Through Service
-          </h1>
-          <p className="text-base sm:text-lg text-[#2B201A]/85 leading-relaxed font-sans max-w-2xl mx-auto">
-            Our initiatives are designed to empower individuals, nurture communities, and create meaningful long-term impact. Guided by the values of the Bhagavad Gita, each program brings compassion together with practical support.
-          </p>
+      {/* HERO SECTION - RECREATED FROM REFERENCE (PANORAMIC ON DESKTOP, EXACT 4:5 HERO ON MOBILE) */}
+      <section className="relative overflow-hidden bg-[#1F150E] md:bg-[#F6EDE2] border-b border-[#E7D8C8] md:min-h-[calc(100vh-80px)] md:flex md:items-center">
+        {/* Desktop Panoramic Background Banner (hidden on mobile) */}
+        <div className="hidden md:block absolute inset-0 z-0">
+          <Image
+            src="/images/initiatives-hero-banner.png"
+            alt="Transforming Lives Through Service"
+            fill
+            priority
+            unoptimized
+            className="object-cover object-right lg:object-center"
+          />
+          {/* Smooth Warm Mist Gradient on Desktop */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#F6EDE2] via-[#F6EDE2] via-38% lg:via-46% to-transparent" />
+        </div>
+
+        {/* MOBILE HERO (4:5 Banner with Bottom Overlay - Exact Home Page Format) */}
+        <div className="md:hidden relative z-1 w-full aspect-[4/5] flex items-center justify-center overflow-hidden">
+          <Image
+            src="/images/initiatives-mobile-hero.png"
+            alt="Transforming Lives Through Service - Namo Bhagwate Vasudevaya"
+            fill
+            priority
+            unoptimized
+            className="w-full h-full object-cover block select-none pointer-events-none"
+          />
+
+          {/* Mobile Overlay Action Bar (Clean gradient at bottom of mobile banner) */}
+          <div className="absolute bottom-0 inset-x-0 z-20 w-full px-4 pt-10 pb-4 bg-gradient-to-t from-black/95 via-black/60 to-transparent flex flex-col items-center gap-1.5 text-center pointer-events-auto">
+            <h2 className="font-editorial text-sm sm:text-base font-extrabold text-white tracking-wide leading-tight drop-shadow-md">
+              {lang === "hi" ? "सेवा से जीवन • सशक्तिकरण एवं परिवर्तन" : "Transforming Lives • Through Service"}
+            </h2>
+            <div className="flex items-center justify-center gap-2.5 w-full max-w-xs pt-1">
+              <a
+                href="#all-initiatives"
+                className="flex-1 py-2 px-3 rounded-lg bg-[#E86F1D] text-white font-bold text-xs uppercase tracking-wider text-center shadow-md active:scale-95 transition-transform"
+              >
+                {lang === "hi" ? "सेवा कार्य" : "Initiatives"}
+              </a>
+              <button
+                onClick={() => openDonateModal()}
+                className="flex-1 py-2 px-3 rounded-lg bg-white text-[#2B201A] font-bold text-xs uppercase tracking-wider text-center shadow-md flex items-center justify-center gap-1 cursor-pointer active:scale-95 transition-transform"
+              >
+                <Heart className="w-3 h-3 text-[#E86F1D] fill-current" />
+                <span>{lang === "hi" ? "सहयोग करें" : "Support"}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop Hero Content (hidden on mobile) */}
+        <div className="hidden md:block relative z-10 page-container py-8 sm:py-12 md:py-24 w-full">
+          <div className="max-w-xl lg:max-w-2xl space-y-4 sm:space-y-5">
+            {/* Main Title matching reference */}
+            <h1 className="font-editorial text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-bold text-[#1F1712] leading-[1.12] tracking-tight">
+              {lang === "hi" ? (
+                <>
+                  सेवा से जीवन <br />
+                  <span className="text-[#E86F1D]">सशक्तिकरण एवं परिवर्तन</span>
+                </>
+              ) : (
+                <>
+                  Transforming Lives <br />
+                  <span className="text-[#E86F1D]">Through Service</span>
+                </>
+              )}
+            </h1>
+
+            {/* Description matching exact reference text */}
+            <p className="text-sm sm:text-base md:text-lg text-[#3E3129] leading-relaxed font-sans font-medium">
+              {lang === "hi"
+                ? "ऐसे सार्थक सेवा प्रकल्पों से जुड़ें जो व्यक्तियों को सशक्त बनाते हैं, समाज को पोषित करते हैं और स्थायी सामाजिक बदलाव लाते हैं। श्रीमद्भगवद्गीता के शाश्वत ज्ञान से प्रेरित होकर, हमारा प्रत्येक प्रकल्प करुणा, सेवा और समग्र विकास के प्रति हमारी निष्ठा को दर्शाता है।"
+                : "Discover meaningful initiatives that empower individuals, nurture communities, and create lasting social impact. Guided by the timeless wisdom of the Bhagavad Gita, every initiative reflects our commitment to compassion, service, and holistic development."}
+            </p>
+
+            {/* Trust Points / Micro Badges */}
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-1 text-[#2B201A]/85 font-semibold">
+              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-white/70 backdrop-blur-xs border border-[#E7D8C8] text-[11px] sm:text-xs">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#2F5A43]" />
+                {lang === "hi" ? "80G आयकर छूट उपलब्ध" : "100% Tax Benefit (80G)"}
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-white/70 backdrop-blur-xs border border-[#E7D8C8] text-[11px] sm:text-xs">
+                <Users className="w-3.5 h-3.5 text-[#E86F1D]" />
+                {lang === "hi" ? "शिक्षा, स्वास्थ्य व महिला उत्थान" : "Education, Health & Women Empowerment"}
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-white/70 backdrop-blur-xs border border-[#E7D8C8] text-[11px] sm:text-xs">
+                <Heart className="w-3.5 h-3.5 text-[#E86F1D]" />
+                {lang === "hi" ? "गौ सेवा व ग्रामीण सहायता" : "Gau Seva & Rural Welfare"}
+              </span>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2 sm:pt-4">
+              <a
+                href="#all-initiatives"
+                className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group"
+              >
+                <span>{lang === "hi" ? "सभी सेवा प्रकल्प देखें" : "Explore All Initiatives"}</span>
+              </a>
+              <button
+                type="button"
+                onClick={() => openDonateModal()}
+                className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 rounded-xl bg-white/80 hover:bg-white text-[#2B201A] font-bold text-xs sm:text-sm uppercase tracking-wider border border-[#E7D8C8] shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer"
+              >
+                <span>{lang === "hi" ? "प्रकल्प में सहयोग करें" : "Support An Initiative"}</span>
+              </button>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* 4 PRIMARY INITIATIVE CARDS */}
-      <section className="section-py">
+      <section className="section-py" id="all-initiatives">
         <div className="page-container">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-stretch">
-            {initiatives.map((item, idx) => {
-              const IconComp = item.icon;
-              return (
+            {initiatives.map((item, idx) => (
                 <div
                   key={item.id}
                   className="card-warm p-0 overflow-hidden flex flex-col justify-between"
@@ -112,13 +208,7 @@ export default function InitiativesPage() {
                   {/* Content Body */}
                   <div className="p-6 sm:p-8 flex flex-col flex-1 justify-between space-y-6">
                     <div className="space-y-4">
-                      {/* 2. Category Label */}
-                      <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#E86F1D]/10 text-[#E86F1D] rounded-full text-xs font-bold uppercase tracking-wider w-fit">
-                        <IconComp className="w-4 h-4" />
-                        <span>Initiative 0{idx + 1}</span>
-                      </div>
-
-                      {/* 3. Initiative Title */}
+                      {/* Initiative Title */}
                       <h2 className="font-editorial text-2xl sm:text-3xl font-bold text-[#2B201A]">
                         {lang === "hi" ? item.titleHi : item.title}
                       </h2>
@@ -153,8 +243,7 @@ export default function InitiativesPage() {
                     </div>
                   </div>
                 </div>
-              );
-            })}
+              ))}
           </div>
         </div>
       </section>

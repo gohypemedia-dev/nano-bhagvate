@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Shield, Heart, Users, BookOpen, Check, ShieldCheck, ArrowRight } from "lucide-react";
+import { Shield, Heart, Users, BookOpen, Check, ShieldCheck, ArrowRight, HandHeart, Award, CheckCircle2, Scroll } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import MemberCarousel from "@/components/MemberCarousel";
 import { MEMBERSHIP_PLANS, findPlan, formatINR } from "@/lib/donation-config";
@@ -18,6 +18,7 @@ import {
 export default function MembershipPage() {
   const { lang, openDonateModal } = useApp();
   const [planId, setPlanId] = useState<string>(MEMBERSHIP_PLANS[0].id);
+  const [activeFlipCard, setActiveFlipCard] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -138,34 +139,64 @@ export default function MembershipPage() {
 
   return (
     <div className="w-full space-y-0">
-      {/* HERO SECTION - RECREATED FROM REFERENCE (PANORAMIC SPIRITUAL UNITY HERO - FULL SCREEN) */}
-      <section className="relative overflow-hidden bg-[#F6EDE2] border-b border-[#E7D8C8] min-h-[calc(100vh-72px)] md:min-h-[calc(100vh-80px)] flex items-center">
-        {/* Background Image Container */}
-        <div className="absolute inset-0 z-0">
+      {/* HERO SECTION - RECREATED FROM REFERENCE (PANORAMIC ON DESKTOP, EXACT 4:5 HERO ON MOBILE) */}
+      <section className="relative overflow-hidden bg-[#1F150E] md:bg-[#F6EDE2] border-b border-[#E7D8C8] md:min-h-[calc(100vh-80px)] md:flex md:items-center">
+        {/* Desktop Panoramic Background Banner (hidden on mobile) */}
+        <div className="hidden md:block absolute inset-0 z-0">
           <Image
             src="/images/membership-hero-banner.png"
             alt="Together for a Better Tomorrow"
             fill
             priority
             unoptimized
-            className="object-cover object-right md:object-center"
+            className="object-cover object-center"
           />
-          {/* Smooth Warm Mist Gradient: seamlessly masks the low-res text on the left and provides a high-contrast luxury canvas */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#F6EDE2] via-[#F6EDE2] via-35% sm:via-[#F6EDE2]/95 sm:via-45% md:via-50% lg:via-52% to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#F6EDE2] via-transparent to-transparent opacity-85 sm:hidden" />
+          {/* Smooth Warm Mist Gradient on Desktop */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#F6EDE2] via-[#F6EDE2] via-40% lg:via-50% to-transparent" />
         </div>
 
-        {/* Hero Content */}
-        <div className="relative z-10 page-container py-14 sm:py-20 md:py-24 w-full">
-          <div className="max-w-xl lg:max-w-2xl space-y-4 sm:space-y-5">
-            {/* Saffron Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E86F1D]/10 border border-[#E86F1D]/30 text-[#E86F1D] text-xs font-bold uppercase tracking-widest shadow-xs">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#E86F1D]" />
-              <span>{lang === "hi" ? "पावन सेवा परिवार से जुड़ें" : "Join Our Spiritual Family"}</span>
-            </div>
+        {/* MOBILE HERO (4:5 Banner with Bottom Overlay - Exact Home Page Format) */}
+        <div className="md:hidden relative z-1 w-full aspect-[4/5] flex items-center justify-center overflow-hidden">
+          <Image
+            src="/images/membership-mobile-hero.png"
+            alt="Together for a Better Tomorrow - Namo Bhagwate Vasudevaya"
+            fill
+            priority
+            unoptimized
+            className="w-full h-full object-cover block select-none pointer-events-none"
+          />
 
-            {/* Main Title matching reference */}
-            <h1 className="font-editorial text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#2B201A] leading-[1.12] tracking-tight">
+          {/* Mobile Overlay Action Bar (Clean gradient at bottom of mobile banner) */}
+          <div className="absolute bottom-0 inset-x-0 z-20 w-full px-4 pt-10 pb-4 bg-gradient-to-t from-black/95 via-black/60 to-transparent flex flex-col items-center gap-1.5 text-center pointer-events-auto">
+            <h2 className="font-editorial text-sm sm:text-base font-extrabold text-white tracking-wide leading-tight drop-shadow-md">
+              {lang === "hi" ? "एक बेहतर कल के लिए साथ" : "Together for a Better Tomorrow"}
+            </h2>
+            <div className="flex items-center justify-center gap-2.5 w-full max-w-xs pt-1">
+              <a
+                href="#membership-plans"
+                className="flex-1 py-2 px-3 rounded-lg bg-[#E86F1D] text-white font-bold text-xs uppercase tracking-wider text-center shadow-md active:scale-95 transition-transform"
+              >
+                {lang === "hi" ? "योजनाएं देखें" : "View Plans"}
+              </a>
+              <button
+                onClick={() => {
+                  const el = document.getElementById("membership-plans");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="flex-1 py-2 px-3 rounded-lg bg-white text-[#2B201A] font-bold text-xs uppercase tracking-wider text-center shadow-md flex items-center justify-center gap-1 cursor-pointer active:scale-95 transition-transform"
+              >
+                <Heart className="w-3 h-3 text-[#E86F1D] fill-current" />
+                <span>{lang === "hi" ? "जुड़ें" : "Join Now"}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop Hero Content (hidden on mobile) */}
+        <div className="hidden md:block relative z-10 page-container py-8 sm:py-12 md:py-24 w-full">
+          <div className="max-w-xl lg:max-w-2xl space-y-4 sm:space-y-5">
+            {/* Main Title */}
+            <h1 className="font-editorial text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#2B201A] leading-[1.18] tracking-tight">
               {lang === "hi" ? (
                 <>
                   एक बेहतर कल के लिए <span className="text-[#E86F1D]">साथ</span>
@@ -185,16 +216,16 @@ export default function MembershipPage() {
             </p>
 
             {/* Trust Points / Micro Badges */}
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-1 text-xs text-[#2B201A]/85 font-semibold">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#FAF3EA]/90 backdrop-blur-xs border border-[#E7D8C8]">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-1 text-[#2B201A]/85 font-semibold">
+              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-white/70 backdrop-blur-xs border border-[#E7D8C8] text-[11px] sm:text-xs">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#2F5A43]" />
                 {lang === "hi" ? "80G आयकर छूट" : "100% Tax Benefit (80G)"}
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#FAF3EA]/90 backdrop-blur-xs border border-[#E7D8C8]">
+              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-white/70 backdrop-blur-xs border border-[#E7D8C8] text-[11px] sm:text-xs">
                 <Users className="w-3.5 h-3.5 text-[#E86F1D]" />
                 {lang === "hi" ? "25,000+ सक्रिय सदस्य" : "25,000+ Devotee Members"}
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#FAF3EA]/90 backdrop-blur-xs border border-[#E7D8C8]">
+              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-white/70 backdrop-blur-xs border border-[#E7D8C8] text-[11px] sm:text-xs">
                 <Heart className="w-3.5 h-3.5 text-[#E86F1D]" />
                 {lang === "hi" ? "प्रत्यक्ष जनसेवा व गुरुकुल" : "Gurukul & Gau Seva"}
               </span>
@@ -204,7 +235,7 @@ export default function MembershipPage() {
             <div className="pt-2 sm:pt-4">
               <a
                 href="#membership-plans"
-                className="inline-flex items-center gap-2.5 px-6 sm:px-7 py-3 sm:py-3.5 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 sm:px-7 py-3.5 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group"
               >
                 <span>{lang === "hi" ? "सदस्यता योजनाएं देखें" : "Explore Membership Plans"}</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -275,76 +306,237 @@ export default function MembershipPage() {
         </div>
       </section>
 
-      {/* WHY BECOME A MEMBER (4 BENEFIT CARDS) */}
-      <section className="section-py bg-[#FBF2E7]/50 border-t border-[#E7D8C8]">
-        <div className="page-container">
-          <div className="text-center max-w-2xl mx-auto section-header space-y-2">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#E86F1D]">MEMBERSHIP BENEFITS</p>
-            <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
-              Why Become a Member?
+      {/* WHY BECOME A MEMBER (HUMAN-CRAFTED AUTHENTIC DEVOTIONAL DESIGN) */}
+      <section className="section-py bg-gradient-to-b from-[#FAF3EA] via-[#F7EDE0] to-[#FAF3EA] border-t border-[#E7D8C8] relative">
+        {/* Subtle decorative background glow */}
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_50%_0%,rgba(212,163,89,0.08),transparent_60%)]" />
+
+        <div className="page-container relative z-10">
+          {/* Section Header */}
+          <div className="text-center max-w-2xl mx-auto section-header space-y-2 mb-10 sm:mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E86F1D]/10 border border-[#E86F1D]/20 text-[#D45A0E] text-[11px] font-bold uppercase tracking-widest">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#E86F1D]" />
+              {lang === "hi" ? "आध्यात्मिक संकल्प एवं सेवा" : "SACRED CALLING & SERVICE"}
+            </div>
+            <h2 className="font-editorial text-3xl sm:text-4xl lg:text-[40px] font-bold text-[#2B201A] tracking-tight">
+              {lang === "hi" ? "ट्रस्ट की सदस्यता क्यों ग्रहण करें?" : "Why Join Our Seva Parivar?"}
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
-            <div className="card-warm bg-[#FFF9F2]">
-              <div className="card-body space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-[#E86F1D]/10 text-[#E86F1D] flex items-center justify-center">
-                  <BookOpen className="w-5 h-5" />
-                </div>
-                <h3 className="font-editorial text-xl font-bold text-[#2B201A]">Spiritual Learning</h3>
-                <p className="text-xs text-[#2B201A]/85 leading-relaxed">
-                  Stay connected with value-based teachings, spiritual programs, discourses, and opportunities for deeper reflection.
-                </p>
-              </div>
-            </div>
+          {/* 4 3D FLIP CARDS (MOBILE OPTIMIZED: TAP ON MOBILE / HOVER ON DESKTOP, BALANCED BACK FACE) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 items-stretch">
+            {[
+              {
+                num: "01",
+                category: lang === "hi" ? "ज्ञान" : "GNANA",
+                badgeColor: "text-[#B8893E]",
+                iconBg: "bg-[#E86F1D]/15 text-[#E86F1D]",
+                borderColor: "border-[#D4A359]",
+                topLine: "bg-gradient-to-r from-[#D48820] to-[#E86F1D]",
+                icon: BookOpen,
+                image: "/images/card-spiritual-thought.jpg",
+                title: lang === "hi" ? "आध्यात्मिक ज्ञान एवं सत्संग" : "Spiritual Enlightenment",
+                desc: lang === "hi"
+                  ? "पूज्य संतों के सान्निध्य में नियमित श्रीमद्भगवद्गीता स्वाध्याय, वैदिक अनुष्ठान और ऑनलाइन सत्संग से जुड़ें।"
+                  : "Deepen your inner journey through live spiritual discourses, Vedic wisdom sessions, and divine satsangs.",
+                points: [
+                  lang === "hi" ? "मासिक विशेष ऑनलाइन सत्संग" : "Monthly Live Satsangs",
+                  lang === "hi" ? "दैनिक वैदिक विचार एवं प्रेरणा" : "Daily Spiritual Guidance",
+                  lang === "hi" ? "वार्षिक मंदिर पूजा संकल्प" : "Personal Puja Sankalp",
+                  lang === "hi" ? "वैदिक साहित्य व प्रेरणा" : "Vedic Spiritual Wisdom",
+                ],
+              },
+              {
+                num: "02",
+                category: lang === "hi" ? "सेवा" : "SEVA",
+                badgeColor: "text-[#2F5A43]",
+                iconBg: "bg-[#2F5A43]/15 text-[#2F5A43]",
+                borderColor: "border-[#2F5A43]",
+                topLine: "bg-gradient-to-r from-[#2F5A43] to-[#4D8C69]",
+                icon: HandHeart,
+                image: "/images/card-charity-seva.jpg",
+                title: lang === "hi" ? "प्रत्यक्ष जनसेवा व अन्नक्षेत्र" : "Hands-On Ground Seva",
+                desc: lang === "hi"
+                  ? "दैनिक अन्नक्षेत्र भंडारा, निःशुल्क गौशाला सेवा और जरूरतमंद बच्चों की शिक्षा में प्रत्यक्ष भागीदारी निभाएं।"
+                  : "Directly participate in daily Annakshetra community kitchens, Desi Gaushala care, and rural child schooling.",
+                points: [
+                  lang === "hi" ? "दैनिक अन्नक्षेत्र भंडारा सेवा" : "Daily Bhandara Seva",
+                  lang === "hi" ? "देसी गोवंश संरक्षण व चारा" : "Desi Cow & Gaushala Care",
+                  lang === "hi" ? "निःशुल्क स्वास्थ्य व राहत शिविर" : "Free Health & Relief Camps",
+                  lang === "hi" ? "प्रत्यक्ष सेवा सहभागिता" : "Direct Volunteer Seva",
+                ],
+              },
+              {
+                num: "03",
+                category: lang === "hi" ? "संग" : "SANGHA",
+                badgeColor: "text-[#B8893E]",
+                iconBg: "bg-[#B8893E]/15 text-[#B8893E]",
+                borderColor: "border-[#B8893E]",
+                topLine: "bg-gradient-to-r from-[#B8893E] to-[#D4A359]",
+                icon: Users,
+                image: "/images/membership-hero-unity.jpg",
+                title: lang === "hi" ? "25,000+ पावन भक्त संग" : "Devotee Sangha & Yatras",
+                desc: lang === "hi"
+                  ? "देश भर के समर्पित सनातन भक्तों के विशाल परिवार का हिस्सा बनें और विशेष तीर्थ यात्राओं में साथ चलें।"
+                  : "Connect with a compassionate national fraternity of 25,000+ devotees and join guided spiritual yatras.",
+                points: [
+                  lang === "hi" ? "देशव्यापी भक्त नेटवर्क" : "Pan-India Member Network",
+                  lang === "hi" ? "वार्षिक तीर्थ यात्रा में प्राथमिकता" : "Priority Teerth Yatra Access",
+                  lang === "hi" ? "ट्रस्ट धर्मशालाओं में सत्कार" : "Trust Dharamshala Hospitality",
+                  lang === "hi" ? "वार्षिक भक्त परिवार सम्मेलन" : "Annual Devotee Sammelan",
+                ],
+              },
+              {
+                num: "04",
+                category: lang === "hi" ? "ट्रस्ट" : "TRUST",
+                badgeColor: "text-[#D45A0E]",
+                iconBg: "bg-[#E86F1D]/15 text-[#E86F1D]",
+                borderColor: "border-[#D48820]",
+                topLine: "bg-gradient-to-r from-[#D48820] to-[#E86F1D]",
+                icon: ShieldCheck,
+                image: "/images/card-vedic-books.jpg",
+                title: lang === "hi" ? "पारदर्शिता, प्रमाणपत्र व 80G" : "Purity, Certificate & 80G",
+                desc: lang === "hi"
+                  ? "प्रत्येक दान का 100% सदुपयोग। आधिकारिक सदस्यता प्रमाणपत्र, मंदिर का पावन प्रसाद और 80G रसीद प्राप्त करें।"
+                  : "100% fiscal integrity. Receive your framed Member Certificate, blessed temple prasad, and 80G tax receipt.",
+                points: [
+                  lang === "hi" ? "100% आयकर छूट (धारा 80G)" : "100% Tax Exemption (80G)",
+                  lang === "hi" ? "आधिकारिक सदस्यता प्रमाणपत्र" : "Official Member Certificate",
+                  lang === "hi" ? "मंदिर का पावन प्रसाद" : "Blessed Temple Prasad Delivery",
+                  lang === "hi" ? "पारदर्शी वार्षिक सेवा रिपोर्ट" : "Verified Annual Audit Report",
+                ],
+              },
+            ].map((card, idx) => {
+              const isFlipped = activeFlipCard === idx;
+              return (
+                <div
+                  key={idx}
+                  onClick={() => setActiveFlipCard(isFlipped ? null : idx)}
+                  className="perspective-1000 w-full max-w-[340px] sm:max-w-none mx-auto h-[310px] sm:h-[325px] group cursor-pointer select-none"
+                >
+                  <div className={`relative w-full h-full flip-card-inner group-hover-flip ${isFlipped ? "is-flipped" : ""}`}>
+                    {/* FRONT FACE - IMAGE & TITLE */}
+                    <div className="absolute inset-0 w-full h-full backface-hidden rounded-2xl overflow-hidden border border-[#E7D8C8] shadow-warm-xs group-hover:shadow-warm-md flex flex-col justify-end p-4 sm:p-5">
+                      <Image
+                        src={card.image}
+                        alt={card.title}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#1F1610]/95 via-[#1F1610]/35 to-transparent z-10" />
 
-            <div className="card-warm bg-[#FFF9F2]">
-              <div className="card-body space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-[#2F5A43]/10 text-[#2F5A43] flex items-center justify-center">
-                  <Heart className="w-5 h-5 fill-current" />
-                </div>
-                <h3 className="font-editorial text-xl font-bold text-[#2B201A]">Seva Opportunities</h3>
-                <p className="text-xs text-[#2B201A]/85 leading-relaxed">
-                  Participate directly in service initiatives across education, welfare, medical camps, and community support.
-                </p>
-              </div>
-            </div>
+                      {/* Bottom Info on Front */}
+                      <div className="relative z-20 text-white">
+                        <h3 className="font-editorial text-xl sm:text-2xl font-bold leading-snug drop-shadow-sm">
+                          {card.title}
+                        </h3>
+                        <div className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-bold text-[#E8A246] uppercase tracking-wider">
+                          <span>{lang === "hi" ? "टैप करें" : "Tap / Hover to explore"}</span>
+                          <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                        </div>
+                      </div>
+                    </div>
 
-            <div className="card-warm bg-[#FFF9F2]">
-              <div className="card-body space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-[#B8893E]/10 text-[#B8893E] flex items-center justify-center">
-                  <Users className="w-5 h-5" />
-                </div>
-                <h3 className="font-editorial text-xl font-bold text-[#2B201A]">Community Connection</h3>
-                <p className="text-xs text-[#2B201A]/85 leading-relaxed">
-                  Become part of a values-led network of members, volunteers, and supporters working toward a shared spiritual purpose.
-                </p>
-              </div>
-            </div>
+                    {/* BACK FACE - TIGHT BALANCED DESIGN (NO MIDDLE GAP) */}
+                    <div className={`absolute inset-0 w-full h-full backface-hidden rotate-y-180 rounded-2xl p-4 sm:p-5 bg-gradient-to-b from-[#FFFDF9] via-[#FFF8EE] to-[#FAF2E6] border-2 ${card.borderColor} shadow-warm-lg flex flex-col justify-start overflow-hidden`}>
+                      <div className={`absolute top-0 left-0 right-0 h-1.5 ${card.topLine}`} />
 
-            <div className="card-warm bg-[#FFF9F2]">
-              <div className="card-body space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-[#E86F1D]/10 text-[#E86F1D] flex items-center justify-center">
-                  <Shield className="w-5 h-5" />
+                      {/* Top Header */}
+                      <div className="flex items-center justify-between mb-2">
+                        <span className={`text-[10px] sm:text-[11px] font-bold uppercase tracking-widest ${card.badgeColor}`}>
+                          {card.num} • {card.category}
+                        </span>
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${card.iconBg}`}>
+                          <card.icon className="w-4 h-4" />
+                        </div>
+                      </div>
+
+                      {/* Title & Description */}
+                      <h3 className="font-editorial text-lg sm:text-xl font-bold text-[#2B201A] leading-snug">
+                        {card.title}
+                      </h3>
+                      <p className="text-xs text-[#2B201A]/80 mt-1.5 leading-relaxed">
+                        {card.desc}
+                      </p>
+
+                      {/* Bullet Points immediately under description (zero middle gap) */}
+                      <div className="mt-3 pt-2.5 border-t border-[#E7D8C8] space-y-1.5 sm:space-y-2">
+                        {card.points.map((pt, pIdx) => (
+                          <div key={pIdx} className="flex items-center gap-2 text-xs text-[#2B201A]/85">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-[#2F5A43] shrink-0" />
+                            <span className="leading-tight">{pt}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Footer Touch Hint */}
+                      <div className="mt-auto pt-1 flex items-center justify-end text-[10px] font-bold text-[#B8893E] uppercase tracking-wider">
+                        <span className="inline-flex items-center gap-1 opacity-80">
+                          <span>{lang === "hi" ? "वापस जाएँ" : "Tap to flip back"}</span>
+                          <ArrowRight className="w-3 h-3 rotate-180" />
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="font-editorial text-xl font-bold text-[#2B201A]">Meaningful Participation</h3>
-                <p className="text-xs text-[#2B201A]/85 leading-relaxed">
-                  Support a transparent mission where every contribution is directed toward practical community and spiritual initiatives.
-                </p>
+              );
+            })}
+          </div>
+
+          {/* Bottom Trust & Devotional Seal Banner */}
+          <div className="mt-10 sm:mt-12 rounded-2xl bg-[#FFF9F2] border border-[#E7D8C8] p-5 sm:p-6 shadow-warm-xs">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-5 text-center md:text-left">
+              <div className="flex items-center gap-3.5">
+                <div className="w-10 h-10 rounded-full bg-[#E86F1D]/15 text-[#E86F1D] flex items-center justify-center shrink-0">
+                  <Award className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm text-[#2B201A] uppercase tracking-wide">
+                    {lang === "hi" ? "विश्वसनीय व पंजीकृत धार्मिक न्यास" : "Government Registered Religious Trust"}
+                  </h4>
+                  <p className="text-xs text-[#2B201A]/70 mt-0.5">
+                    {lang === "hi"
+                      ? "धारा 12A एवं 80G के अंतर्गत पंजीकृत • समस्त दान आयकर छूट हेतु मान्य"
+                      : "Registered under Section 12A & 80G • Zero administrative leakage • Complete annual reporting"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 sm:gap-4 shrink-0 flex-wrap justify-center">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FAF3EA] border border-[#E7D8C8] text-[11px] font-bold text-[#2B201A]">
+                  <Scroll className="w-3.5 h-3.5 text-[#B8893E]" />
+                  {lang === "hi" ? "सदस्यता पत्र" : "Seva Certificate"}
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FAF3EA] border border-[#E7D8C8] text-[11px] font-bold text-[#2B201A]">
+                  <Heart className="w-3.5 h-3.5 text-[#E86F1D]" />
+                  {lang === "hi" ? "वार्षिक संकल्प" : "Annual Sankalp"}
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FAF3EA] border border-[#E7D8C8] text-[11px] font-bold text-[#2F5A43]">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#2F5A43]" />
+                  {lang === "hi" ? "80G रसीद" : "80G Tax Benefit"}
+                </span>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* DEVOTEE COMMUNITY / OUR ACTIVE MEMBERS CAROUSEL */}
-      <section className="section-py">
-        <div className="page-container max-w-5xl">
+      {/* DEVOTEE COMMUNITY / OUR ACTIVE MEMBERS TICKER (END TO END AUTO SCROLL) */}
+      <section className="py-12 sm:py-16 overflow-hidden">
+        <div className="page-container mb-6 sm:mb-8">
           <div className="text-center max-w-2xl mx-auto section-header space-y-2">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#B8893E]">DEVOTEE COMMUNITY</p>
-            <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">Our Active Members</h2>
+            <p className="text-xs font-bold uppercase tracking-widest text-[#B8893E]">
+              {lang === "hi" ? "भक्त समुदाय" : "DEVOTEE COMMUNITY"}
+            </p>
+            <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
+              {lang === "hi" ? "हमारे सक्रिय सदस्य" : "Our Active Members"}
+            </h2>
           </div>
+        </div>
 
+        {/* Full width edge-to-edge auto scroll strip */}
+        <div className="w-full">
           <MemberCarousel />
         </div>
       </section>

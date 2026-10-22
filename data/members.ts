@@ -3,58 +3,69 @@ export interface Member {
   image: string;
   role?: string;
   location?: string;
+  subtitle?: string;
   description?: string;
 }
 
 export const membersData: Member[] = [
   {
-    name: "Mr Satish Kumar",
-    image: "/images/members/satish-kumar.png",
+    name: "MR SANJEEV AKEEL",
+    image: "/images/members/mr-sanjeev-akeel.jpg",
+    subtitle: "NATIONAL MEDIA CO-ORDINATOR (CHANDIGARH)",
   },
   {
-    name: "Mr Chandan Singh",
-    image: "/images/members/chandan-singh.jpg",
+    name: "MR MANN SINGH",
+    image: "/images/members/mr-mann-singh.jpg",
+    subtitle: "MEMBER (PUNJAB)",
   },
   {
-    name: "Mrs Prabha Gupta",
-    image: "/images/members/prabha-gupta.jpg",
+    name: "MR SATISH KUMAR",
+    image: "/images/members/mr-satish-kumar.jpg",
+    subtitle: "MEMBER",
   },
   {
-    name: "Mr Sudhir Gupta",
-    image: "/images/members/sudhir-gupta.jpg",
-    location: "Solan",
+    name: "MR CHANDAN SINGH",
+    image: "/images/members/mr-chandan-singh.jpg",
+    subtitle: "MEMBER (LUCKNOW)",
   },
   {
-    name: "Mr Ankit Gupta",
-    image: "/images/members/ankit-gupta.jpg",
+    name: "MRS PRABHA GUPTA",
+    image: "/images/members/mrs-prabha-gupta.jpg",
+    subtitle: "MEMBER (SOLAN)",
   },
   {
-    name: "Mrs Rashmi Sharma",
-    image: "/images/members/rashmi-sharma.png",
+    name: "MR SUDHIR GUPTA",
+    image: "/images/members/mr-sudhir-gupta.jpg",
+    subtitle: "MEMBER (SOLAN)",
   },
   {
-    name: "Birender Yadav",
-    image: "/images/members/birender-yadav.png",
+    name: "MR ANSHU KUMAR",
+    image: "/images/members/mr-anshu-kumar.jpg",
+    subtitle: "MEMBER",
   },
   {
-    name: "Manish Yadav",
-    image: "/images/members/manish-yadav.png",
+    name: "MRS RASHMI SHARMA",
+    image: "/images/members/mrs-rashmi-sharma.jpg",
+    subtitle: "MEMBER",
   },
   {
-    name: "Dr. Pramod Kumar Mishra",
-    image: "/images/members/pramod-kumar-mishra.png",
+    name: "BIJENDER YADAV",
+    image: "/images/members/bijender-yadav.jpg",
+    subtitle: "MEMBER",
   },
   {
-    name: "Sonal Goel",
-    image: "/images/members/sonal-goel.jpg",
-    role: "IAS Officer",
+    name: "MANISH YADAV",
+    image: "/images/members/manish-yadav.jpg",
+    subtitle: "MEMBER (GURGAON)",
   },
   {
-    name: "Mr Sanjeev Akeel",
-    image: "/images/members/sanjeev-akeel.png",
+    name: "DR. PRAMOD KUMAR MISHRA",
+    image: "/images/members/dr-pramod-kumar-mishra.jpg",
+    subtitle: "PRINCIPLE SECRETARY TO THE PRIME MINISTER",
   },
   {
-    name: "Mr Mani Singh",
-    image: "/images/members/mani-singh.png",
+    name: "SONAL GOAL",
+    image: "/images/members/sonal-goal.jpg",
+    subtitle: "IAS OFFICER",
   },
 ];

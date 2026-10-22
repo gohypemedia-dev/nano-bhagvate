@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Sprout, GraduationCap, Users, Sun, ArrowRight } from "lucide-react";
+import { Sprout, GraduationCap, Users, Sun, ArrowRight, ShieldCheck, Heart, CheckCircle2 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 export default function AboutPage() {
@@ -11,179 +11,477 @@ export default function AboutPage() {
 
   const commitmentCards = [
     {
+      id: "farmer-welfare",
       title: "Farmer Welfare",
-      titleHi: "किसान कल्याण एवं मार्गदर्शन",
-      desc: "Working with farmers — including sugarcane growers — to share modern agricultural knowledge, soil health science, and sustainable practices that improve crop yield and rural livelihoods.",
+      titleHi: "किसान कल्याण एवं संवर्धन",
+      badge: "SEVA PILLAR I",
+      badgeHi: "सेवा स्तंभ १",
+      desc: "Working closely with sugarcane farmers to introduce modern agricultural techniques and knowledge that improve yield, sustainability, and livelihood.",
+      descHi: "गन्ना किसानों और ग्रामीण कृषकों के साथ मिलकर आधुनिक कृषि तकनीकों, मृदा स्वास्थ्य एवं टिकाऊ पद्धतियों का प्रसार करना ताकि पैदावार और आजीविका में वास्तविक सुधार हो सके।",
       image: "/images/initiative-farmers.jpg",
       icon: Sprout,
+      points: [
+        { en: "Sugarcane yield & crop science guidance", hi: "गन्ना उत्पादन एवं फसल विज्ञान मार्गदर्शन" },
+        { en: "Soil health & sustainable farming practices", hi: "मृदा स्वास्थ्य एवं प्राकृतिक उर्वरक प्रयोग" },
+        { en: "Direct village-level farmer support workshops", hi: "ग्राम स्तर पर प्रत्यक्ष किसान परामर्श कार्यशालाएँ" },
+      ],
     },
     {
+      id: "womens-empowerment",
       title: "Women’s Empowerment",
       titleHi: "महिला सशक्तिकरण एवं स्वावलंबन",
-      desc: "Equipping women with practical skills, financial literacy, and entrepreneurship resources that support self-reliance and strengthen leadership within families and villages.",
+      badge: "SEVA PILLAR II",
+      badgeHi: "सेवा स्तंभ २",
+      desc: "Equipping women with practical vocational skills, financial literacy, and entrepreneurship resources that support self-reliance and strengthen leadership within families and villages.",
+      descHi: "ग्रामीण व अर्ध-शहरी महिलाओं को व्यावहारिक कौशल, वित्तीय साक्षरता और स्वरोजगार के संसाधन प्रदान करना जिससे वे आत्मनिर्भर बनकर अपने परिवार व समाज को सशक्त बना सकें।",
       image: "/images/initiative-women.jpg",
       icon: Users,
+      points: [
+        { en: "Vocational training & handicraft development", hi: "व्यावसायिक सिलाई, हस्तकला एवं कौशल प्रशिक्षण" },
+        { en: "Financial literacy & self-help group mentoring", hi: "वित्तीय साक्षरता एवं स्वयं सहायता समूह मार्गदर्शन" },
+        { en: "Healthcare & nutritional awareness drives", hi: "स्वास्थ्य, पोषण व परिवार कल्याण जागरूकता शिविर" },
+      ],
     },
     {
+      id: "youth-empowerment",
       title: "Youth Empowerment",
       titleHi: "युवा विकास एवं मार्गदर्शन",
-      desc: "Providing young people with character-building guidance, skill-building workshops, and mentorship so they can grow into confident and grounded contributors to society.",
+      badge: "SEVA PILLAR III",
+      badgeHi: "सेवा स्तंभ ३",
+      desc: "Providing young people with character-building guidance, skill workshops, and mentorship so they can grow into confident and grounded contributors to society.",
+      descHi: "युवाओं को चारित्रिक विकास, कौशल संवर्धन कार्यशालाएँ और नैतिक मार्गदर्शन देना ताकि वे आत्मविश्वास से परिपूर्ण होकर समाज के जिम्मेदार नागरिक बन सकें।",
       image: "/images/initiative-education.jpg",
       icon: GraduationCap,
+      points: [
+        { en: "Career mentorship & digital literacy programs", hi: "करियर मार्गदर्शन एवं डिजिटल कौशल विकास" },
+        { en: "Leadership & teamwork development camps", hi: "नेतृत्व क्षमता एवं व्यक्तित्व विकास शिविर" },
+        { en: "Value-based education grounded in Vedic ethics", hi: "वैदिक जीवन मूल्यों पर आधारित चरित्र निर्माण" },
+      ],
     },
     {
+      id: "spiritual-education",
       title: "Spiritual Education",
       titleHi: "आध्यात्मिक एवं नैतिक शिक्षा",
-      desc: "Introducing children and young minds to Bhagavad Gita teachings, Sanskrit heritage, and meditation practices that cultivate mental focus, resilience, moral values, and inner peace.",
+      badge: "SEVA PILLAR IV",
+      badgeHi: "सेवा स्तंभ ४",
+      desc: "Introducing children to Bhagavad Gita teachings, Sanskrit heritage, and meditation practices that cultivate mental focus, resilience, moral values, and inner peace.",
+      descHi: "बच्चों और विद्यार्थियों को श्रीमद्भगवद्गीता के पावन श्लोक, संस्कृत धरोहर और ध्यान साधना से जोड़ना ताकि उनमें एकाग्रता, मानसिक शांति व उच्च संस्कार विकसित हों।",
       image: "/images/krishna.jpg",
       icon: Sun,
+      points: [
+        { en: "Bal Sanskar & Bhagavad Gita sloka chanting", hi: "बाल संस्कार शाला एवं श्रीमद्भगवद्गीता श्लोक पाठ" },
+        { en: "Daily meditation & mindfulness for students", hi: "विद्यार्थियों के लिए दैनिक ध्यान एवं एकाग्रता अभ्यास" },
+        { en: "Preserving ancient Sanatan Sanskrit heritage", hi: "प्राचीन सनातन संस्कृति व नैतिक जीवन मूल्यों का संरक्षण" },
+      ],
     },
   ];
 
   return (
-    <div className="w-full space-y-0">
-      {/* HERO SECTION */}
-      <section className="relative py-14 md:py-20 bg-[#FBF2E7] border-b border-[#E7D8C8]">
-        <div className="page-container">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-            <div className="lg:col-span-7 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFF9F2] border border-[#B8893E]/30 text-[#E86F1D] text-xs font-bold uppercase tracking-widest">
-                <span>ABOUT NAMO BHAGWATE VASUDEVAYA TRUST</span>
-              </div>
-              <h1 className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2B201A] leading-[1.12]">
-                Rooted in Wisdom
-                <br />
-                <span className="text-[#E86F1D]">Driven by Service</span>
-              </h1>
-              <p className="text-base sm:text-lg text-[#2B201A]/85 leading-relaxed font-sans">
-                Namo Bhagwate Vasudevaya Trust brings spiritual wisdom and practical service together to strengthen individuals, families, and communities across India.
-              </p>
+    <div className="w-full space-y-0 text-[#2B201A] font-sans">
+      {/* 1. HERO SECTION - RECREATED FROM REFERENCE (PANORAMIC ON DESKTOP, EXACT 4:5 HERO ON MOBILE) */}
+      <section className="relative overflow-hidden bg-[#1F150E] md:bg-[#F7EDE1] border-b border-[#E7D8C8] md:min-h-[calc(100vh-80px)] md:flex md:items-center">
+        {/* Desktop Panoramic Background Banner (hidden on mobile) */}
+        <div className="hidden md:block absolute inset-0 z-0">
+          <Image
+            src="/images/about-hero-banner.png"
+            alt="Rooted in Wisdom. Driven by Service."
+            fill
+            priority
+            unoptimized
+            className="object-cover object-right lg:object-center"
+          />
+          {/* Smooth Warm Mist Gradient on Desktop: provides authentic luxury canvas */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#F7EDE1] via-[#F7EDE1] via-50% lg:via-56% to-transparent" />
+        </div>
+
+        {/* MOBILE HERO (4:5 Banner with Bottom Overlay - Exact Home Page Mobile Standard) */}
+        <div className="md:hidden relative z-1 w-full aspect-[4/5] flex items-center justify-center overflow-hidden">
+          <Image
+            src="/images/about-mobile-hero.png"
+            alt="Lord Krishna and Children - Rooted in Wisdom. Driven by Service."
+            fill
+            priority
+            unoptimized
+            className="w-full h-full object-cover block select-none pointer-events-none"
+          />
+
+          {/* Mobile Overlay Action Bar */}
+          <div className="absolute bottom-0 inset-x-0 z-20 w-full px-4 pt-10 pb-4 bg-gradient-to-t from-black/95 via-black/60 to-transparent flex flex-col items-center gap-1.5 text-center pointer-events-auto">
+            <h2 className="font-editorial text-sm sm:text-base font-extrabold text-white tracking-wide leading-tight drop-shadow-md">
+              {lang === "hi" ? "ज्ञान में निष्ठा • सेवा में समर्पण" : "Rooted in Wisdom • Driven by Service"}
+            </h2>
+            <div className="flex items-center justify-center gap-2.5 w-full max-w-xs pt-1">
+              <a
+                href="#about-story"
+                className="flex-1 py-2 px-3 rounded-lg bg-[#E86F1D] text-white font-bold text-xs uppercase tracking-wider text-center shadow-md active:scale-95 transition-transform"
+              >
+                {lang === "hi" ? "ट्रस्ट परिचय" : "Our Story"}
+              </a>
+              <button
+                onClick={() => openDonateModal()}
+                className="flex-1 py-2 px-3 rounded-lg bg-white text-[#2B201A] font-bold text-xs uppercase tracking-wider text-center shadow-md flex items-center justify-center gap-1 cursor-pointer active:scale-95 transition-transform"
+              >
+                <Heart className="w-3 h-3 text-[#E86F1D] fill-current" />
+                <span>{lang === "hi" ? "सहयोग करें" : "Support"}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop Hero Content (hidden on mobile) */}
+        <div className="hidden md:block relative z-10 page-container py-8 sm:py-12 md:py-24 w-full">
+          <div className="max-w-xl lg:max-w-2xl space-y-4 sm:space-y-5">
+            {/* Main Title matching reference */}
+            <h1 className="font-editorial text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-bold text-[#1F1712] leading-[1.12] tracking-tight">
+              {lang === "hi" ? (
+                <>
+                  ज्ञान में निष्ठा।
+                  <br />
+                  <span className="text-[#E86F1D]">सेवा में समर्पण।</span>
+                </>
+              ) : (
+                <>
+                  Rooted in Wisdom.
+                  <br />
+                  <span className="text-[#E86F1D]">Driven by Service.</span>
+                </>
+              )}
+            </h1>
+
+            {/* Subtitle matching exact reference text */}
+            <p className="text-sm sm:text-base md:text-lg text-[#3E3129] leading-relaxed font-sans font-medium">
+              {lang === "hi"
+                ? "नमो भगवते वासुदेवाय ट्रस्ट आध्यात्मिक ज्ञान के प्रसार, मानवता की सेवा और शिक्षा, स्वास्थ्य, संस्कृति व समाज कल्याण के माध्यम से जीवन उत्थान के लिए समर्पित है।"
+                : "Namo Bhagwate Vasudevaya Trust is dedicated to spreading spiritual wisdom, serving humanity, and uplifting lives through selfless initiatives in education, health, culture, and community welfare."}
+            </p>
+
+            {/* Trust Points / Micro Badges */}
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-1 text-[#2B201A]/85 font-semibold">
+              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-white/70 backdrop-blur-xs border border-[#E7D8C8] text-[11px] sm:text-xs">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#2F5A43]" />
+                {lang === "hi" ? "80G आयकर छूट व 100% पारदर्शी" : "100% Tax Benefit (80G)"}
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-white/70 backdrop-blur-xs border border-[#E7D8C8] text-[11px] sm:text-xs">
+                <Users className="w-3.5 h-3.5 text-[#E86F1D]" />
+                {lang === "hi" ? "स्थापना 2019 • पावन सेवा" : "Founded in 2019 • Vedic Dharma"}
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-white/70 backdrop-blur-xs border border-[#E7D8C8] text-[11px] sm:text-xs">
+                <Heart className="w-3.5 h-3.5 text-[#E86F1D]" />
+                {lang === "hi" ? "4 मुख्य सेवा स्तंभ" : "4 Core Seva Pillars"}
+              </span>
             </div>
 
-            <div className="lg:col-span-5 relative">
-              <div className="relative rounded-3xl overflow-hidden border-4 border-[#FFF9F2] shadow-warm-lg aspect-[4/3]">
-                <Image
-                  src="/images/initiative-education.jpg"
-                  alt="Gurukul Students & Heritage"
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </div>
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2 sm:pt-4">
+              <a
+                href="#about-story"
+                className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group"
+              >
+                <span>{lang === "hi" ? "ट्रस्ट की यात्रा जानें" : "Our Story & Journey"}</span>
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </a>
+              <button
+                type="button"
+                onClick={() => openDonateModal()}
+                className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 rounded-xl bg-white/80 hover:bg-white text-[#2B201A] font-bold text-xs sm:text-sm uppercase tracking-wider border border-[#E7D8C8] shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer"
+              >
+                <span>{lang === "hi" ? "पुण्य सेवा में सहयोग करें" : "Support Our Mission"}</span>
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ABOUT THE TRUST STORY & MISSION JOURNEY */}
-      <section className="section-py">
-        <div className="page-container max-w-5xl space-y-10">
-          <div className="card-warm">
-            <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A] mb-4">
-              About the Trust
-            </h2>
-            <div className="prose prose-lg text-[#2B201A]/85 font-sans leading-relaxed space-y-4">
+      {/* 2. AUTHENTIC NARRATIVE: "ABOUT US" & "OUR MISSION" */}
+      <section className="py-12 sm:py-16 md:py-20 bg-[#FBF6EE]" id="about-story">
+        <div className="page-container max-w-4xl space-y-12 sm:space-y-16">
+          {/* ABOUT US BLOCK */}
+          <div className="space-y-4 sm:space-y-5 text-center sm:text-left">
+            <div className="flex items-center justify-center sm:justify-start gap-2.5">
+              <span className="h-0.5 w-6 bg-[#E86F1D]" />
+              <h2 className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-[#E86F1D]">
+                {lang === "hi" ? "ट्रस्ट परिचय" : "ABOUT US"}
+              </h2>
+            </div>
+
+            <p className="font-editorial text-2xl sm:text-3xl md:text-4xl font-bold text-[#1F1712] leading-tight">
+              {lang === "hi"
+                ? "प्राचीन सनातन ज्ञान और आधुनिक प्रगति का पावन समन्वय"
+                : "Ancient Wisdom & Modern Progress Working Hand in Hand"}
+            </p>
+
+            <div className="text-sm sm:text-base md:text-lg text-[#3E3129] leading-relaxed space-y-4 pt-1 font-normal">
               <p>
-                Founded in 2019 by Pujya Sadhvi Vijeshanand Saraswati Ji, Namo Bhagwate Vasudevaya Trust was created with a simple belief: <strong>ancient wisdom and modern progress can work together seamlessly.</strong> Inspired by the teachings of the Bhagavad Gita, the Trust channels spiritual learning into meaningful action across education, empowerment, welfare, and community service.
+                {lang === "hi" ? (
+                  <>
+                    <strong>नमो भगवते वासुदेवाय ट्रस्ट</strong> की स्थापना वर्ष २०१९ में <strong>पूज्य साध्वी विजेषानंद सरस्वती जी</strong> द्वारा एक पावन और सुदृढ़ विश्वास के साथ की गई थी: <em>प्राचीन ज्ञान और आधुनिक प्रगति परस्पर विरोधी नहीं, बल्कि एक सशक्त समाज के निर्माण में एक-दूसरे के पूरक हैं।</em>
+                  </>
+                ) : (
+                  <>
+                    <strong>Namo Bhagwate Vasudevaya Foundation</strong> was founded in 2019 by <strong>Pujya Sadhvi Vijeshanand Saraswati Ji</strong> with a simple but powerful belief: <em>ancient wisdom and modern progress are not opposing forces, but partners in building stronger communities.</em>
+                  </>
+                )}
               </p>
               <p>
-                Our work is guided by four core pillars: <strong>spiritual education, women’s empowerment, youth empowerment, and farmer welfare.</strong> Each initiative is designed to strengthen inner confidence while creating practical opportunities for a more secure and dignified life.
+                {lang === "hi" ? (
+                  <>
+                    हमारा नाम श्रीमद्भगवद्गीता के पावन मंगलाचरण से प्रेरित है, जो हमें सदैव यह स्मरण कराता है कि हमारा प्रत्येक कर्म स्वयं से परे, समाज और परमात्मा की सेवा में समर्पित है। यही पावन भावना हमारे चार मुख्य सेवा स्तंभों का आधार है: <strong>आध्यात्मिक शिक्षा, महिला सशक्तिकरण, युवा विकास और किसान कल्याण।</strong>
+                  </>
+                ) : (
+                  <>
+                    Our name draws from the opening invocation of the Bhagavad Gita, serving as a reminder that every action we take is offered in service of something larger than ourselves. It is this spirit that guides our work across four pillars: <strong>spiritual education, women’s empowerment, youth empowerment, and farmer welfare.</strong>
+                  </>
+                )}
               </p>
             </div>
           </div>
 
-          <div className="card-warm bg-[#FFF9F2]">
-            <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A] mb-4">
-              Our Mission Journey
-            </h2>
-            <div className="prose prose-lg text-[#2B201A]/85 font-sans leading-relaxed space-y-4">
+          {/* ELEGANT DIVIDER */}
+          <div className="w-full flex items-center justify-center gap-3 py-2 text-[#E86F1D]/40">
+            <span className="h-px w-24 bg-[#E7D8C8]" />
+            <span className="text-sm">✦ ✦ ✦</span>
+            <span className="h-px w-24 bg-[#E7D8C8]" />
+          </div>
+
+          {/* OUR MISSION BLOCK */}
+          <div className="space-y-4 sm:space-y-5 text-center sm:text-left">
+            <div className="flex items-center justify-center sm:justify-start gap-2.5">
+              <span className="h-0.5 w-6 bg-[#E86F1D]" />
+              <h2 className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-[#E86F1D]">
+                {lang === "hi" ? "हमारा संकल्प एवं उद्देश्य" : "OUR MISSION"}
+              </h2>
+            </div>
+
+            <p className="font-editorial text-2xl sm:text-3xl md:text-4xl font-bold text-[#1F1712] leading-tight">
+              {lang === "hi"
+                ? "आंतरिक सामर्थ्य और व्यावहारिक अवसरों का संगम"
+                : "Real Empowerment When Inner Strength Meets Real Opportunity"}
+            </p>
+
+            <div className="text-sm sm:text-base md:text-lg text-[#3E3129] leading-relaxed space-y-4 pt-1 font-normal">
               <p>
-                Our journey began with introducing young minds to the teachings of the Bhagavad Gita and meditation as tools for focus, resilience, and lifelong well-being. Over time, the mission expanded to serve the practical needs of communities — from women seeking financial independence and young people building skills, to farmers adopting better agricultural practices.
+                {lang === "hi" ? (
+                  <>
+                    हमारी यात्रा एक केंद्रित उद्देश्य के साथ आरंभ हुई: विद्यालयों व सामुदायिक कार्यक्रमों के माध्यम से नन्हे बच्चों को श्रीमद्भगवद्गीता की शिक्षाओं से जोड़ना और आजीवन मानसिक शांति व एकाग्रता के साधन के रूप में ध्यान का परिचय देना।
+                  </>
+                ) : (
+                  <>
+                    We began with a focused mission: bringing the teachings of the Bhagavad Gita to young children through schools and community programs and introducing them to meditation as a tool for lifelong wellness and clarity of mind.
+                  </>
+                )}
               </p>
               <p>
-                We believe meaningful empowerment happens when inner strength meets real opportunity. A child who learns calm and discipline is better prepared for life. A woman with skills and confidence can strengthen an entire family. A farmer with practical knowledge can improve both livelihood and future resilience.
+                {lang === "hi" ? (
+                  <>
+                    समय के साथ, हमारा सेवा कार्य उन समुदायों की व्यावहारिक आवश्यकताओं को पूरा करने के लिए विस्तारित हुआ जिनकी हम सेवा करते हैं। आज हम वित्तीय स्वतंत्रता प्राप्त करने वाली महिलाओं, नए कौशल व आत्मविश्वास विकसित करने वाले युवाओं, और आधुनिक कृषि ज्ञान के माध्यम से पैदावार बढ़ाने वाले गन्ना किसानों के साथ सीधे काम कर रहे हैं।
+                  </>
+                ) : (
+                  <>
+                    Over time, our work has grown to meet the practical needs of the communities we serve. Today, we work directly with women building financial independence, young people developing skills and confidence, and farmers, particularly sugarcane growers, improving yields through modern agricultural knowledge.
+                  </>
+                )}
+              </p>
+              <p className="p-4 sm:p-5 rounded-2xl bg-white border border-[#E7D8C8] shadow-xs italic text-[#2B201A] font-serif">
+                {lang === "hi" ? (
+                  <>
+                    “जो बच्चा ध्यान के माध्यम से स्थिरता सीखता है, वह जीवन के दबावों का सामना करने में सक्षम वयस्क बनता है। जो महिला कौशल और स्वावलंबन से सम्पन्न होती है, वह अपने पूरे परिवार की संबल बनती है। और जो किसान आधुनिक तकनीकों से सशक्त होता है, वह न केवल बेहतर फसल उगाता है बल्कि उसी भूमि पर अगली पीढ़ी के लिए उज्ज्वल भविष्य भी गढ़ता है।”
+                  </>
+                ) : (
+                  <>
+                    “What connects all of this is a single conviction: real empowerment happens when inner strength meets practical opportunity. A child who learns stillness through meditation grows into an adult equipped to handle life’s pressures. A woman equipped with financial and vocational skills becomes an anchor for her family. A farmer equipped with modern techniques builds not just a better harvest, but a better future for the next generation on that same land.”
+                  </>
+                )}
               </p>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* BRAND STATEMENT BANNER */}
-          <div className="relative rounded-3xl overflow-hidden border-2 border-[#B8893E] p-8 md:p-12 text-center bg-gradient-to-r from-[#2B201A] to-[#3D2C24] text-white shadow-warm-md">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#B8893E] mb-3">BRAND STATEMENT</p>
-            <blockquote className="font-editorial text-2xl sm:text-3xl italic leading-relaxed max-w-3xl mx-auto">
-              “We are, at heart, a community of teachers, practitioners and service-minded people — working village by village, school by school and family by family.”
-            </blockquote>
+      {/* 3. SACRED TEMPLE BRAND STATEMENT BANNER (RECREATED DIRECTLY FROM LIVE SITE REFERENCE) */}
+      <section className="relative overflow-hidden py-20 sm:py-28 md:py-36 border-y border-[#E7D8C8] flex items-center justify-center">
+        {/* Divine Background Temple Landscape */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/about-temple-quote-bg.jpg"
+            alt="Sacred Vedic Temple Skyline and Golden Sky"
+            fill
+            unoptimized
+            className="object-cover object-center"
+          />
+          {/* Subtle warm wash for readability */}
+          <div className="absolute inset-0 bg-[#FBF2E7]/30 backdrop-blur-[0.5px]" />
+        </div>
+
+        {/* Floating Quote Card */}
+        <div className="relative z-10 page-container max-w-3xl text-center px-6">
+          <div className="inline-block px-3 py-1 rounded-full bg-white/80 border border-[#B8893E]/40 text-[#8C5E1A] text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em] mb-4 shadow-xs">
+            {lang === "hi" ? "हमारा मूल भाव" : "FOUNDATION ETHOS"}
           </div>
 
-          {/* MISSION STATEMENT BANNER */}
-          <div className="card-warm text-center">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#E86F1D] mb-2">CORE PURPOSE</p>
-            <h3 className="font-editorial text-2xl sm:text-3xl font-bold text-[#2B201A]">
-              Mission Statement
-            </h3>
-            <p className="font-editorial text-xl sm:text-2xl text-[#E86F1D] italic mt-2">
-              “To nurture the mind, uplift the community, and root every action in the timeless wisdom of the Bhagavad Gita.”
+          <blockquote className="font-editorial text-xl sm:text-2xl md:text-3xl lg:text-4xl text-[#2B201A] font-bold leading-relaxed tracking-tight drop-shadow-xs">
+            {lang === "hi"
+              ? "“हम हृदय से शिक्षकों, विचारकों और कर्मठ समाजसेवियों का एक परिवार हैं — जो गाँव-गाँव, विद्यालय-विद्यालय और परिवार-परिवार जाकर सेवा कार्य कर रहे हैं।”"
+              : "“We are, at heart, a foundation of teachers, practitioners and community builders working village by village, school by school, and family by family.”"}
+          </blockquote>
+
+          <div className="mt-6 flex items-center justify-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#E86F1D]" />
+            <span className="text-xs sm:text-sm font-semibold tracking-wider uppercase text-[#3E3129]/80">
+              {lang === "hi" ? "नमो भगवते वासुदेवाय ट्रस्ट" : "Namo Bhagwate Vasudevaya Foundation"}
+            </span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#E86F1D]" />
+          </div>
+        </div>
+      </section>
+
+      {/* 4. MISSION STATEMENT (CLEAN & DIGNIFIED MINIMALIST PRESENTATION) */}
+      <section className="py-14 sm:py-20 bg-[#FFFDF9] border-b border-[#E7D8C8]">
+        <div className="page-container max-w-3xl text-center space-y-4">
+          <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.25em] text-[#E86F1D]">
+            {lang === "hi" ? "मिशन संकल्प" : "MISSION STATEMENT"}
+          </p>
+
+          <h3 className="font-editorial text-2xl sm:text-3xl md:text-4xl text-[#1F1712] font-semibold leading-relaxed px-4">
+            {lang === "hi"
+              ? "“मन को संस्कारित व सशक्त बनाना, समाज का समग्र उत्थान करना और प्रत्येक कर्म को श्रीमद्भगवद्गीता के शाश्वत ज्ञान से सिंचित करना।”"
+              : "“To nurture the mind, uplift the community, and root every action in the timeless wisdom of the Bhagavad Gita.”"}
+          </h3>
+
+          <div className="pt-2">
+            <span className="inline-block w-16 h-1 rounded-full bg-[#E86F1D]" />
+          </div>
+        </div>
+      </section>
+
+      {/* 5. WE ARE COMMITTED TO (4 PILLAR MODULES FAITHFULLY MATCHING ORIGINAL SITE) */}
+      <section className="py-16 sm:py-24 bg-[#FBF6EE]">
+        <div className="page-container max-w-5xl space-y-12">
+          {/* Section Heading */}
+          <div className="text-center space-y-2.5 max-w-2xl mx-auto">
+            <h2 className="font-editorial text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-wider text-[#1F1712]">
+              {lang === "hi" ? "हम समर्पित हैं" : "WE ARE COMMITTED TO"}
+            </h2>
+            <p className="text-sm sm:text-base text-[#3E3129]/80 font-medium">
+              {lang === "hi"
+                ? "हमारी संपूर्ण सेवा यात्रा चार मूलभूत स्तंभों पर आधारित है"
+                : "Our entire community service operates through four foundational pillars"}
             </p>
           </div>
-        </div>
-      </section>
 
-      {/* WE ARE COMMITTED TO (4 LARGE COMMITMENT CARDS) */}
-      <section className="section-py bg-[#FBF2E7]/50 border-t border-[#E7D8C8]">
-        <div className="page-container">
-          <div className="text-center max-w-2xl mx-auto section-header space-y-2">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#E86F1D]">Pillars of Impact</p>
-            <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
-              We Are Dedicated To
-            </h2>
-          </div>
-
+          {/* Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
-            {commitmentCards.map((card, idx) => {
+            {commitmentCards.map((card) => {
               const IconComponent = card.icon;
               return (
-                <div key={idx} className="card-warm p-0 overflow-hidden">
-                  <div className="relative aspect-[16/10] w-full">
-                    <Image src={card.image} alt={card.title} fill className="object-cover" />
-                  </div>
-                  <div className="p-6 sm:p-8 card-body space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2.5 rounded-xl bg-[#E86F1D]/10 text-[#E86F1D] shrink-0">
-                        <IconComponent className="w-5 h-5" />
+                <div
+                  key={card.id}
+                  className="bg-white rounded-3xl border border-[#E7D8C8] overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col justify-between"
+                >
+                  {/* Card Header & Content */}
+                  <div className="p-6 sm:p-8 space-y-5">
+                    {/* Saffron Emblem & Title */}
+                    <div className="flex items-start gap-4">
+                      {/* Signature circular saffron emblem from original site */}
+                      <div className="w-12 h-12 rounded-full bg-[#E86F1D] flex items-center justify-center shrink-0 shadow-sm text-white">
+                        <IconComponent className="w-6 h-6 stroke-[2]" />
                       </div>
-                      <h3 className="font-editorial text-2xl font-bold text-[#2B201A]">
-                        {card.title}
-                      </h3>
+
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#E86F1D]">
+                          {lang === "hi" ? card.badgeHi : card.badge}
+                        </span>
+                        <h3 className="font-editorial text-xl sm:text-2xl font-bold text-[#1F1712] uppercase tracking-wide">
+                          {lang === "hi" ? card.titleHi : card.title}
+                        </h3>
+                      </div>
                     </div>
-                    <p className="text-sm text-[#2B201A]/85 leading-relaxed">{card.desc}</p>
+
+                    {/* Description Paragraph */}
+                    <p className="text-sm sm:text-base text-[#3E3129] leading-relaxed">
+                      {lang === "hi" ? card.descHi : card.desc}
+                    </p>
+
+                    {/* Specific Action Points */}
+                    <div className="pt-2 space-y-2 border-t border-[#F2E5D5]">
+                      {card.points.map((pt, pIdx) => (
+                        <div key={pIdx} className="flex items-start gap-2 text-xs sm:text-sm text-[#4E3E33]">
+                          <CheckCircle2 className="w-4 h-4 text-[#2F5A43] shrink-0 mt-0.5" />
+                          <span>{lang === "hi" ? pt.hi : pt.en}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="p-6 sm:px-8 sm:pb-8 pt-0 card-action">
-                    <Link href="/initiatives" className="btn-outline w-full">
-                      <span>Learn More About Initiatives</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
+
+                  {/* Card Real Photograph at bottom (Framed cleanly) */}
+                  <div className="p-4 sm:p-6 pt-0">
+                    <div className="relative aspect-[16/10] w-full rounded-2xl overflow-hidden border border-[#E7D8C8]">
+                      <Image
+                        src={card.image}
+                        alt={card.title}
+                        fill
+                        unoptimized
+                        className="object-cover transition-transform duration-500 hover:scale-105"
+                      />
+                    </div>
                   </div>
                 </div>
               );
             })}
           </div>
+
+          <div className="text-center pt-2">
+            <Link
+              href="/initiatives"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#2B201A] hover:bg-[#3D2C24] text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors shadow-sm"
+            >
+              <span>{lang === "hi" ? "सभी सेवा प्रकल्प विस्तार से देखें" : "Explore All Trust Initiatives"}</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* CLOSING LINE */}
-      <section className="section-py">
-        <div className="page-container max-w-4xl text-center">
-          <div className="card-warm border-[#B8893E]/40 p-8 sm:p-12">
-            <p className="font-editorial text-xl sm:text-2xl text-[#2B201A] font-semibold leading-relaxed">
-              “Ancient values and modern capability, walking together — one child, one woman, one young person and one farmer at a time.”
-            </p>
-            <div className="pt-6">
-              <button
-                onClick={() => openDonateModal("General Donation")}
-                className="btn-primary"
-              >
-                Support Our Work
-              </button>
-            </div>
+      {/* 6. CLOSING GOLDEN WALK LANDSCAPE BANNER */}
+      <section className="relative overflow-hidden py-24 sm:py-32 border-t border-[#E7D8C8] flex items-center justify-center">
+        {/* Landscape Banner Artwork */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/about-closing-walk.jpg"
+            alt="Rural family and farmers walking into golden horizon"
+            fill
+            unoptimized
+            className="object-cover object-bottom"
+          />
+          {/* Subtle gradient scrim for text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/30" />
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 page-container max-w-3xl text-center px-4 text-white space-y-6">
+          <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.25em] text-[#F3A847]">
+            {lang === "hi" ? "समग्र समाज उत्थान का संकल्प" : "WALKING TOGETHER FOR HUMANITY"}
+          </p>
+
+          <p className="font-editorial text-lg sm:text-2xl md:text-3xl text-white font-medium leading-relaxed drop-shadow-md">
+            {lang === "hi"
+              ? "“इन निरंतर प्रयासों के माध्यम से, नमो भगवते वासुदेवाय ट्रस्ट एक ऐसे समाज के निर्माण के लिए समर्पित है जहाँ सनातन मूल्य और आधुनिक क्षमताएँ साथ-साथ आगे बढ़ें — हर बच्चे, हर महिला, हर युवा और हर किसान के जीवन को छूते हुए।”"
+              : "“Through these efforts, Namo Bhagwate Vasudevaya Foundation strives to build a society where ancient values and modern capability walk hand in hand — one child, one woman, one young person, and one farmer at a time.”"}
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+            <button
+              onClick={() => openDonateModal("General Seva")}
+              className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <Heart className="w-4 h-4 fill-current" />
+              <span>{lang === "hi" ? "सेवा में सहयोग करें" : "Support Our Seva"}</span>
+            </button>
+            <Link
+              href="/membership"
+              className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-white hover:bg-neutral-100 text-[#2B201A] font-bold text-xs sm:text-sm uppercase tracking-wider shadow-lg active:scale-95 transition-all text-center"
+            >
+              <span>{lang === "hi" ? "ट्रस्ट के सदस्य बनें" : "Become a Member"}</span>
+            </Link>
           </div>
         </div>
       </section>
