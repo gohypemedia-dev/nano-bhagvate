@@ -29,6 +29,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "commondatastorage.googleapis.com",
       },
+      {
+        protocol: "https",
+        hostname: "namobhagwatevasudevaya.com",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.shopify.com",
+      },
     ],
   },
 };

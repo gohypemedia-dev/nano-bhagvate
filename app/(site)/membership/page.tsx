@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Shield, Heart, Users, BookOpen, Check, ShieldCheck } from "lucide-react";
+import Image from "next/image";
+import { Shield, Heart, Users, BookOpen, Check, ShieldCheck, ArrowRight } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import MemberCarousel from "@/components/MemberCarousel";
 import { MEMBERSHIP_PLANS, findPlan, formatINR } from "@/lib/donation-config";
@@ -137,21 +138,84 @@ export default function MembershipPage() {
 
   return (
     <div className="w-full space-y-0">
-      {/* HERO SECTION */}
-      <section className="relative py-14 md:py-20 bg-[#FBF2E7] border-b border-[#E7D8C8]">
-        <div className="page-container text-center space-y-4 max-w-4xl">
-          <p className="text-xs font-bold uppercase tracking-widest text-[#E86F1D]">JOIN OUR SPIRITUAL FAMILY</p>
-          <h1 className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2B201A]">
-            Together for a Better Tomorrow
-          </h1>
-          <p className="text-base sm:text-lg text-[#2B201A]/85 leading-relaxed font-sans max-w-2xl mx-auto">
-            Become part of a spiritual family committed to Dharma, education, community service, and humanitarian welfare. Every membership strengthens the Trust’s ability to serve with greater consistency and reach.
-          </p>
+      {/* HERO SECTION - RECREATED FROM REFERENCE (PANORAMIC SPIRITUAL UNITY HERO - FULL SCREEN) */}
+      <section className="relative overflow-hidden bg-[#F6EDE2] border-b border-[#E7D8C8] min-h-[calc(100vh-72px)] md:min-h-[calc(100vh-80px)] flex items-center">
+        {/* Background Image Container */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/membership-hero-banner.png"
+            alt="Together for a Better Tomorrow"
+            fill
+            priority
+            unoptimized
+            className="object-cover object-right md:object-center"
+          />
+          {/* Smooth Warm Mist Gradient: seamlessly masks the low-res text on the left and provides a high-contrast luxury canvas */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#F6EDE2] via-[#F6EDE2] via-35% sm:via-[#F6EDE2]/95 sm:via-45% md:via-50% lg:via-52% to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#F6EDE2] via-transparent to-transparent opacity-85 sm:hidden" />
+        </div>
+
+        {/* Hero Content */}
+        <div className="relative z-10 page-container py-14 sm:py-20 md:py-24 w-full">
+          <div className="max-w-xl lg:max-w-2xl space-y-4 sm:space-y-5">
+            {/* Saffron Badge */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E86F1D]/10 border border-[#E86F1D]/30 text-[#E86F1D] text-xs font-bold uppercase tracking-widest shadow-xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#E86F1D]" />
+              <span>{lang === "hi" ? "पावन सेवा परिवार से जुड़ें" : "Join Our Spiritual Family"}</span>
+            </div>
+
+            {/* Main Title matching reference */}
+            <h1 className="font-editorial text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#2B201A] leading-[1.12] tracking-tight">
+              {lang === "hi" ? (
+                <>
+                  एक बेहतर कल के लिए <span className="text-[#E86F1D]">साथ</span>
+                </>
+              ) : (
+                <>
+                  Together for a <span className="text-[#E86F1D]">Better Tomorrow</span>
+                </>
+              )}
+            </h1>
+
+            {/* Description matching exact reference text */}
+            <p className="text-sm sm:text-base md:text-[15px] text-[#4A3B32] leading-relaxed font-sans font-medium">
+              {lang === "hi"
+                ? "आइए, एक ऐसे परिवार का हिस्सा बनें जो सेवा, संस्कृति और समाज के सशक्तिकरण में विश्वास रखता है। साथ मिलकर हम एक ऐसे भविष्य का निर्माण कर सकते हैं जहाँ शिक्षा, स्वास्थ्य, गौ सेवा, पर्यावरण संरक्षण और आध्यात्मिक चेतना से सभी का समग्र कल्याण और उत्थान हो सके।"
+                : "Come, be a part of a family that believes in service, culture, and the empowerment of society. Together, we can create a future where education, health, cow protection, environmental conservation, and spiritual awareness bring holistic well-being and enlightened prosperity for all."}
+            </p>
+
+            {/* Trust Points / Micro Badges */}
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-1 text-xs text-[#2B201A]/85 font-semibold">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#FAF3EA]/90 backdrop-blur-xs border border-[#E7D8C8]">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#2F5A43]" />
+                {lang === "hi" ? "80G आयकर छूट" : "100% Tax Benefit (80G)"}
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#FAF3EA]/90 backdrop-blur-xs border border-[#E7D8C8]">
+                <Users className="w-3.5 h-3.5 text-[#E86F1D]" />
+                {lang === "hi" ? "25,000+ सक्रिय सदस्य" : "25,000+ Devotee Members"}
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#FAF3EA]/90 backdrop-blur-xs border border-[#E7D8C8]">
+                <Heart className="w-3.5 h-3.5 text-[#E86F1D]" />
+                {lang === "hi" ? "प्रत्यक्ष जनसेवा व गुरुकुल" : "Gurukul & Gau Seva"}
+              </span>
+            </div>
+
+            {/* CTA Button */}
+            <div className="pt-2 sm:pt-4">
+              <a
+                href="#membership-plans"
+                className="inline-flex items-center gap-2.5 px-6 sm:px-7 py-3 sm:py-3.5 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group"
+              >
+                <span>{lang === "hi" ? "सदस्यता योजनाएं देखें" : "Explore Membership Plans"}</span>
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* MEMBERSHIP TIERS (4 PRICING CARDS - RESPONSIVE 4-col -> 2-col -> 1-col) */}
-      <section className="section-py">
+      <section className="section-py" id="membership-plans">
         <div className="page-container">
           <div className="text-center max-w-2xl mx-auto section-header space-y-2">
             <p className="text-xs font-bold uppercase tracking-widest text-[#B8893E]">CHOOSE YOUR MEMBERSHIP TIER</p>
@@ -181,7 +245,7 @@ export default function MembershipPage() {
                   </div>
 
                   <div className="py-3 border-y border-[#2B201A]/10">
-                    <span className={`font-editorial text-3xl font-bold ${tier.priceColor}`}>
+                    <span className={`font-sans text-3xl font-bold tracking-tight ${tier.priceColor}`}>
                       ₹{tier.price.toLocaleString("en-IN")}
                     </span>
                     <span className="text-xs text-[#2B201A]/60 ml-1.5 font-semibold">INR / {tier.period}</span>

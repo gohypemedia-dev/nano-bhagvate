@@ -1,328 +1,183 @@
 "use client";
 
 import React, { useState, useMemo, useRef } from "react";
+import Link from "next/link";
 import Image from "next/image";
 import {
-  Play,
   Film,
-  Image as ImageIcon,
-  ChevronDown,
-  Layers,
   ArrowRight,
   Maximize2,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
-import { galleryData, GalleryItem, MediaType } from "@/data/gallery";
+import { galleryData, GalleryItem } from "@/data/gallery";
 import GalleryModal from "./GalleryModal";
-
-type FilterType = "all" | "photos" | "videos";
-
-const INITIAL_COUNT = 6;
-const LOAD_MORE_STEP = 6;
+import GalleryVideoCard from "./GalleryVideoCard";
 
 export default function GallerySection() {
   const { lang } = useApp();
-  const [activeFilter, setActiveFilter] = useState<FilterType>("all");
-  const [visibleCount, setVisibleCount] = useState<number>(INITIAL_COUNT);
   const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const lastTriggerRef = useRef<HTMLElement | null>(null);
 
-  // Sort items by displayOrder ascending
-  const sortedItems = useMemo(() => {
-    return [...galleryData].sort((a, b) => a.displayOrder - b.displayOrder);
+  // Exactly 4 featured items for the homepage row
+  const featuredItems = useMemo(() => {
+    return [...galleryData]
+      .sort((a, b) => a.displayOrder - b.displayOrder)
+      .slice(0, 4);
   }, []);
 
-  // Filter items based on active tab
-  const filteredItems = useMemo(() => {
-    if (activeFilter === "photos") {
-      return sortedItems.filter((item) => item.type === "photo");
-    }
-    if (activeFilter === "videos") {
-      return sortedItems.filter((item) => item.type === "video");
-    }
-    return sortedItems;
-  }, [sortedItems, activeFilter]);
-
-  // Counts for badge labels
-  const allCount = sortedItems.length;
-  const photosCount = useMemo(
-    () => sortedItems.filter((i) => i.type === "photo").length,
-    [sortedItems]
-  );
-  const videosCount = useMemo(
-    () => sortedItems.filter((i) => i.type === "video").length,
-    [sortedItems]
-  );
-
-  const filters: { key: FilterType; label: string; count: number }[] = [
-    {
-      key: "all",
-      label: lang === "hi" ? "सभी" : "All",
-      count: allCount,
-    },
-    {
-      key: "photos",
-      label: lang === "hi" ? "तस्वीरें" : "Photos",
-      count: photosCount,
-    },
-    {
-      key: "videos",
-      label: lang === "hi" ? "वीडियो" : "Videos",
-      count: videosCount,
-    },
-  ];
-
-  // Changing filters resets visible items count to INITIAL_COUNT
-  const handleFilterChange = (filter: FilterType) => {
-    setActiveFilter(filter);
-    setVisibleCount(INITIAL_COUNT);
-  };
-
-  const handleLoadMore = () => {
-    setVisibleCount((prev) => prev + LOAD_MORE_STEP);
-  };
-
-  // Open modal
-  const handleOpenItem = (item: GalleryItem, e: React.MouseEvent<HTMLButtonElement>) => {
+  // Open photo in full lightbox
+  const handleOpenPhoto = (item: GalleryItem, e: React.MouseEvent<HTMLElement>) => {
     lastTriggerRef.current = e.currentTarget;
     setSelectedItem(item);
     setIsModalOpen(true);
   };
 
-  // Close modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedItem(null);
   };
 
-  // Lightbox index within currently filtered list
   const currentIndex = selectedItem
-    ? filteredItems.findIndex((i) => i.id === selectedItem.id)
+    ? featuredItems.findIndex((i) => i.id === selectedItem.id)
     : -1;
 
   const handlePrevItem = () => {
-    if (filteredItems.length === 0) return;
-    const prevIdx = (currentIndex - 1 + filteredItems.length) % filteredItems.length;
-    setSelectedItem(filteredItems[prevIdx]);
+    if (featuredItems.length === 0) return;
+    const prevIdx = (currentIndex - 1 + featuredItems.length) % featuredItems.length;
+    setSelectedItem(featuredItems[prevIdx]);
   };
 
   const handleNextItem = () => {
-    if (filteredItems.length === 0) return;
-    const nextIdx = (currentIndex + 1) % filteredItems.length;
-    setSelectedItem(filteredItems[nextIdx]);
+    if (featuredItems.length === 0) return;
+    const nextIdx = (currentIndex + 1) % featuredItems.length;
+    setSelectedItem(featuredItems[nextIdx]);
   };
-
-  const visibleItems = filteredItems.slice(0, visibleCount);
-  const hasMore = visibleCount < filteredItems.length;
-  const remainingCount = filteredItems.length - visibleCount;
 
   return (
     <section
       id="gallery"
-      className="section-py bg-[#FBF2E7]/40 border-t border-[#E7D8C8] scroll-mt-24 sm:scroll-mt-28 relative"
+      className="pt-10 sm:pt-14 pb-6 sm:pb-8 bg-[#FFF9F2] border-t border-[#E7D8C8] scroll-mt-20 relative overflow-hidden"
       aria-labelledby="gallery-heading"
     >
-      <div className="page-container">
-        {/* SECTION HEADER */}
-        <div className="text-center max-w-2xl mx-auto section-header space-y-2.5">
-          <div className="inline-flex items-center px-3.5 py-1.5 rounded-full bg-[#FFF9F2] border border-[#B8893E]/35 text-[#E86F1D] text-xs font-bold uppercase tracking-widest shadow-2xs">
-            <span>{lang === "hi" ? "दर्शन एवं सेवा • GLIMPSES" : "GLIMPSES & MEMORIES"}</span>
+      {/* End-to-end full width container */}
+      <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8">
+        {/* ==================================================================== */}
+        {/* ORNAMENTAL HEADER WITH ARROWS: < ─────── GALLERY ─────── >          */}
+        {/* ==================================================================== */}
+        <div className="flex flex-col items-center justify-center mb-6 sm:mb-8 text-center">
+          <div className="w-full flex items-center justify-center gap-3 sm:gap-6 max-w-4xl mx-auto">
+            {/* Left Decorative Arrow & Line */}
+            <div className="flex-1 flex items-center justify-end gap-1">
+              <span className="text-[#E86F1D] text-sm sm:text-base font-bold select-none">◄</span>
+              <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#E86F1D]/60 to-[#E86F1D]" />
+            </div>
+
+            {/* Centered Gallery Heading */}
+            <h2
+              id="gallery-heading"
+              className="font-editorial text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#2B201A] tracking-wider uppercase whitespace-nowrap px-2"
+            >
+              {lang === "hi" ? "गैलरी • GALLERY" : "GALLERY"}
+            </h2>
+
+            {/* Right Decorative Line & Arrow */}
+            <div className="flex-1 flex items-center justify-start gap-1">
+              <div className="h-[2px] w-full bg-gradient-to-r from-[#E86F1D] via-[#E86F1D]/60 to-transparent" />
+              <span className="text-[#E86F1D] text-sm sm:text-base font-bold select-none">►</span>
+            </div>
           </div>
-
-          <h2
-            id="gallery-heading"
-            className="font-editorial text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2B201A] leading-tight"
-          >
-            {lang === "hi" ? "हमारी झलकियाँ" : "Our Glimpses & Moments"}
-          </h2>
-
-          <p className="text-sm sm:text-base text-[#2B201A]/85 max-w-xl mx-auto font-sans leading-relaxed">
-            {lang === "hi"
-              ? "हमारे आयोजनों, सेवा कार्यों और यादगार पलों की खूबसूरत झलकियाँ।"
-              : "Beautiful glimpses of our sacred gatherings, seva initiatives, and memorable milestones."}
-          </p>
         </div>
 
-        {/* WORKING FILTER BUTTONS */}
-        <div
-          role="tablist"
-          aria-label={lang === "hi" ? "मीडिया फ़िल्टर" : "Media filters"}
-          className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3.5 mb-8 sm:mb-10 max-w-lg mx-auto"
-        >
-          {filters.map((filter) => {
-            const isSelected = activeFilter === filter.key;
+        {/* ==================================================================== */}
+        {/* EXACTLY 4 DIRECT MEDIA TILES IN 1 ROW (END-TO-END WIDE GRID)         */}
+        {/* ==================================================================== */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-4 items-stretch">
+          {featuredItems.map((item) => {
+            const title = lang === "hi" && item.titleHi ? item.titleHi : item.title;
+            const event = lang === "hi" && item.eventHi ? item.eventHi : item.event;
+            const isVideo = item.type === "video";
+
+            if (isVideo) {
+              return (
+                <GalleryVideoCard
+                  key={item.id}
+                  item={item}
+                  title={title}
+                  event={event}
+                  lang={lang}
+                  onOpen={(e) => handleOpenPhoto(item, e)}
+                />
+              );
+            }
+
             return (
-              <button
-                key={filter.key}
-                role="tab"
-                aria-selected={isSelected}
-                onClick={() => handleFilterChange(filter.key)}
-                className={`min-h-[44px] px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold tracking-wide transition-all duration-200 cursor-pointer flex items-center gap-2 border select-none focus-visible:ring-2 focus-visible:ring-[#E86F1D] focus-visible:outline-none ${
-                  isSelected
-                    ? "bg-[#E86F1D] text-white border-[#E86F1D] shadow-warm-sm scale-[1.02]"
-                    : "bg-[#FFF9F2] text-[#2B201A]/85 border-[#E7D8C8] hover:border-[#E86F1D]/50 hover:bg-[#FBF2E7] hover:text-[#E86F1D]"
-                }`}
+              <div
+                key={item.id}
+                className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-[#181310] border border-[#E7D8C8]/70 shadow-warm-xs hover:shadow-warm-md hover:border-[#E86F1D] transition-all duration-300 group"
               >
-                <span>{filter.label}</span>
-                <span
-                  className={`text-[11px] px-2 py-0.5 rounded-full font-semibold transition-colors ${
-                    isSelected
-                      ? "bg-white/25 text-white"
-                      : "bg-[#E7D8C8]/50 text-[#6B5B52]"
-                  }`}
-                >
-                  {filter.count}
-                </span>
-              </button>
-            );
+                {/* DIRECT PHOTO TILE (CLICK TO VIEW FULLSCREEN IN LIGHTBOX) */}
+                    <button
+                      type="button"
+                      onClick={(e) => handleOpenPhoto(item, e)}
+                      aria-label={`${lang === "hi" ? "तस्वीर देखें" : "View photo"}: ${title}`}
+                      className="relative w-full h-full block cursor-pointer group/photo focus-visible:ring-2 focus-visible:ring-[#E86F1D] focus-visible:outline-none"
+                    >
+                      <Image
+                        src={item.thumbnail}
+                        alt={item.alt}
+                        fill
+                        loading="eager"
+                        unoptimized={item.thumbnail.startsWith("http")}
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        className="object-cover transition-transform duration-500 ease-out group-hover/photo:scale-105"
+                        style={{ objectPosition: item.focalPoint || "center" }}
+                      />
+
+                      {/* Dark Gradient Overlay on Hover */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent opacity-0 group-hover/photo:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+                      {/* Expand Badge */}
+                      <div className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/60 backdrop-blur-md text-white opacity-0 group-hover/photo:opacity-100 transition-opacity duration-200 shadow-md">
+                        <Maximize2 className="w-3.5 h-3.5" />
+                      </div>
+
+                      {/* Title Caption on Hover */}
+                      <div className="absolute bottom-0 inset-x-0 p-3.5 z-10 text-left text-white opacity-0 group-hover/photo:opacity-100 transition-opacity duration-300 pointer-events-none space-y-0.5">
+                        {event && (
+                          <p className="text-[10px] font-bold text-[#E86F1D] uppercase tracking-wider">
+                            {event}
+                          </p>
+                        )}
+                        <h4 className="font-editorial text-xs sm:text-sm font-bold text-white line-clamp-1 drop-shadow-xs">
+                          {title}
+                        </h4>
+                      </div>
+                    </button>
+                  </div>
+                );
           })}
         </div>
 
-        {/* RESPONSIVE MEDIA GRID */}
-        {filteredItems.length === 0 ? (
-          /* FRIENDLY EMPTY STATE */
-          <div className="card-warm text-center py-12 px-6 max-w-md mx-auto my-6 space-y-4">
-            <div className="w-16 h-16 rounded-2xl bg-[#FFF9F2] border border-[#E7D8C8] text-[#B8893E] flex items-center justify-center mx-auto shadow-xs">
-              <Layers className="w-8 h-8 opacity-70" />
-            </div>
-            <div className="space-y-1.5">
-              <h3 className="font-editorial text-xl font-bold text-[#2B201A]">
-                {lang === "hi" ? "कोई मीडिया उपलब्ध नहीं है" : "No Media Found"}
-              </h3>
-              <p className="text-sm text-[#2B201A]/80 leading-relaxed font-sans">
-                {lang === "hi"
-                  ? "इस श्रेणी में अभी कोई फ़ोटो या वीडियो नहीं मिला।"
-                  : "There is currently no media available under this filter."}
-              </p>
-            </div>
-            <button
-              onClick={() => handleFilterChange("all")}
-              className="btn-outline min-h-[44px] text-xs"
-            >
-              <span>{lang === "hi" ? "सभी मीडिया देखें" : "View All Media"}</span>
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 items-stretch">
-            {visibleItems.map((item, idx) => {
-              const title = lang === "hi" && item.titleHi ? item.titleHi : item.title;
-              const event = lang === "hi" && item.eventHi ? item.eventHi : item.event;
-              const isVideo = item.type === "video";
-
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={(e) => handleOpenItem(item, e)}
-                  aria-label={`${
-                    isVideo ? (lang === "hi" ? "वीडियो देखें" : "Watch video") : (lang === "hi" ? "फ़ोटो देखें" : "View photo")
-                  }: ${title}`}
-                  className="card-warm p-3 sm:p-4 text-left group cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-warm-md hover:border-[#E86F1D]/40 focus-visible:ring-2 focus-visible:ring-[#E86F1D] focus-visible:outline-none flex flex-col h-full bg-[#FBF2E7] rounded-[18px] border border-[#E7D8C8]/80 select-none motion-reduce:hover:translate-none"
-                >
-                  {/* 4:3 THUMBNAIL CONTAINER - RESERVED ASPECT RATIO PREVENTS LAYOUT JUMPS */}
-                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[14px] bg-[#EFE4D6] border border-[#E7D8C8]/60 shadow-2xs shrink-0">
-                    <Image
-                      src={item.thumbnail}
-                      alt={item.alt}
-                      fill
-                      loading="lazy"
-                      unoptimized={item.thumbnail.startsWith("http")}
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:group-hover:scale-100"
-                      style={{ objectPosition: item.focalPoint || "center" }}
-                    />
-
-                    {/* VIDEO OVERLAYS */}
-                    {isVideo ? (
-                      <>
-                        {/* Video Badge (Top-left) */}
-                        <div className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md text-white text-[11px] font-bold tracking-wide flex items-center gap-1.5 shadow-md border border-white/10">
-                          <Film className="w-3 h-3 text-[#E86F1D]" />
-                          <span>{lang === "hi" ? "वीडियो" : "VIDEO"}</span>
-                        </div>
-
-                        {/* Subtle Bottom Gradient */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-70 group-hover:opacity-40 transition-opacity" />
-
-                        {/* Clear Centered Play Button with Hover Micro-interaction */}
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                          <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-[#E86F1D]/90 group-hover:bg-[#E86F1D] group-hover:scale-110 motion-reduce:group-hover:scale-100 text-white flex items-center justify-center shadow-lg backdrop-blur-xs transition-all duration-300 border-2 border-white/80 pl-0.5">
-                            <Play className="w-6 h-6 fill-current text-white" />
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      /* PHOTO HOVER BADGE */
-                      <div className="absolute bottom-2.5 right-2.5 z-10 p-2 rounded-full bg-black/60 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-md pointer-events-none">
-                        <Maximize2 className="w-4 h-4" />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* CARD TEXT CONTENT */}
-                  <div className="pt-3.5 pb-1 px-1 flex flex-col flex-1 justify-between gap-1.5">
-                    <div>
-                      {/* Event / Category Pill */}
-                      {event && (
-                        <p className="text-xs font-bold text-[#B8893E] uppercase tracking-wider line-clamp-1 mb-1">
-                          {event}
-                        </p>
-                      )}
-
-                      {/* Title */}
-                      <h3 className="font-editorial text-lg sm:text-xl font-bold text-[#2B201A] leading-snug group-hover:text-[#E86F1D] transition-colors line-clamp-2">
-                        {title}
-                      </h3>
-                    </div>
-
-                    {/* Metadata strip */}
-                    <div className="pt-2 mt-auto border-t border-[#E7D8C8]/60 flex items-center justify-between text-[11px] text-[#6B5B52] font-semibold">
-                      <span className="flex items-center gap-1">
-                        {isVideo ? (
-                          <>
-                            <Play className="w-3 h-3 text-[#E86F1D]" />
-                            <span>{lang === "hi" ? "वीडियो चलाएं" : "Play Video"}</span>
-                          </>
-                        ) : (
-                          <>
-                            <ImageIcon className="w-3 h-3 text-[#B8893E]" />
-                            <span>{lang === "hi" ? "तस्वीर देखें" : "View Photo"}</span>
-                          </>
-                        )}
-                      </span>
-                      {item.date && <span>{item.date}</span>}
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        )}
-
-        {/* LOAD MORE BUTTON */}
-        {hasMore && (
-          <div className="mt-10 sm:mt-12 text-center">
-            <button
-              onClick={handleLoadMore}
-              className="btn-outline min-h-[48px] px-8 py-3 rounded-xl inline-flex items-center gap-2 group cursor-pointer hover:border-[#E86F1D] hover:bg-[#FFF9F2]"
-            >
-              <span>
-                {lang === "hi"
-                  ? `और देखें (${remainingCount} और उपलब्ध)`
-                  : `Load More (${remainingCount} Remaining)`}
-              </span>
-              <ChevronDown className="w-4 h-4 text-[#E86F1D] group-hover:translate-y-0.5 transition-transform" />
-            </button>
-          </div>
-        )}
+        {/* ==================================================================== */}
+        {/* VIEW FULL GALLERY BUTTON: [ View Full Gallery → ]                     */}
+        {/* ==================================================================== */}
+        <div className="text-center mt-5 sm:mt-6">
+          <Link
+            href="/gallery"
+            className="inline-flex items-center gap-2.5 px-8 sm:px-10 py-3 sm:py-3.5 rounded-full border-2 border-[#E86F1D] text-[#E86F1D] hover:bg-[#E86F1D] hover:text-white font-bold text-sm sm:text-base tracking-wide transition-all duration-300 shadow-warm-xs hover:shadow-warm-md hover:scale-[1.02] active:scale-[0.98] group bg-white/80 backdrop-blur-xs"
+          >
+            <span>{lang === "hi" ? "पूरी गैलरी देखें" : "View Full Gallery"}</span>
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+          </Link>
+        </div>
       </div>
 
-      {/* FULLSCREEN LIGHTBOX & VIDEO MODAL */}
+      {/* LIGHTBOX MODAL FOR EXPANDED PHOTOS */}
       <GalleryModal
         isOpen={isModalOpen}
         item={selectedItem}
-        items={filteredItems}
+        items={featuredItems}
         currentIndex={currentIndex}
         onClose={handleCloseModal}
         onPrev={handlePrevItem}

@@ -43,12 +43,12 @@ export default function Header() {
       }`}
     >
       {/* DESKTOP 3-ZONE GRID LAYOUT (visible >= 1200px / xl) */}
-      <div className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8 box-border">
+      <div className="max-w-[1560px] w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 box-border">
         {/* DESKTOP HEADER GRID */}
-        <div className="hidden xl:grid grid-cols-[auto_1fr_auto] items-center h-[80px] gap-3 2xl:gap-6">
+        <div className="hidden xl:grid grid-cols-[auto_1fr_auto] items-center h-[80px] gap-6 xl:gap-8 2xl:gap-12">
           
           {/* 1. LEFT: Trust Logo + Brand Name */}
-          <Link href="/" className="flex items-center gap-2.5 shrink-0 min-w-0 group whitespace-nowrap pr-2">
+          <Link href="/" className="flex items-center gap-3 shrink-0 min-w-0 group whitespace-nowrap pr-2">
             <div className="relative w-[48px] h-[48px] 2xl:w-[54px] 2xl:h-[54px] rounded-full overflow-hidden border-2 border-[#B8893E] shadow-sm transition-transform group-hover:scale-105 shrink-0 bg-white">
               <Image
                 src="/images/logo.jpg"
@@ -69,17 +69,17 @@ export default function Header() {
           </Link>
 
           {/* 2. CENTER: Navigation Menu */}
-          <nav className="flex items-center justify-center gap-1 xl:gap-1.5 2xl:gap-3 min-w-0 whitespace-nowrap px-1">
+          <nav className="flex items-center justify-center gap-2 xl:gap-2.5 2xl:gap-4 min-w-0 whitespace-nowrap px-2">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`px-2 2xl:px-3 py-1.5 rounded-lg text-xs 2xl:text-sm font-semibold transition-all duration-200 whitespace-nowrap shrink-0 ${
+                  className={`px-2.5 xl:px-3 2xl:px-3.5 py-1.5 rounded-lg text-xs xl:text-[13px] 2xl:text-sm font-semibold transition-all duration-200 whitespace-nowrap shrink-0 ${
                     isActive
-                      ? "text-[#E86F1D] bg-[#FBF2E7] font-bold"
-                      : "text-[#2B201A]/85 hover:text-[#E86F1D] hover:bg-[#FBF2E7]/60"
+                      ? "text-[#E86F1D] bg-[#FBF2E7] font-bold shadow-xs"
+                      : "text-[#2B201A]/85 hover:text-[#E86F1D] hover:bg-[#FBF2E7]/70"
                   }`}
                 >
                   {link.label}
@@ -89,7 +89,7 @@ export default function Header() {
           </nav>
 
           {/* 3. RIGHT: Language Selector + Cart + (Only If Logged In: Account Icon) + Orange Donate Button */}
-          <div className="flex items-center justify-end gap-2.5 2xl:gap-3 shrink-0 whitespace-nowrap">
+          <div className="flex items-center justify-end gap-3 xl:gap-3.5 2xl:gap-4 shrink-0 whitespace-nowrap">
             {/* Language Selector */}
             <button
               onClick={() => setLang(lang === "en" ? "hi" : "en")}

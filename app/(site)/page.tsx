@@ -20,40 +20,12 @@ import {
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import EventDetailsModal, { EventItem } from "@/components/EventDetailsModal";
+import GallerySection from "@/components/gallery/GallerySection";
+import CountUp from "@/components/CountUp";
+import TestimonialsSection from "@/components/TestimonialsSection";
 
 export default function HomePage() {
   const { lang, openDonateModal } = useApp();
-  const [activeTestimonial, setActiveTestimonial] = useState(0);
-
-  const testimonials = [
-    {
-      quote:
-        "The spiritual guidance I received here has brought greater peace and clarity to my life. Every visit feels deeply grounding and inspiring.",
-      quoteHi:
-        "यहाँ से प्राप्त आध्यात्मिक मार्गदर्शन ने मेरे जीवन में अपार शांति और स्पष्टता प्रदान की है। हर विचार आत्मिक ऊर्जा प्रदान करता है।",
-      name: "Rajesh Kumar",
-      location: "Mumbai, Maharashtra",
-      role: "Devotee & Lifetime Member",
-    },
-    {
-      quote:
-        "A warm and meaningful experience. The community, teachings and atmosphere have strengthened my faith and sense of cultural connection.",
-      quoteHi:
-        "अत्यंत पवित्र और प्रेरणादायक अनुभव। ट्रस्ट द्वारा संचालित शिक्षा और सेवा कार्यक्रमों से समाज में सकारात्मक बदलाव आ रहा है।",
-      name: "Priya Sharma",
-      location: "New Delhi",
-      role: "Voluntary Sevadar",
-    },
-    {
-      quote:
-        "The Bhagavad Gita teachings have brought more purpose and calm to my everyday life. I am deeply grateful to Sadhvi Ji and this community.",
-      quoteHi:
-        "श्रीमद्भगवद्गीता के उपदेशों ने मेरे दैनिक जीवन में शांति और उद्देश्य ला दिया है। नमो भगवते वासुदेवाय ट्रस्ट का हृदय से आभार।",
-      name: "Amit Patel",
-      location: "Ahmedabad, Gujarat",
-      role: "Gold Member",
-    },
-  ];
 
   const defaultEvents: EventItem[] = [
     {
@@ -185,165 +157,314 @@ export default function HomePage() {
 
   return (
     <div className="w-full">
-      {/* HERO SECTION */}
-      <section className="relative overflow-hidden pt-8 md:pt-14 pb-14 md:pb-20 bg-[#FFF9F2] border-b border-[#E7D8C8]">
-        <div className="page-container">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-            {/* Left Copy */}
-            <div className="lg:col-span-7 space-y-6 text-left">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FBF2E7] border border-[#B8893E]/30 text-[#E86F1D] text-xs font-bold uppercase tracking-widest">
-                <span>DHARMA • SEVA • SANSKAR</span>
-              </div>
+      {/* FULL-VIEWPORT HERO BANNER (100% VISIBLE WITHIN VIEWPORT - ZERO SCROLLING REQUIRED) */}
+      <section className="relative w-full bg-[#1F150E] overflow-hidden flex flex-col items-center justify-center border-b border-[#E7D8C8] md:h-[calc(100vh-68px)] xl:md:h-[calc(100vh-80px)] md:min-h-[460px] md:max-h-[1080px]">
+        {/* Ambient Warm Wood Backdrop for widescreen/letterbox seamless blending - ONLY on desktop */}
+        <div className="hidden md:block absolute inset-0 overflow-hidden pointer-events-none select-none">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/desktop-hero-banner.png"
+            alt=""
+            aria-hidden="true"
+            className="w-full h-full object-cover scale-110 blur-2xl opacity-40 brightness-75"
+          />
+          <div className="absolute inset-0 bg-[#2A1D13]/60 backdrop-blur-xs" />
+        </div>
 
-              <h1 className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2B201A] leading-[1.12] tracking-tight">
-                {lang === "hi" ? (
-                  <span className="lang-hi">धर्म में निहित। सेवा के प्रति समर्पित</span>
-                ) : (
-                  <>
-                    Rooted in <span className="text-[#E86F1D]">Dharma</span>
-                    <br />
-                    Dedicated to <span className="text-[#B8893E]">Seva</span>
-                  </>
-                )}
-              </h1>
+        {/* Foreground Banner: Aspect 4:5 on mobile (1080x1350 native), contain on desktop */}
+        <div className="relative z-1 w-full aspect-[4/5] sm:aspect-auto sm:h-full flex items-center justify-center">
+          <picture className="w-full h-full flex items-center justify-center">
+            <source
+              media="(max-width: 640px)"
+              srcSet="/images/mobile-hero-banner.png"
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/desktop-hero-banner.png"
+              alt="Namo Bhagwate Vasudevaya Trust - Pujya Sadhvi Vijeshanand Saraswati Ji"
+              className="w-full h-full object-cover sm:object-contain block select-none pointer-events-none drop-shadow-2xl"
+              loading="eager"
+            />
+          </picture>
 
-              <p className="text-base sm:text-lg text-[#2B201A]/85 leading-relaxed max-w-2xl font-sans">
-                {lang === "hi"
-                  ? "श्रीमद्भगवद्गीता के शाश्वत ज्ञान से प्रेरित होकर, नमो भगवते वासुदेवाय ट्रस्ट आध्यात्मिक शिक्षा, समाज सेवा, महिला एवं युवा सशक्तिकरण, किसान कल्याण और दयालु कार्यों के माध्यम से जीवन को उन्नत बनाने के लिए तत्पर है।"
-                  : "Guided by the timeless wisdom of the Bhagavad Gita, Namo Bhagwate Vasudevaya Trust works to uplift lives through spiritual education, community service, women and youth empowerment, farmer welfare, and compassionate action."}
-              </p>
+          {/* Mobile Overlay Action Bar (Clean gradient at bottom of mobile banner) */}
+          <div className="md:hidden absolute bottom-0 inset-x-0 z-20 w-full px-4 pt-10 pb-3.5 bg-gradient-to-t from-black/95 via-black/60 to-transparent flex flex-col items-center gap-1.5 text-center pointer-events-auto">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/60 border border-[#E86F1D]/60 text-[#E86F1D] text-[10px] font-bold tracking-widest uppercase shadow-md">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#E86F1D] animate-pulse shrink-0" />
+              <span>{lang === "hi" ? "धर्म • सेवा • संस्कार" : "DHARMA • SEVA • SANSKAR"}</span>
+            </div>
+            <h2 className="font-editorial text-sm sm:text-base font-extrabold text-white tracking-wide leading-tight drop-shadow-md">
+              {lang === "hi" ? "धर्म में निहित • सेवा के प्रति समर्पित" : "Rooted in Dharma • Dedicated to Seva"}
+            </h2>
+            <div className="flex items-center justify-center gap-2.5 w-full max-w-xs pt-1">
+              <Link
+                href="/initiatives"
+                className="flex-1 py-2 px-3 rounded-lg bg-[#E86F1D] text-white font-bold text-xs uppercase tracking-wider text-center shadow-md active:scale-95 transition-transform"
+              >
+                {lang === "hi" ? "सेवा कार्य" : "Initiatives"}
+              </Link>
+              <button
+                onClick={() => openDonateModal("General Donation")}
+                className="flex-1 py-2 px-3 rounded-lg bg-white text-[#2B201A] font-bold text-xs uppercase tracking-wider text-center shadow-md flex items-center justify-center gap-1 cursor-pointer active:scale-95 transition-transform"
+              >
+                <Heart className="w-3 h-3 text-[#E86F1D] fill-current" />
+                <span>{lang === "hi" ? "सहयोग करें" : "Donate"}</span>
+              </button>
+            </div>
+          </div>
+        </div>
 
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
-                <Link href="/initiatives" className="btn-primary">
-                  <span>{lang === "hi" ? "कार्य देखें" : "Explore Our Work"}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-
-                <button
-                  onClick={() => openDonateModal("General Donation")}
-                  className="btn-outline"
-                >
-                  <Heart className="w-4 h-4 text-[#E86F1D] fill-current" />
-                  <span>{lang === "hi" ? "मिशन का समर्थन करें" : "Support the Mission"}</span>
-                </button>
-              </div>
-
-              {/* Trust Badges */}
-              <div className="pt-6 border-t border-[#E7D8C8] grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-[#2B201A]/80 font-medium">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-[#2F5A43] shrink-0" />
-                  <span>Registered Charitable Trust</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Sun className="w-4 h-4 text-[#B8893E] shrink-0" />
-                  <span>15+ Years of Seva</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Users className="w-4 h-4 text-[#E86F1D] shrink-0" />
-                  <span>25,000+ Active Devotees</span>
-                </div>
-              </div>
+        {/* Desktop HERO ACTION BAR: LEFT END (BADGE + HEADLINE) & RIGHT END (CTA BUTTONS) */}
+        <div className="hidden md:flex absolute bottom-5 md:bottom-6 inset-x-0 z-20 w-full px-6 md:px-8 lg:px-12 xl:px-14 flex-row items-end justify-between gap-4 pointer-events-none">
+          {/* 1. LEFT END: Badge + Heading */}
+          <div className="flex flex-col items-start gap-1.5 text-left pointer-events-auto">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-black/55 backdrop-blur-md border border-[#E86F1D]/60 text-[#E86F1D] text-[11px] font-bold tracking-widest uppercase shadow-md">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#E86F1D] animate-pulse shrink-0" />
+              <span>{lang === "hi" ? "धर्म • सेवा • संस्कार" : "DHARMA • SEVA • SANSKAR"}</span>
             </div>
 
-            {/* Right Media Display: Premium Founder Hero Card */}
-            <div className="lg:col-span-5 relative w-full">
-              <div className="relative mx-auto max-w-lg lg:max-w-none">
-                {/* Main Founder Image Hero Card */}
-                <div className="relative rounded-[24px] overflow-hidden border-4 border-[#FFF9F2] shadow-2xl group transition-all duration-300 hover:shadow-warm-lg">
-                  <div className="aspect-[16/10] relative w-full overflow-hidden bg-[#2B201A]">
-                    <Image
-                      src="/images/founder-hero-card.jpg"
-                      alt="Pujya Sadhvi Vijeshanand Saraswati Ji"
-                      fill
-                      className="object-cover object-[50%_35%] contrast-[1.04] brightness-[1.02] transition-transform duration-700 group-hover:scale-[1.03]"
-                      priority
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 45vw"
-                    />
-                  </div>
-                  {/* Reduced Height & Intensity Dark Gradient Overlay at Bottom */}
-                  <div className="absolute bottom-0 left-0 right-0 h-[32%] bg-gradient-to-t from-black/75 via-black/30 to-transparent pointer-events-none" />
-                  
-                  {/* Lower-left Clean Text Overlay */}
-                  <div className="founder-text-overlay">
-                    <div className="founder-label">FOUNDER</div>
-                    <div className="founder-name">
-                      Pujya Sadhvi Vijeshanand Saraswati Ji
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Heading with drop shadow for legibility over image */}
+            <h2 className="font-editorial text-xl md:text-2xl lg:text-3xl font-extrabold text-white tracking-wide leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+              {lang === "hi" ? (
+                <>
+                  धर्म में निहित • <span className="text-[#E86F1D] drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">सेवा के प्रति समर्पित</span>
+                </>
+              ) : (
+                <>
+                  Rooted in Dharma • <span className="text-[#E86F1D] drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">Dedicated to Seva</span>
+                </>
+              )}
+            </h2>
+          </div>
+
+          {/* 2. RIGHT END: The Two CTA Action Buttons */}
+          <div className="flex items-center gap-3 shrink-0 pointer-events-auto">
+            <Link
+              href="/initiatives"
+              className="px-6 py-3 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-sm tracking-wider uppercase transition-all shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 flex items-center gap-2"
+            >
+              <span>{lang === "hi" ? "सेवा कार्य देखें" : "Explore Initiatives"}</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+
+            <button
+              onClick={() => openDonateModal("General Donation")}
+              className="px-6 py-3 rounded-xl bg-white hover:bg-[#FFF9F2] text-[#2B201A] font-bold text-sm tracking-wider uppercase transition-all border border-white shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 flex items-center gap-2 cursor-pointer"
+            >
+              <Heart className="w-3.5 h-3.5 text-[#E86F1D] fill-current" />
+              <span>{lang === "hi" ? "सहयोग करें" : "Support Seva"}</span>
+            </button>
           </div>
         </div>
       </section>
 
-      {/* QUICK ACTION CARDS */}
-      <section className="section-py">
-        <div className="page-container">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-            {/* Card 1: Books */}
-            <div className="card-warm">
-              <div className="card-body space-y-3">
-                <div className="w-12 h-12 rounded-xl bg-[#E86F1D]/10 text-[#E86F1D] flex items-center justify-center">
-                  <BookOpen className="w-6 h-6" />
-                </div>
-                <h3 className="font-editorial text-2xl font-bold text-[#2B201A]">
-                  Books for Knowledge & Change
-                </h3>
-                <p className="text-sm text-[#2B201A]/85 leading-relaxed">
-                  Discover practical, value-led publications created to educate, guide and empower agricultural & spiritual communities.
-                </p>
+      {/* HORIZONTAL AUTO-SCROLL MARQUEE TICKER (JUST BELOW HERO) */}
+      <div className="w-full bg-[#FFF5EA] border-y border-[#E86F1D]/25 py-2.5 sm:py-3 overflow-hidden select-none relative z-20 shadow-xs">
+        {/* Soft edge gradient fades */}
+        <div className="absolute left-0 inset-y-0 w-12 sm:w-24 bg-gradient-to-r from-[#FFF5EA] to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 inset-y-0 w-12 sm:w-24 bg-gradient-to-l from-[#FFF5EA] to-transparent z-10 pointer-events-none" />
+
+        <div className="flex animate-marquee whitespace-nowrap">
+          {/* Ticker Set 1 */}
+          <div className="flex items-center shrink-0 gap-6 sm:gap-10 px-4">
+            {[...Array(6)].map((_, i) => (
+              <div key={`ticker-1-${i}`} className="inline-flex items-center gap-6 sm:gap-10 text-xs sm:text-sm font-bold tracking-widest uppercase text-[#E86F1D]">
+                <span>Namo Bhagavate Vasudevaya Trust</span>
+                <span className="text-[#E86F1D] text-sm sm:text-base font-bold select-none opacity-80">ॐ</span>
+                <span className="font-hindi">{lang === "hi" ? "नमो भगवते वासुदेवाय ट्रस्ट" : "नमो भगवते वासुदेवाय ट्रस्ट"}</span>
+                <span className="text-[#E86F1D] text-sm sm:text-base font-bold select-none opacity-80">ॐ</span>
               </div>
-              <div className="card-action">
-                <Link href="/books" className="btn-outline w-full">
-                  <span>Explore Books</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
+            ))}
+          </div>
+
+          {/* Ticker Set 2 (Identical for seamless infinite auto-scroll) */}
+          <div className="flex items-center shrink-0 gap-6 sm:gap-10 px-4" aria-hidden="true">
+            {[...Array(6)].map((_, i) => (
+              <div key={`ticker-2-${i}`} className="inline-flex items-center gap-6 sm:gap-10 text-xs sm:text-sm font-bold tracking-widest uppercase text-[#E86F1D]">
+                <span>Namo Bhagavate Vasudevaya Trust</span>
+                <span className="text-[#E86F1D] text-sm sm:text-base font-bold select-none opacity-80">ॐ</span>
+                <span className="font-hindi">{lang === "hi" ? "नमो भगवते वासुदेवाय ट्रस्ट" : "नमो भगवते वासुदेवाय ट्रस्ट"}</span>
+                <span className="text-[#E86F1D] text-sm sm:text-base font-bold select-none opacity-80">ॐ</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* THREE PILLAR ACTION CARDS (WIDE HORIZONTAL RECTANGLE WITH TRANSLUCENT TEXT PLATE) */}
+      <section className="pt-8 sm:pt-10 pb-6 sm:pb-7 bg-[#FFF9F2] border-b border-[#E7D8C8]/60">
+        <div className="w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-7 items-stretch">
+            {/* Card 1: Books (Horizontal Rectangle Background + Hover Reveal Text on Desktop, Always Open on Mobile) */}
+            <div className="relative min-h-[340px] md:h-[325px] h-auto rounded-3xl overflow-hidden shadow-[0_16px_40px_-8px_rgba(43,32,26,0.22),0_8px_20px_-4px_rgba(232,111,29,0.12)] hover:shadow-[0_24px_50px_-10px_rgba(43,32,26,0.32),0_12px_28px_-4px_rgba(232,111,29,0.2)] hover:-translate-y-1.5 transition-all duration-500 group flex flex-col justify-between p-4 sm:p-4.5 border border-[#E7D8C8] hover:border-[#E86F1D]">
+              {/* Full Background Image */}
+              <Image
+                src="/images/card-books-rect.jpg"
+                alt="Books & Sacred Literature"
+                fill
+                priority
+                unoptimized
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-106"
+              />
+              {/* Soft Vignette Gradient */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/35 pointer-events-none" />
+
+              {/* Top Bar: Orange Pill Tag + Icon */}
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-3.5 py-1.5 rounded-lg bg-[#E86F1D] text-white text-[11px] font-black tracking-wider uppercase shadow-md flex items-center gap-1.5">
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>{lang === "hi" ? "साहित्य सेवा" : "SAHITYA SEVA"}</span>
+                </span>
+                <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/40 text-white flex items-center justify-center shadow-md group-hover:bg-[#E86F1D] transition-colors">
+                  <ArrowRight className="w-3.5 h-3.5 text-white" />
+                </div>
+              </div>
+
+              {/* Translucent Text Plate: Open on mobile, hover-expandable on desktop */}
+              <div className="relative z-10 w-full bg-[#FFF9F2]/95 group-hover:bg-[#FFF9F2]/98 backdrop-blur-md border border-white/85 rounded-2xl p-3 sm:p-3.5 md:p-2.5 md:group-hover:p-4 shadow-xl transition-all duration-500 ease-out mt-8 md:mt-0">
+                {/* Collapsible Text Content */}
+                <div className="max-md:max-h-none max-md:opacity-100 md:max-h-0 md:opacity-0 md:group-hover:max-h-48 md:group-hover:opacity-100 transition-all duration-500 ease-in-out overflow-hidden">
+                  <div className="pb-2.5 pt-0.5 transform md:translate-y-2 md:group-hover:translate-y-0 transition-transform duration-500 ease-out">
+                    <h3 className="font-sans font-black text-[#1E1612] tracking-wider text-sm sm:text-base uppercase mb-1.5 leading-snug">
+                      {lang === "hi" ? "ज्ञान के लिए पुस्तकें, जीवन में परिवर्तन" : "BOOKS FOR KNOWLEDGE, LIFE FOR CHANGE"}
+                    </h3>
+                    <p className="text-xs sm:text-[13px] text-[#5C4D43] line-clamp-2 leading-relaxed font-sans">
+                      {lang === "hi"
+                        ? "हमारे पावन ग्रंथों और ज्ञान संग्रह के माध्यम से आध्यात्मिक ज्ञान प्राप्त करें।"
+                        : "Discover spiritual wisdom through our curated collection of sacred texts and teachings."}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Bottom Action Row */}
+                <div className="flex items-center justify-between gap-2 pt-1 md:pt-0">
+                  <span className="hidden md:inline-block text-[11px] font-bold text-[#8C6B3E] uppercase tracking-wider group-hover:opacity-0 transition-opacity duration-300">
+                    {lang === "hi" ? "साहित्य सेवा" : "Sacred Texts"}
+                  </span>
+                  <Link
+                    href="/books"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#2B201A] hover:bg-[#1E1612] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all w-full md:w-auto"
+                  >
+                    <span>{lang === "hi" ? "पुस्तकें देखें" : "Explore Books"}</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-[#E86F1D]" />
+                  </Link>
+                </div>
               </div>
             </div>
 
-            {/* Card 2: Donate */}
-            <div className="card-warm">
-              <div className="card-body space-y-3">
-                <div className="w-12 h-12 rounded-xl bg-[#2F5A43]/10 text-[#2F5A43] flex items-center justify-center">
-                  <Heart className="w-6 h-6 fill-current" />
+            {/* Card 2: Donate for Seva (Horizontal Rectangle Background + Hover Reveal Text on Desktop, Always Open on Mobile) */}
+            <div className="relative min-h-[340px] md:h-[325px] h-auto rounded-3xl overflow-hidden shadow-[0_16px_40px_-8px_rgba(43,32,26,0.22),0_8px_20px_-4px_rgba(232,111,29,0.12)] hover:shadow-[0_24px_50px_-10px_rgba(43,32,26,0.32),0_12px_28px_-4px_rgba(232,111,29,0.2)] hover:-translate-y-1.5 transition-all duration-500 group flex flex-col justify-between p-4 sm:p-4.5 border border-[#E7D8C8] hover:border-[#E86F1D]">
+              {/* Full Background Image */}
+              <Image
+                src="/images/card-seva-rect.jpg"
+                alt="Donate for Seva"
+                fill
+                priority
+                unoptimized
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-106"
+              />
+              {/* Soft Vignette Gradient */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/35 pointer-events-none" />
+
+              {/* Top Bar: Orange Pill Tag + Icon */}
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-3.5 py-1.5 rounded-lg bg-[#E86F1D] text-white text-[11px] font-black tracking-wider uppercase shadow-md flex items-center gap-1.5">
+                  <Heart className="w-3.5 h-3.5 fill-current" />
+                  <span>{lang === "hi" ? "पुण्य सेवा" : "PUNYA SEVA"}</span>
+                </span>
+                <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/40 text-white flex items-center justify-center shadow-md group-hover:bg-[#E86F1D] transition-colors">
+                  <Heart className="w-3.5 h-3.5 text-[#E86F1D] fill-current" />
                 </div>
-                <h3 className="font-editorial text-2xl font-bold text-[#2B201A]">
-                  Donate for Seva
-                </h3>
-                <p className="text-sm text-[#2B201A]/85 leading-relaxed">
-                  Support programs that bring education, welfare, spiritual learning and practical assistance to underserved families.
-                </p>
               </div>
-              <div className="card-action">
-                <button
-                  onClick={() => openDonateModal("General Donation")}
-                  className="btn-secondary w-full"
-                >
-                  <span>Donate Now</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+
+              {/* Translucent Text Plate: Open on mobile, hover-expandable on desktop */}
+              <div className="relative z-10 w-full bg-[#FFF9F2]/95 group-hover:bg-[#FFF9F2]/98 backdrop-blur-md border border-white/85 rounded-2xl p-3 sm:p-3.5 md:p-2.5 md:group-hover:p-4 shadow-xl transition-all duration-500 ease-out mt-8 md:mt-0">
+                {/* Collapsible Text Content */}
+                <div className="max-md:max-h-none max-md:opacity-100 md:max-h-0 md:opacity-0 md:group-hover:max-h-48 md:group-hover:opacity-100 transition-all duration-500 ease-in-out overflow-hidden">
+                  <div className="pb-2.5 pt-0.5 transform md:translate-y-2 md:group-hover:translate-y-0 transition-transform duration-500 ease-out">
+                    <h3 className="font-sans font-black text-[#1E1612] tracking-wider text-sm sm:text-base uppercase mb-1.5 leading-snug">
+                      {lang === "hi" ? "सेवा हेतु सहयोग" : "DONATE FOR SEVA"}
+                    </h3>
+                    <p className="text-xs sm:text-[13px] text-[#5C4D43] line-clamp-2 leading-relaxed font-sans">
+                      {lang === "hi"
+                        ? "अपने उदार सहयोग से मानवता की सेवा के हमारे पावन संकल्प में सहभागी बनें।"
+                        : "Support our mission to serve humanity through your generous contributions."}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Bottom Action Row */}
+                <div className="flex items-center justify-between gap-2 pt-1 md:pt-0">
+                  <span className="hidden md:inline-flex text-[11px] font-bold text-[#E86F1D] uppercase tracking-wider group-hover:opacity-0 transition-opacity duration-300 items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-[#E86F1D] animate-ping" />
+                    <span>{lang === "hi" ? "पुण्य सेवा" : "Support Seva"}</span>
+                  </span>
+                  <button
+                    onClick={() => openDonateModal("General Donation")}
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer w-full md:w-auto"
+                  >
+                    <Heart className="w-3.5 h-3.5 fill-current" />
+                    <span>{lang === "hi" ? "अभी सहयोग करें" : "Donate Now"}</span>
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* Card 3: Daily Thought */}
-            <div className="card-warm border-[#B8893E]/40 relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-4 opacity-10">
-                <Quote className="w-20 h-20 text-[#B8893E]" />
-              </div>
-              <div className="card-body space-y-3 relative z-10">
-                <div className="w-12 h-12 rounded-xl bg-[#B8893E]/10 text-[#B8893E] flex items-center justify-center">
-                  <Sun className="w-6 h-6" />
+            {/* Card 3: Daily Thought (Horizontal Rectangle Background + Hover Reveal Text on Desktop, Always Open on Mobile) */}
+            <div className="relative min-h-[340px] md:h-[325px] h-auto rounded-3xl overflow-hidden shadow-[0_16px_40px_-8px_rgba(43,32,26,0.22),0_8px_20px_-4px_rgba(232,111,29,0.12)] hover:shadow-[0_24px_50px_-10px_rgba(43,32,26,0.32),0_12px_28px_-4px_rgba(232,111,29,0.2)] hover:-translate-y-1.5 transition-all duration-500 group flex flex-col justify-between p-4 sm:p-4.5 border border-[#E7D8C8] hover:border-[#E86F1D]">
+              {/* Full Background Image */}
+              <Image
+                src="/images/card-thought-rect.jpg"
+                alt="Daily Thought"
+                fill
+                priority
+                unoptimized
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-106"
+              />
+              {/* Soft Vignette Gradient */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/35 pointer-events-none" />
+
+              {/* Top Bar: Orange Pill Tag + Icon */}
+              <div className="relative z-10 flex items-center justify-between">
+                <span className="px-3.5 py-1.5 rounded-lg bg-[#E86F1D] text-white text-[11px] font-black tracking-wider uppercase shadow-md flex items-center gap-1.5">
+                  <Quote className="w-3.5 h-3.5" />
+                  <span>{lang === "hi" ? "दैनिक विचार" : "DAILY THOUGHT"}</span>
+                </span>
+                <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/40 text-white flex items-center justify-center shadow-md">
+                  <Quote className="w-3.5 h-3.5 text-white" />
                 </div>
-                <h3 className="font-editorial text-2xl font-bold text-[#2B201A]">
-                  Daily Thought
-                </h3>
-                <p className="text-base font-editorial italic text-[#2B201A] leading-relaxed pt-1">
-                  “Let every thought become clearer, every action kinder, and every day an opportunity to serve.”
-                </p>
               </div>
-              <div className="card-action text-xs font-bold text-[#B8893E] uppercase tracking-wider">
-                — Pujya Sadhvi Vijeshanand Saraswati Ji
+
+              {/* Translucent Text Plate: Open on mobile, hover-expandable on desktop */}
+              <div className="relative z-10 w-full bg-[#FFF9F2]/95 group-hover:bg-[#FFF9F2]/98 backdrop-blur-md border border-white/85 rounded-2xl p-3 sm:p-3.5 md:p-2.5 md:group-hover:p-4 shadow-xl transition-all duration-500 ease-out mt-8 md:mt-0">
+                {/* Collapsible Text Content */}
+                <div className="max-md:max-h-none max-md:opacity-100 md:max-h-0 md:opacity-0 md:group-hover:max-h-48 md:group-hover:opacity-100 transition-all duration-500 ease-in-out overflow-hidden">
+                  <div className="pb-2.5 pt-0.5 transform md:translate-y-2 md:group-hover:translate-y-0 transition-transform duration-500 ease-out">
+                    <h3 className="font-sans font-black text-[#1E1612] tracking-wider text-sm sm:text-base uppercase mb-1.5 leading-snug">
+                      {lang === "hi" ? "“ दैनिक विचार ”" : "“ DAILY THOUGHT ”"}
+                    </h3>
+                    <p className="text-xs sm:text-[13px] text-[#5C4D43] italic leading-relaxed font-sans line-clamp-3 border-l-2 border-[#E86F1D] pl-2.5">
+                      {lang === "hi"
+                        ? "“मन ही सब कुछ है। आप जो सोचते हैं, वही बन जाते हैं। अपने विचारों को शुद्ध और कर्मों को धर्ममय रखें।”"
+                        : "“The mind is everything. What you think, you become. Let your thoughts be pure and your actions righteous.”"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Bottom Action Row */}
+                <div className="flex items-center justify-between gap-2 pt-1 md:pt-0">
+                  <span className="hidden md:inline-block text-[11px] font-bold text-[#8C6B3E] uppercase tracking-wider group-hover:opacity-0 transition-opacity duration-300">
+                    {lang === "hi" ? "पावन विचार" : "Daily Wisdom"}
+                  </span>
+                  <Link
+                    href="/founder"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#2B201A] hover:bg-[#1E1612] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all w-full md:w-auto"
+                  >
+                    <span>{lang === "hi" ? "संस्थापक दृष्टिकोण" : "Founder's Vision"}</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-[#B8893E]" />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
@@ -351,166 +472,349 @@ export default function HomePage() {
       </section>
 
       {/* UPCOMING EVENTS */}
-      <section id="events" className="section-py bg-[#FBF2E7]/60 border-y border-[#E7D8C8]">
-        <div className="page-container">
-          <div className="text-center max-w-2xl mx-auto section-header space-y-2">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#E86F1D]">Punya Seva & Satsang</p>
+      <section id="events" className="pt-6 sm:pt-8 pb-14 sm:pb-20 bg-[#FBF2E7]/60 border-y border-[#E7D8C8]">
+        <div className="w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-8">
             <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
               Upcoming Events & Spiritual Discourses
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-            {events.map((event) => (
-              <div
-                key={event.id}
-                onClick={() => {
-                  setSelectedEvent(event);
-                  setEventModalOpen(true);
-                }}
-                className="card-warm cursor-pointer group hover:border-[#E86F1D]/50 hover:shadow-lg transition-all duration-200"
-              >
-                <div className="card-body space-y-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="inline-block px-3 py-1 bg-[#E86F1D] text-white text-xs font-bold rounded-md w-fit shadow-xs">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+            {[...events]
+              .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
+              .map((event) => {
+                const t = (event.title || "").toLowerCase();
+                const s = (event.slug || "").toLowerCase();
+                const graphicSrc =
+                  t.includes("bhagwat") || s.includes("bhagwat") || t.includes("भागवत")
+                    ? "/images/event-katha-graphic.jpg"
+                    : t.includes("yoga") || s.includes("yoga") || t.includes("योग")
+                    ? "/images/event-yoga-graphic.jpg"
+                    : "/images/event-gurukul-graphic.jpg";
+
+              return (
+                <div
+                  key={event.id}
+                  onClick={() => {
+                    setSelectedEvent(event);
+                    setEventModalOpen(true);
+                  }}
+                  className="rounded-3xl overflow-hidden bg-white border border-[#E7D8C8] shadow-[0_10px_30px_-8px_rgba(43,32,26,0.1)] hover:shadow-[0_20px_40px_-10px_rgba(43,32,26,0.2)] hover:-translate-y-1.5 transition-all duration-300 group flex flex-col justify-between cursor-pointer"
+                >
+                  {/* Top Illustration Area with Date Badge (Format from Reference Picture) */}
+                  <div className="relative w-full h-[220px] sm:h-[240px] bg-white flex items-center justify-center p-3 overflow-hidden border-b border-[#F0E4D5]">
+                    {/* Orange Date Badge */}
+                    <div className="absolute top-3.5 left-3.5 z-10 px-3.5 py-1.5 rounded-lg bg-[#E86F1D] text-white text-xs font-black tracking-wider uppercase shadow-md">
                       {formatCardDate(event.startDate)}
                     </div>
-                    <span className="text-[11px] font-bold text-[#E86F1D] opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                      <span>View Details</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </span>
+
+                    {/* Centered Graphic Emblem */}
+                    <div className="relative w-full h-full">
+                      <Image
+                        src={graphicSrc}
+                        alt={event.title}
+                        fill
+                        className="object-contain p-2 group-hover:scale-105 transition-transform duration-500 ease-out"
+                      />
+                    </div>
                   </div>
-                  <h3 className="font-editorial text-xl font-bold text-[#2B201A] group-hover:text-[#E86F1D] transition-colors leading-snug">
-                    {lang === "hi" && event.titleHi ? event.titleHi : event.title}
-                  </h3>
-                  <p className="text-xs text-[#B8893E] font-bold flex items-center gap-1.5">
-                    <Calendar className="w-4 h-4 shrink-0" />
-                    <span className="truncate">{event.location}</span>
-                  </p>
-                  <p className="text-sm text-[#2B201A]/85 leading-relaxed line-clamp-3">
-                    {lang === "hi" && event.summaryHi ? event.summaryHi : event.summary}
-                  </p>
+
+                  {/* Bottom Text Plate (Format from Reference Picture) */}
+                  <div className="bg-[#FFF9F2] p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-3">
+                    <div className="space-y-2">
+                      <h3 className="font-sans font-black text-[#1E1612] tracking-wider text-base sm:text-lg uppercase leading-snug group-hover:text-[#E86F1D] transition-colors">
+                        {lang === "hi" && event.titleHi ? event.titleHi : event.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-[#4A3E38] leading-relaxed line-clamp-3 font-sans">
+                        {lang === "hi" && event.summaryHi ? event.summaryHi : event.summary}
+                      </p>
+                    </div>
+
+                    <div className="pt-2 flex items-center justify-between border-t border-[#E7D8C8]/60 mt-2">
+                      <span className="text-xs font-semibold text-[#8C6B3E] flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5 text-[#E86F1D]" />
+                        <span className="truncate max-w-[150px]">{event.location}</span>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedEvent(event);
+                          setEventModalOpen(true);
+                        }}
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-[#E86F1D] hover:text-[#C75A10] uppercase tracking-wider group/btn cursor-pointer"
+                      >
+                        <span>{lang === "hi" ? "विवरण देखें" : "View Details"}</span>
+                        <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="card-action">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openDonateModal(event.title);
-                    }}
-                    className="btn-outline w-full"
-                  >
-                    REGISTER / SUPPORT EVENT
-                  </button>
-                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* IMPACT COUNTERS STRIP (Matching original site design & number style) */}
+      <section className="py-8 sm:py-12 bg-[#FFF8F0] border-y border-[#E7D8C8]/60">
+        <div className="page-container">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-4 items-center justify-between text-center">
+            {/* 1. Members */}
+            <div className="flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2 relative lg:after:content-[''] lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 lg:after:w-[1px] lg:after:h-[60%] lg:after:bg-[#E6E6E6]/60">
+              <div className="w-11 h-11 sm:w-12 sm:h-12 relative flex items-center justify-center">
+                <Image
+                  src="https://namobhagwatevasudevaya.com/cdn/shop/files/ChatGPT_Image_May_22_2026_12_53_41_PM.png?v=1779434644&width=200"
+                  alt="Members"
+                  width={48}
+                  height={48}
+                  unoptimized
+                  className="w-full h-full object-contain"
+                />
               </div>
-            ))}
+              <div className="font-sans font-bold text-2xl sm:text-3xl lg:text-[32px] text-[#E8622A] leading-tight tracking-tight">
+                <CountUp start={18500} end={25000} suffix="+" duration={1800} />
+              </div>
+              <div className="font-sans text-xs sm:text-[13px] md:text-sm font-bold text-black uppercase tracking-wider leading-snug">
+                {lang === "hi" ? "सक्रिय सदस्य" : "Members"}
+              </div>
+            </div>
+
+            {/* 2. Events */}
+            <div className="flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2 relative lg:after:content-[''] lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 lg:after:w-[1px] lg:after:h-[60%] lg:after:bg-[#E6E6E6]/60">
+              <div className="w-11 h-11 sm:w-12 sm:h-12 relative flex items-center justify-center">
+                <Image
+                  src="https://namobhagwatevasudevaya.com/cdn/shop/files/ChatGPT_Image_May_22_2026_12_57_44_PM.png?v=1779434880&width=200"
+                  alt="Events"
+                  width={48}
+                  height={48}
+                  unoptimized
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div className="font-sans font-bold text-2xl sm:text-3xl lg:text-[32px] text-[#E8622A] leading-tight tracking-tight">
+                <CountUp start={240} end={350} suffix="+" duration={1600} />
+              </div>
+              <div className="font-sans text-xs sm:text-[13px] md:text-sm font-bold text-black uppercase tracking-wider leading-snug">
+                {lang === "hi" ? "आयोजित कार्यक्रम" : "Events"}
+              </div>
+            </div>
+
+            {/* 3. Cities */}
+            <div className="flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2 relative lg:after:content-[''] lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 lg:after:w-[1px] lg:after:h-[60%] lg:after:bg-[#E6E6E6]/60">
+              <div className="w-11 h-11 sm:w-12 sm:h-12 relative flex items-center justify-center">
+                <Image
+                  src="https://namobhagwatevasudevaya.com/cdn/shop/files/ChatGPT_Image_May_22_2026_01_03_51_PM.png?v=1779435249&width=200"
+                  alt="Cities Served"
+                  width={48}
+                  height={48}
+                  unoptimized
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div className="font-sans font-bold text-2xl sm:text-3xl lg:text-[32px] text-[#E8622A] leading-tight tracking-tight">
+                <CountUp start={25} end={50} suffix="+" duration={1400} />
+              </div>
+              <div className="font-sans text-xs sm:text-[13px] md:text-sm font-bold text-black uppercase tracking-wider leading-snug">
+                {lang === "hi" ? "लाभान्वित शहर" : "Cities Served"}
+              </div>
+            </div>
+
+            {/* 4. Impacted */}
+            <div className="flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2 relative lg:after:content-[''] lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 lg:after:w-[1px] lg:after:h-[60%] lg:after:bg-[#E6E6E6]/60">
+              <div className="w-11 h-11 sm:w-12 sm:h-12 relative flex items-center justify-center">
+                <Image
+                  src="https://namobhagwatevasudevaya.com/cdn/shop/files/ChatGPT_Image_May_22_2026_01_06_51_PM.png?v=1779435441&width=200"
+                  alt="People Impacted"
+                  width={48}
+                  height={48}
+                  unoptimized
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div className="font-sans font-bold text-2xl sm:text-3xl lg:text-[32px] text-[#E8622A] leading-tight tracking-tight">
+                <CountUp start={75000} end={100000} suffix="+" duration={2000} />
+              </div>
+              <div className="font-sans text-xs sm:text-[13px] md:text-sm font-bold text-black uppercase tracking-wider leading-snug">
+                {lang === "hi" ? "लाभान्वित परिवार" : "People Impacted"}
+              </div>
+            </div>
+
+            {/* 5. Years of Seva */}
+            <div className="col-span-2 md:col-span-1 flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2">
+              <div className="w-11 h-11 sm:w-12 sm:h-12 relative flex items-center justify-center">
+                <Image
+                  src="https://namobhagwatevasudevaya.com/cdn/shop/files/ChatGPT_Image_May_22_2026_01_08_48_PM.png?v=1779435579&width=200"
+                  alt="Years of Seva"
+                  width={48}
+                  height={48}
+                  unoptimized
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div className="font-sans font-bold text-2xl sm:text-3xl lg:text-[32px] text-[#E8622A] leading-tight tracking-tight">
+                <CountUp start={8} end={15} suffix="+" duration={1200} />
+              </div>
+              <div className="font-sans text-xs sm:text-[13px] md:text-sm font-bold text-black uppercase tracking-wider leading-snug">
+                {lang === "hi" ? "सेवा के वर्ष" : "Years of Seva"}
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* IMPACT COUNTERS STRIP */}
-      <section className="py-12 bg-[#FBF2E7] border-b border-[#E7D8C8]">
-        <div className="page-container">
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-6 text-center">
-            <div className="space-y-1 p-3">
-              <p className="font-editorial text-3xl sm:text-4xl font-bold text-[#E86F1D]">25,000+</p>
-              <p className="text-xs sm:text-sm font-bold text-[#2B201A]/80 uppercase tracking-wider">Active Members</p>
-            </div>
-            <div className="space-y-1 p-3">
-              <p className="font-editorial text-3xl sm:text-4xl font-bold text-[#B8893E]">350+</p>
-              <p className="text-xs sm:text-sm font-bold text-[#2B201A]/80 uppercase tracking-wider">Events Conducted</p>
-            </div>
-            <div className="space-y-1 p-3">
-              <p className="font-editorial text-3xl sm:text-4xl font-bold text-[#2F5A43]">50+</p>
-              <p className="text-xs sm:text-sm font-bold text-[#2B201A]/80 uppercase tracking-wider">Cities Served</p>
-            </div>
-            <div className="space-y-1 p-3">
-              <p className="font-editorial text-3xl sm:text-4xl font-bold text-[#E86F1D]">1,00,000+</p>
-              <p className="text-xs sm:text-sm font-bold text-[#2B201A]/80 uppercase tracking-wider">Lives Impacted</p>
-            </div>
-            <div className="col-span-2 lg:col-span-1 space-y-1 p-3">
-              <p className="font-editorial text-3xl sm:text-4xl font-bold text-[#B8893E]">15+</p>
-              <p className="text-xs sm:text-sm font-bold text-[#2B201A]/80 uppercase tracking-wider">Years of Seva</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* SACRED GALLERY & GLIMPSES SECTION */}
+      <GallerySection />
 
-      {/* FOUR PURPOSE CARDS */}
-      <section className="section-py">
-        <div className="page-container">
-          <div className="text-center max-w-2xl mx-auto section-header space-y-2">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#B8893E]">Pillars of Action</p>
+      {/* FOUR PURPOSE CARDS (PILLARS OF ACTION) */}
+      <section className="pt-7 sm:pt-9 pb-12 sm:pb-16 bg-[#FFF9F2] border-t border-[#E7D8C8]/60">
+        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10 space-y-2">
+            <span className="inline-block px-3.5 py-1 rounded-full bg-[#E86F1D]/10 text-[#E86F1D] text-[11px] font-bold uppercase tracking-widest border border-[#E86F1D]/20">
+              {lang === "hi" ? "कार्य के स्तम्भ" : "Pillars of Action"}
+            </span>
             <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
-              Our Foundational Commitments
+              {lang === "hi" ? "हमारे आधारभूत संकल्प" : "Our Foundational Commitments"}
             </h2>
+            <p className="text-sm text-[#7A6B60] max-w-lg mx-auto">
+              {lang === "hi"
+                ? "सनातन धर्म, शिक्षा, स्वास्थ्य एवं समाज सेवा को समर्पित हमारे चार मुख्य स्तंभ।"
+                : "Dedicated to preserving Sanatan culture, moral education, healthcare, and humanitarian service."}
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
-            {/* Mission */}
-            <div className="card-warm">
-              <div className="card-body space-y-4">
-                <div className="w-12 h-12 rounded-xl bg-[#E86F1D]/10 text-[#E86F1D] flex items-center justify-center">
-                  <Compass className="w-6 h-6" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-7 items-stretch">
+            {/* 1. Mission */}
+            <div className="relative rounded-3xl bg-white/75 hover:bg-white/95 backdrop-blur-sm p-6 sm:p-7 border border-[#E7D8C8] hover:border-[#E86F1D] shadow-[0_8px_24px_-4px_rgba(43,32,26,0.06)] hover:shadow-[0_16px_36px_-6px_rgba(232,111,29,0.14)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="w-12 h-12 rounded-2xl bg-[#E86F1D]/10 text-[#E86F1D] flex items-center justify-center group-hover:scale-105 group-hover:bg-[#E86F1D] group-hover:text-white transition-all duration-300 shadow-sm">
+                    <Compass className="w-6 h-6" />
+                  </div>
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#B8893E] bg-[#B8893E]/10 px-3 py-1 rounded-full">
+                    {lang === "hi" ? "हमारा संकल्प" : "SANKALPA"}
+                  </span>
                 </div>
-                <h3 className="font-editorial text-2xl font-bold text-[#2B201A]">Our Mission</h3>
-                <p className="text-sm sm:text-base text-[#2B201A]/85 leading-relaxed">
-                  To empower every section of society through education, moral values, selfless service, and spiritual guidance, while helping youth and women become self-reliant and strengthening cultural heritage.
-                </p>
+                <div>
+                  <h3 className="font-editorial text-2xl font-bold text-[#2B201A] group-hover:text-[#E86F1D] transition-colors">
+                    {lang === "hi" ? "हमारा ध्येय (Mission)" : "Our Mission"}
+                  </h3>
+                  <p className="text-sm sm:text-[15px] text-[#5C4D43] leading-relaxed mt-2">
+                    {lang === "hi"
+                      ? "शिक्षा, नैतिक मूल्यों, निःस्वार्थ सेवा और आध्यात्मिक मार्गदर्शन के माध्यम से समाज के हर वर्ग को सशक्त बनाना, युवाओं और महिलाओं को स्वावलंबी बनाना तथा सांस्कृतिक धरोहर को सुदृढ़ करना।"
+                      : "To empower every section of society through education, moral values, selfless service, and spiritual guidance, while helping youth and women become self-reliant and strengthening cultural heritage."}
+                  </p>
+                </div>
+              </div>
+              <div className="pt-5 mt-5 border-t border-[#E7D8C8]/60 flex items-center justify-between">
+                <Link
+                  href="/about"
+                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#E86F1D] hover:text-[#D45A0E] group/link transition-colors"
+                >
+                  <span>{lang === "hi" ? "ध्येय के बारे में और जानें" : "Learn About Our Mission"}</span>
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover/link:translate-x-1" />
+                </Link>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#E86F1D]/40" />
               </div>
             </div>
 
-            {/* Vision */}
-            <div className="card-warm">
-              <div className="card-body space-y-4">
-                <div className="w-12 h-12 rounded-xl bg-[#B8893E]/10 text-[#B8893E] flex items-center justify-center">
-                  <Sun className="w-6 h-6" />
+            {/* 2. Vision */}
+            <div className="relative rounded-3xl bg-white/75 hover:bg-white/95 backdrop-blur-sm p-6 sm:p-7 border border-[#E7D8C8] hover:border-[#B8893E] shadow-[0_8px_24px_-4px_rgba(43,32,26,0.06)] hover:shadow-[0_16px_36px_-6px_rgba(184,137,62,0.18)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="w-12 h-12 rounded-2xl bg-[#B8893E]/10 text-[#B8893E] flex items-center justify-center group-hover:scale-105 group-hover:bg-[#B8893E] group-hover:text-white transition-all duration-300 shadow-sm">
+                    <Sun className="w-6 h-6" />
+                  </div>
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#B8893E] bg-[#B8893E]/10 px-3 py-1 rounded-full">
+                    {lang === "hi" ? "दिव्य दृष्टि" : "VISION"}
+                  </span>
                 </div>
-                <h3 className="font-editorial text-2xl font-bold text-[#2B201A]">Our Vision</h3>
-                <p className="text-sm sm:text-base text-[#2B201A]/85 leading-relaxed">
-                  To help build a society rooted in spiritual values, cultural heritage, education, and humanity, where every individual can live with dignity, peace, and harmony.
-                </p>
+                <div>
+                  <h3 className="font-editorial text-2xl font-bold text-[#2B201A] group-hover:text-[#B8893E] transition-colors">
+                    {lang === "hi" ? "हमारा दृष्टिकोण (Vision)" : "Our Vision"}
+                  </h3>
+                  <p className="text-sm sm:text-[15px] text-[#5C4D43] leading-relaxed mt-2">
+                    {lang === "hi"
+                      ? "आध्यात्मिक मूल्यों, सांस्कृतिक विरासत, शिक्षा और मानवता पर आधारित ऐसे समाज का निर्माण करना, जहां प्रत्येक व्यक्ति गरिमा, शांति और परस्पर सद्भाव के साथ जीवन व्यतीत कर सके।"
+                      : "To help build a society rooted in spiritual values, cultural heritage, education, and humanity, where every individual can live with dignity, peace, and harmony."}
+                  </p>
+                </div>
+              </div>
+              <div className="pt-5 mt-5 border-t border-[#E7D8C8]/60 flex items-center justify-between">
+                <Link
+                  href="/founder"
+                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#B8893E] hover:text-[#9A702E] group/link transition-colors"
+                >
+                  <span>{lang === "hi" ? "संस्थापक दृष्टिकोण देखें" : "Explore Founder's Vision"}</span>
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover/link:translate-x-1" />
+                </Link>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#B8893E]/40" />
               </div>
             </div>
 
-            {/* Join Us */}
-            <div className="card-warm">
-              <div className="card-body space-y-4">
-                <div className="w-12 h-12 rounded-xl bg-[#2F5A43]/10 text-[#2F5A43] flex items-center justify-center">
-                  <Users className="w-6 h-6" />
+            {/* 3. Join Us */}
+            <div className="relative rounded-3xl bg-white/75 hover:bg-white/95 backdrop-blur-sm p-6 sm:p-7 border border-[#E7D8C8] hover:border-[#2F5A43] shadow-[0_8px_24px_-4px_rgba(43,32,26,0.06)] hover:shadow-[0_16px_36px_-6px_rgba(47,90,67,0.18)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="w-12 h-12 rounded-2xl bg-[#2F5A43]/10 text-[#2F5A43] flex items-center justify-center group-hover:scale-105 group-hover:bg-[#2F5A43] group-hover:text-white transition-all duration-300 shadow-sm">
+                    <Users className="w-6 h-6" />
+                  </div>
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#2F5A43] bg-[#2F5A43]/10 px-3 py-1 rounded-full">
+                    {lang === "hi" ? "सेवा परिवार" : "COMMUNITY"}
+                  </span>
                 </div>
-                <h3 className="font-editorial text-2xl font-bold text-[#2B201A]">Join Us</h3>
-                <p className="text-sm sm:text-base text-[#2B201A]/85 leading-relaxed">
-                  Become part of a community committed to seva, culture, and spiritual growth. Together, we can create practical and compassionate change in villages and cities alike.
-                </p>
+                <div>
+                  <h3 className="font-editorial text-2xl font-bold text-[#2B201A] group-hover:text-[#2F5A43] transition-colors">
+                    {lang === "hi" ? "हमसे जुड़ें (Join Us)" : "Join Us"}
+                  </h3>
+                  <p className="text-sm sm:text-[15px] text-[#5C4D43] leading-relaxed mt-2">
+                    {lang === "hi"
+                      ? "सेवा, संस्कृति और आत्मिक उन्नति के लिए समर्पित एक पावन परिवार का अंग बनें। साथ मिलकर हम गांवों और शहरों में वास्तविक और सकारात्मक बदलाव ला सकते हैं।"
+                      : "Become part of a community committed to seva, culture, and spiritual growth. Together, we can create practical and compassionate change in villages and cities alike."}
+                  </p>
+                </div>
               </div>
-              <div className="card-action">
-                <Link href="/membership" className="btn-secondary w-full">
-                  <span>Become a Member</span>
-                  <ArrowRight className="w-4 h-4" />
+              <div className="pt-5 mt-5 border-t border-[#E7D8C8]/60">
+                <Link
+                  href="/membership"
+                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#2F5A43] hover:bg-[#244734] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all"
+                >
+                  <span>{lang === "hi" ? "सदस्य बनें" : "Become a Member"}</span>
+                  <ArrowRight className="w-4 h-4 text-[#A5D6A7]" />
                 </Link>
               </div>
             </div>
 
-            {/* Support Us */}
-            <div className="card-warm">
-              <div className="card-body space-y-4">
-                <div className="w-12 h-12 rounded-xl bg-[#E86F1D]/10 text-[#E86F1D] flex items-center justify-center">
-                  <Heart className="w-6 h-6 fill-current" />
+            {/* 4. Support Us */}
+            <div className="relative rounded-3xl bg-white/75 hover:bg-white/95 backdrop-blur-sm p-6 sm:p-7 border border-[#E7D8C8] hover:border-[#E86F1D] shadow-[0_8px_24px_-4px_rgba(43,32,26,0.06)] hover:shadow-[0_16px_36px_-6px_rgba(232,111,29,0.18)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="w-12 h-12 rounded-2xl bg-[#E86F1D]/10 text-[#E86F1D] flex items-center justify-center group-hover:scale-105 group-hover:bg-[#E86F1D] group-hover:text-white transition-all duration-300 shadow-sm">
+                    <Heart className="w-6 h-6 fill-current" />
+                  </div>
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#E86F1D] bg-[#E86F1D]/10 px-3 py-1 rounded-full">
+                    {lang === "hi" ? "पुण्य सेवा" : "PUNYA SEVA"}
+                  </span>
                 </div>
-                <h3 className="font-editorial text-2xl font-bold text-[#2B201A]">Support Us</h3>
-                <p className="text-sm sm:text-base text-[#2B201A]/85 leading-relaxed">
-                  Your contribution helps sustain social service, Gurukul education, spiritual initiatives, farmer awareness workshops, and community welfare programs that create lasting impact.
-                </p>
+                <div>
+                  <h3 className="font-editorial text-2xl font-bold text-[#2B201A] group-hover:text-[#E86F1D] transition-colors">
+                    {lang === "hi" ? "सहयोग करें (Support Us)" : "Support Us"}
+                  </h3>
+                  <p className="text-sm sm:text-[15px] text-[#5C4D43] leading-relaxed mt-2">
+                    {lang === "hi"
+                      ? "आपका एक छोटा सा सहयोग समाज सेवा, गुरुकुल शिक्षा, आध्यात्मिक आयोजनों, किसान कल्याण और अन्नदान कार्यक्रमों को निरंतर जारी रखने में अमूल्य योगदान देता है।"
+                      : "Your contribution helps sustain social service, Gurukul education, spiritual initiatives, farmer awareness workshops, and community welfare programs that create lasting impact."}
+                  </p>
+                </div>
               </div>
-              <div className="card-action">
+              <div className="pt-5 mt-5 border-t border-[#E7D8C8]/60">
                 <button
                   onClick={() => openDonateModal("General Donation")}
-                  className="btn-primary w-full"
+                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer"
                 >
-                  <span>Make a Donation</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <Heart className="w-4 h-4 fill-current" />
+                  <span>{lang === "hi" ? "सहयोग राशि दान करें" : "Make a Donation"}</span>
                 </button>
               </div>
             </div>
@@ -518,67 +822,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* DEVOTEE TESTIMONIAL CAROUSEL */}
-      <section className="section-py bg-[#FBF2E7]/40 border-t border-[#E7D8C8]">
-        <div className="page-container max-w-4xl">
-          <div className="card-warm text-center relative overflow-hidden p-8 sm:p-12">
-            <Quote className="w-16 h-16 text-[#B8893E]/20 mx-auto mb-4" />
-            <p className="text-xs font-bold uppercase tracking-widest text-[#E86F1D] mb-2">
-              WHAT OUR DEVOTEES SAY
-            </p>
-            <h2 className="font-editorial text-2xl sm:text-3xl font-bold text-[#2B201A] mb-6">
-              Experiences & Blessings Shared by Our Community
-            </h2>
-
-            <div className="min-h-[140px] flex items-center justify-center">
-              <blockquote className="space-y-4">
-                <p className="font-editorial text-lg sm:text-xl text-[#2B201A] italic leading-relaxed max-w-2xl mx-auto">
-                  “{lang === "hi" ? testimonials[activeTestimonial].quoteHi : testimonials[activeTestimonial].quote}”
-                </p>
-                <div>
-                  <p className="font-bold text-sm text-[#2B201A]">{testimonials[activeTestimonial].name}</p>
-                  <p className="text-xs text-[#B8893E] font-semibold">
-                    {testimonials[activeTestimonial].role} — {testimonials[activeTestimonial].location}
-                  </p>
-                </div>
-              </blockquote>
-            </div>
-
-            {/* Carousel Controls */}
-            <div className="flex items-center justify-center gap-4 mt-8 pt-4 border-t border-[#E7D8C8]">
-              <button
-                onClick={() =>
-                  setActiveTestimonial((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1))
-                }
-                className="p-2.5 rounded-full border border-[#E7D8C8] hover:bg-[#FFF9F2] text-[#2B201A] min-h-[44px] min-w-[44px] flex items-center justify-center"
-                aria-label="Previous Testimonial"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <div className="flex gap-2">
-                {testimonials.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveTestimonial(idx)}
-                    className={`h-2.5 rounded-full transition-all ${
-                      activeTestimonial === idx ? "bg-[#E86F1D] w-6" : "bg-[#E7D8C8] w-2.5"
-                    }`}
-                  />
-                ))}
-              </div>
-              <button
-                onClick={() =>
-                  setActiveTestimonial((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1))
-                }
-                className="p-2.5 rounded-full border border-[#E7D8C8] hover:bg-[#FFF9F2] text-[#2B201A] min-h-[44px] min-w-[44px] flex items-center justify-center"
-                aria-label="Next Testimonial"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* DEVOTEE TESTIMONIALS CAROUSEL (Matching reference design) */}
+      <TestimonialsSection lang={lang} />
 
       {/* EVENT DETAILS POPUP MODAL */}
       <EventDetailsModal
