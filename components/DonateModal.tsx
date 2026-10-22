@@ -402,11 +402,41 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
     } catch {}
   }
 
+function localizeProgramName(name: string | undefined | null, isHi: boolean): string {
+  if (!name) return isHi ? "सेवा हेतु दान" : "Support Our Mission";
+  if (!isHi) return name;
+  const lower = name.toLowerCase();
+  if (lower.includes("general donation") || lower === "general donation") return "सामान्य पुण्य दान";
+  if (lower.includes("founder's vision") || lower.includes("founder")) return "संस्थापक विजन सेवा";
+  if (lower.includes("general seva") || lower === "general seva") return "सामान्य जनसेवा";
+  if (lower.includes("health")) return "स्वास्थ्य एवं प्राकृतिक कल्याण सेवा";
+  if (lower.includes("education") || lower.includes("gurukul")) return "शिक्षा एवं गुरुकुल विकास सेवा";
+  if (lower.includes("women")) return "महिला सशक्तिकरण सेवा";
+  if (lower.includes("welfare") || lower.includes("farmer")) return "सामाजिक कल्याण एवं सर्वजन सेवा";
+  if (lower.includes("membership")) {
+    if (lower.includes("silver")) return "रजत (सिल्वर) सदस्यता";
+    if (lower.includes("gold")) return "स्वर्ण (गोल्ड) सदस्यता";
+    if (lower.includes("platinum")) return "प्लेटिनम सदस्यता";
+    return "साधारण सदस्यता";
+  }
+  return name;
+}
+
+function localizeError(msg: string | undefined, isHi: boolean): string {
+  if (!msg || !isHi) return msg || "";
+  if (msg.includes("valid name") || msg.includes("enter your name")) return "कृपया अपना पूरा नाम दर्ज करें।";
+  if (msg.includes("valid email") || msg.includes("email")) return "कृपया एक मान्य ईमेल पता दर्ज करें।";
+  if (msg.includes("10-digit") || msg.includes("mobile")) return "कृपया 10 अंकों का मान्य मोबाइल नंबर दर्ज करें।";
+  if (msg.includes("amount") || msg.includes("minimum")) return "कृपया एक मान्य राशि चुनें।";
+  if (msg.includes("connection") || msg.includes("server")) return "सर्वर से संपर्क नहीं हो सका। कृपया अपना इंटरनेट कनेक्शन जांचें और पुनः प्रयास करें।";
+  return msg;
+}
+
   const fieldError = (field: string) =>
-    error?.field === field ? <p className="mt-1 text-xs font-semibold text-[#B3261E]">{error.message}</p> : null;
+    error?.field === field ? <p className="mt-1 text-xs font-semibold text-[#B3261E]">{localizeError(error.message, hi)}</p> : null;
   const generalError = error && !["name", "email", "mobile", "amount"].includes(error.field ?? "") ? (
     <p role="alert" className="text-sm font-semibold text-[#B3261E] bg-[#B3261E]/5 border border-[#B3261E]/20 rounded-xl p-3">
-      {error.message}
+      {localizeError(error.message, hi)}
     </p>
   ) : null;
 
@@ -429,12 +459,12 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
             </div>
             <div className="min-w-0">
               <h3 id="donate-title" className="font-editorial text-lg sm:text-xl font-bold text-[#2B201A] truncate">
-                {session && step !== "SELECT" ? session.program : donateModal.program || (hi ? "सेवा हेतु दान" : "Support Our Mission")}
+                {localizeProgramName(session && step !== "SELECT" ? session.program : donateModal.program, hi)}
               </h3>
-              <p className="text-xs text-[#B8893E] font-semibold">Namo Bhagwate Vasudevaya Trust</p>
+              <p className="text-xs text-[#B8893E] font-semibold">{hi ? "नमो भगवते वासुदेवाय ट्रस्ट" : "Namo Bhagwate Vasudevaya Trust"}</p>
             </div>
           </div>
-          <button onClick={handleClose} aria-label="Close" className="p-2 text-[#2B201A]/60 hover:text-[#2B201A] rounded-xl hover:bg-[#FFF9F2] min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0">
+          <button onClick={handleClose} aria-label={hi ? "बंद करें" : "Close"} className="p-2 text-[#2B201A]/60 hover:text-[#2B201A] rounded-xl hover:bg-[#FFF9F2] min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -442,7 +472,7 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
         {/* Progress */}
         {step !== "DONE" && (
           <ol className="flex gap-2 sm:gap-3 px-4 sm:px-6 pt-3.5 pb-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider shrink-0 bg-[#FFF9F2] border-b border-[#E7D8C8]/40">
-            {["Details", "Pay", "Confirmed"].map((label, i) => (
+            {(hi ? ["विवरण", "भुगतान", "पुष्टि"] : ["Details", "Pay", "Confirmed"]).map((label, i) => (
               <li key={label} className={`flex-1 border-t-2 pt-1.5 transition-colors whitespace-nowrap text-center sm:text-left ${i <= stepIndex ? "border-[#E86F1D] text-[#E86F1D]" : "border-[#E7D8C8] text-[#2B201A]/40"}`}>
                 {i + 1}. {label}
               </li>
@@ -474,7 +504,7 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
                                 : "bg-[#FBF2E7] border-[#E7D8C8] text-[#2B201A] hover:border-[#E86F1D] hover:bg-[#FFF9F2]"
                             }`}
                           >
-                            <span className="text-xs font-bold leading-tight">{p.name}</span>
+                            <span className="text-xs font-bold leading-tight">{localizeProgramName(p.name, hi)}</span>
                             <span className={`text-sm sm:text-base font-extrabold mt-1 ${selected ? "text-white" : "text-[#E86F1D]"}`}>
                               {formatINR(p.price)}
                             </span>
@@ -516,14 +546,16 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label htmlFor="donate-name" className="block text-xs font-semibold text-[#2B201A]/80 mb-1">Full Name *</label>
+                    <label htmlFor="donate-name" className="block text-xs font-semibold text-[#2B201A]/80 mb-1">
+                      {hi ? "पूरा नाम *" : "Full Name *"}
+                    </label>
                     <input
                       id="donate-name"
                       type="text"
                       autoComplete="name"
                       required
                       maxLength={60}
-                      placeholder="Your full name"
+                      placeholder={hi ? "आपका पूरा नाम" : "Your full name"}
                       value={donorName}
                       onChange={(e) => {
                         setDonorName(e.target.value);
@@ -535,7 +567,10 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
                     {fieldError("name")}
                   </div>
                   <div>
-                    <label htmlFor="donate-mobile" className="block text-xs font-semibold text-[#2B201A]/80 mb-1">Mobile Number <span className="font-normal text-[#2B201A]/50">(optional)</span></label>
+                    <label htmlFor="donate-mobile" className="block text-xs font-semibold text-[#2B201A]/80 mb-1">
+                      {hi ? "मोबाइल नंबर " : "Mobile Number "}
+                      <span className="font-normal text-[#2B201A]/50">({hi ? "वैकल्पिक" : "optional"})</span>
+                    </label>
                     <input
                       id="donate-mobile"
                       type="tel"
@@ -557,7 +592,9 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
                 </div>
 
                 <div>
-                  <label htmlFor="donate-email" className="block text-xs font-semibold text-[#2B201A]/80 mb-1">Email Address *</label>
+                  <label htmlFor="donate-email" className="block text-xs font-semibold text-[#2B201A]/80 mb-1">
+                    {hi ? "ईमेल पता *" : "Email Address *"}
+                  </label>
                   <input
                     id="donate-email"
                     type="email"
@@ -574,19 +611,27 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
                     className="input-warm"
                   />
                   {fieldError("email")}
-                  <p className="mt-1 text-xs text-[#2B201A]/55">Your confirmation will be sent here after we verify the payment.</p>
+                  <p className="mt-1 text-xs text-[#2B201A]/55">
+                    {hi ? "भुगतान सत्यापन के बाद आपकी पावती और रसीद यहाँ भेजी जाएगी।" : "Your confirmation will be sent here after we verify the payment."}
+                  </p>
                 </div>
 
                 <div className="flex items-start gap-2 text-xs text-[#2B201A]/70 bg-[#FBF2E7] p-3 rounded-xl border border-[#E7D8C8]">
                   <ShieldCheck className="w-4 h-4 text-[#2F5A43] shrink-0 mt-0.5" />
-                  <span>You will pay directly to the Trust&apos;s UPI account using any UPI app. No card details are collected.</span>
+                  <span>
+                    {hi
+                      ? "आप किसी भी UPI ऐप से सीधे ट्रस्ट के आधिकारिक खाते में भुगतान करेंगे। कोई कार्ड विवरण नहीं लिया जाता।"
+                      : "You will pay directly to the Trust's UPI account using any UPI app. No card details are collected."}
+                  </span>
                 </div>
 
                 {generalError}
 
                 <button type="submit" disabled={busy || currentAmount <= 0} className="btn-primary w-full disabled:opacity-60 disabled:cursor-not-allowed">
                   {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                  <span>Continue to Payment · {formatINR(currentAmount)}</span>
+                  <span>
+                    {hi ? `भुगतान के लिए आगे बढ़ें · ${formatINR(currentAmount)}` : `Continue to Payment · ${formatINR(currentAmount)}`}
+                  </span>
                 </button>
               </form>
             )}
@@ -604,7 +649,7 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
                         <Image src="/images/logo.jpg" alt="Namo Bhagwate Vasudevaya Trust emblem" fill sizes="56px" className="object-cover" />
                       </div>
                       <h4 className="font-sans text-lg md:text-xl leading-tight font-extrabold tracking-tight uppercase text-[#14532D] text-left">
-                        Namo Bhagwate Trust
+                        {hi ? "नमो भगवते ट्रस्ट" : "Namo Bhagwate Trust"}
                       </h4>
                     </div>
 
@@ -621,50 +666,65 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
 
                     <div className="mt-2 w-full flex items-center gap-3">
                       <span className="h-px flex-1 bg-linear-to-r from-transparent to-[#C9A24B]" />
-                      <span className="font-editorial text-lg md:text-xl font-bold text-[#14532D] whitespace-nowrap">Scan &amp; Support</span>
+                      <span className="font-editorial text-lg md:text-xl font-bold text-[#14532D] whitespace-nowrap">
+                        {hi ? "स्कैन कर सहयोग करें" : "Scan & Support"}
+                      </span>
                       <span className="h-px flex-1 bg-linear-to-l from-transparent to-[#C9A24B]" />
                     </div>
-                    <p className="hidden md:block text-xs text-[#2B201A]/75">For a Better, Kinder &amp; Healthier Society</p>
+                    <p className="hidden md:block text-xs text-[#2B201A]/75">
+                      {hi ? "एक बेहतर, संवेदनशील और स्वस्थ समाज के लिए" : "For a Better, Kinder & Healthier Society"}
+                    </p>
                   </div>
                   <div className="bg-[#14532D] text-[#E9D9A6] text-center py-1.5 text-[10px] font-semibold tracking-[0.3em]">
-                    SEVA • SANSKAR • SAMARPAN
+                    {hi ? "सेवा • संस्कार • समर्पण" : "SEVA • SANSKAR • SAMARPAN"}
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   {resumed && (
                     <p className="text-xs text-[#2B201A]/70 bg-[#FBF2E7] border border-[#E7D8C8] rounded-xl p-2.5">
-                      Continuing the donation you started earlier.{" "}
-                      <button type="button" onClick={resetAll} className="font-bold text-[#E86F1D] underline underline-offset-2">Start a new donation</button>
+                      {hi ? "पहले शुरू किए गए दान को जारी रख रहे हैं।" : "Continuing the donation you started earlier."}{" "}
+                      <button type="button" onClick={resetAll} className="font-bold text-[#E86F1D] underline underline-offset-2">
+                        {hi ? "नया दान शुरू करें" : "Start a new donation"}
+                      </button>
                     </p>
                   )}
 
                   {session.membership && (
                     <p className="text-xs text-[#2B201A]/75">
-                      <strong>{session.program}</strong>: your membership certificate is emailed to you once the Trust confirms the payment.
+                      <strong>{localizeProgramName(session.program, hi)}</strong>:{" "}
+                      {hi
+                        ? "ट्रस्ट द्वारा भुगतान की पुष्टि होते ही आपका सदस्यता प्रमाणपत्र आपको ईमेल किया जाएगा।"
+                        : "your membership certificate is emailed to you once the Trust confirms the payment."}
                     </p>
                   )}
                   <div className="rounded-xl bg-[#14532D]/5 border border-[#14532D]/15 px-3.5 py-2.5 space-y-2">
                     <div className="flex items-end justify-between gap-3">
                       <div>
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-[#14532D]/70">Amount</p>
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-[#14532D]/70">
+                          {hi ? "राशि" : "Amount"}
+                        </p>
                         <p className="text-2xl font-extrabold text-[#14532D] tabular-nums leading-tight">{formatINR(session.amount)}</p>
                       </div>
                       <div className="text-right min-w-0">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-[#14532D]/70">{session.membership ? "Membership ID" : "Donation ID"}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-[#14532D]/70">
+                          {session.membership ? (hi ? "सदस्यता आईडी" : "Membership ID") : (hi ? "दान आईडी" : "Donation ID")}
+                        </p>
                         <p className="font-mono text-xs font-bold text-[#1F1A17] truncate">{session.donationId}</p>
                       </div>
                     </div>
                     <div className="flex items-center justify-between gap-2 border-t border-[#14532D]/10 pt-2">
                       <div className="min-w-0">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-[#14532D]/70">UPI ID</p>
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-[#14532D]/70">
+                          {hi ? "यूपीआई आईडी" : "UPI ID"}
+                        </p>
                         <p className="font-bold text-sm text-[#1F1A17] break-all">{session.upiId}</p>
                         {session.accountLabel && <p className="text-xs text-[#2B201A]/60">{session.accountLabel}</p>}
                       </div>
                       <button
                         type="button"
                         onClick={copyUpiId}
-                        aria-label={copied ? "UPI ID copied" : "Copy UPI ID"}
+                        aria-label={copied ? (hi ? "UPI आईडी कॉपी हो गई" : "UPI ID copied") : (hi ? "UPI आईडी कॉपी करें" : "Copy UPI ID")}
                         className="shrink-0 p-1.5 rounded-md text-[#14532D]/70 hover:text-[#14532D] hover:bg-[#14532D]/5"
                       >
                         {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -675,18 +735,27 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
                   <p className="flex items-start gap-2 text-xs text-[#2B201A]/70">
                     <ShieldCheck className="w-4 h-4 text-[#2F5A43] shrink-0" />
                     <span>
-                      Scan the QR with any UPI app (BHIM, Google Pay, PhonePe, Paytm), or send to the UPI ID above.{" "}
-                      Pay exactly {formatINR(session.amount)} to {session.upiName}, then tap the button below. No screenshot or UTR needed.
+                      {hi ? (
+                        <>
+                          किसी भी UPI ऐप (BHIM, Google Pay, PhonePe, Paytm) से QR स्कैन करें, या ऊपर दी गई UPI ID पर भेजें।{" "}
+                          <strong>{session.upiName}</strong> को ठीक <strong>{formatINR(session.amount)}</strong> का भुगतान करें, फिर नीचे दिए बटन पर टैप करें। स्क्रीनशॉट या UTR की आवश्यकता नहीं है।
+                        </>
+                      ) : (
+                        <>
+                          Scan the QR with any UPI app (BHIM, Google Pay, PhonePe, Paytm), or send to the UPI ID above.{" "}
+                          Pay exactly {formatINR(session.amount)} to {session.upiName}, then tap the button below. No screenshot or UTR needed.
+                        </>
+                      )}
                     </span>
                   </p>
 
                   {generalError}
                   <button type="button" onClick={handlePaid} disabled={busy} className="btn-primary w-full disabled:opacity-60 disabled:cursor-not-allowed">
                     {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                    <span>I Have Completed the Payment</span>
+                    <span>{hi ? "मैंने भुगतान पूरा कर लिया है" : "I Have Completed the Payment"}</span>
                   </button>
                   <button type="button" onClick={resetAll} className="w-full text-xs font-semibold text-[#2B201A]/60 hover:text-[#2B201A] py-1">
-                    Cancel and change amount
+                    {hi ? "रद्द करें और राशि बदलें" : "Cancel and change amount"}
                   </button>
                 </div>
               </div>
@@ -700,21 +769,42 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
                   {hi ? "भुगतान सफलतापूर्वक सबमिट हुआ" : "Payment submitted successfully"}
                 </h4>
                 <p className="text-sm text-[#2B201A]/80 leading-relaxed max-w-sm mx-auto" role="status">
-                  Thank you, {session.name}! The Trust has been notified of your payment of <strong>{formatINR(session.amount)}</strong>.
-                  Once they confirm it has reached their UPI account, we&apos;ll email your confirmation to{" "}
-                  <strong className="wrap-anywhere">{session.email}</strong>.
+                  {hi ? (
+                    <>
+                      धन्यवाद, <strong>{session.name}</strong>! ट्रस्ट को आपके <strong>{formatINR(session.amount)}</strong> के भुगतान की सूचना मिल गई है।
+                      खाते में सत्यापन होते ही आपकी पावती रसीद <strong className="wrap-anywhere">{session.email}</strong> पर भेज दी जाएगी।
+                    </>
+                  ) : (
+                    <>
+                      Thank you, {session.name}! The Trust has been notified of your payment of <strong>{formatINR(session.amount)}</strong>.
+                      Once they confirm it has reached their UPI account, we&apos;ll email your confirmation to{" "}
+                      <strong className="wrap-anywhere">{session.email}</strong>.
+                    </>
+                  )}
                 </p>
                 <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm text-left bg-[#FBF2E7] border border-[#E7D8C8] rounded-xl p-4 max-w-sm mx-auto">
-                  <dt className="text-[#2B201A]/60">{session.membership ? "Membership ID" : "Donation ID"}</dt><dd className="font-mono font-semibold text-right">{session.donationId}</dd>
-                  {session.membership && (<><dt className="text-[#2B201A]/60">Plan</dt><dd className="font-semibold text-right">{session.program}</dd></>)}
-                  <dt className="text-[#2B201A]/60">Amount</dt><dd className="font-semibold text-right tabular-nums">{formatINR(session.amount)}</dd>
-                  <dt className="text-[#2B201A]/60">Status</dt><dd className="font-semibold text-right text-[#B8893E]">Awaiting confirmation</dd>
+                  <dt className="text-[#2B201A]/60">{session.membership ? (hi ? "सदस्यता आईडी" : "Membership ID") : (hi ? "दान आईडी" : "Donation ID")}</dt>
+                  <dd className="font-mono font-semibold text-right">{session.donationId}</dd>
+                  {session.membership && (
+                    <>
+                      <dt className="text-[#2B201A]/60">{hi ? "योजना" : "Plan"}</dt>
+                      <dd className="font-semibold text-right">{localizeProgramName(session.program, hi)}</dd>
+                    </>
+                  )}
+                  <dt className="text-[#2B201A]/60">{hi ? "राशि" : "Amount"}</dt>
+                  <dd className="font-semibold text-right tabular-nums">{formatINR(session.amount)}</dd>
+                  <dt className="text-[#2B201A]/60">{hi ? "स्थिति" : "Status"}</dt>
+                  <dd className="font-semibold text-right text-[#B8893E]">{hi ? "पुष्टि की प्रतीक्षा" : "Awaiting confirmation"}</dd>
                 </dl>
                 <p className="text-xs text-[#2B201A]/60 max-w-sm mx-auto">
-                  You can close this window. Keep your {session.membership ? "Membership ID" : "Donation ID"} for reference.
+                  {hi
+                    ? `आप यह विंडो बंद कर सकते हैं। संदर्भ हेतु अपनी ${session.membership ? "सदस्यता आईडी" : "दान आईडी"} सुरक्षित रखें।`
+                    : `You can close this window. Keep your ${session.membership ? "Membership ID" : "Donation ID"} for reference.`}
                 </p>
                 {generalError}
-                <button type="button" onClick={handleClose} className="btn-primary px-8">Close</button>
+                <button type="button" onClick={handleClose} className="btn-primary px-8">
+                  {hi ? "बंद करें" : "Close"}
+                </button>
               </div>
             )}
 
@@ -722,38 +812,58 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
             {step === "DONE" && session && (
               <div className="text-center py-4 space-y-4">
                 <CheckCircle2 className="w-14 h-14 text-[#2F5A43] mx-auto" aria-hidden="true" />
-                <h4 className="font-editorial text-2xl font-bold text-[#2B201A]">{hi ? "धन्यवाद! भुगतान प्राप्त हुआ" : "Payment received. Thank you!"}</h4>
+                <h4 className="font-editorial text-2xl font-bold text-[#2B201A]">
+                  {hi ? "धन्यवाद! भुगतान प्राप्त हुआ" : "Payment received. Thank you!"}
+                </h4>
                 <p className="text-sm text-[#2B201A]/80 leading-relaxed max-w-sm mx-auto">
-                  {session.membership ? (
-                    <>Welcome to the Trust! Your <strong>{session.program}</strong> payment of <strong>{formatINR(session.amount)}</strong> has been received.</>
+                  {hi ? (
+                    session.membership ? (
+                      <>ट्रस्ट में आपका स्वागत है! आपका <strong>{localizeProgramName(session.program, hi)}</strong> का <strong>{formatINR(session.amount)}</strong> का भुगतान प्राप्त हो गया है।</>
+                    ) : (
+                      <>ट्रस्ट को आपका <strong>{formatINR(session.amount)}</strong> का पावन दान प्राप्त हो गया है।</>
+                    )
                   ) : (
-                    <>The Trust has received your donation of <strong>{formatINR(session.amount)}</strong>.</>
+                    session.membership ? (
+                      <>Welcome to the Trust! Your <strong>{session.program}</strong> payment of <strong>{formatINR(session.amount)}</strong> has been received.</>
+                    ) : (
+                      <>The Trust has received your donation of <strong>{formatINR(session.amount)}</strong>.</>
+                    )
                   )}
                 </p>
                 <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm text-left bg-[#FBF2E7] border border-[#E7D8C8] rounded-xl p-4 max-w-sm mx-auto">
-                  <dt className="text-[#2B201A]/60">{session.membership ? "Membership ID" : "Donation ID"}</dt><dd className="font-mono font-semibold text-right">{session.donationId}</dd>
-                  <dt className="text-[#2B201A]/60">Amount</dt><dd className="font-semibold text-right tabular-nums">{formatINR(session.amount)}</dd>
+                  <dt className="text-[#2B201A]/60">{session.membership ? (hi ? "सदस्यता आईडी" : "Membership ID") : (hi ? "दान आईडी" : "Donation ID")}</dt>
+                  <dd className="font-mono font-semibold text-right">{session.donationId}</dd>
+                  <dt className="text-[#2B201A]/60">{hi ? "राशि" : "Amount"}</dt>
+                  <dd className="font-semibold text-right tabular-nums">{formatINR(session.amount)}</dd>
                 </dl>
                 <p className="text-sm text-[#2B201A]/80 leading-relaxed max-w-sm mx-auto">
-                  {session.membership
-                    ? emailSent ? "Your membership confirmation and certificate have been emailed to " : "Your membership confirmation and certificate will be emailed to "
-                    : emailSent ? "Your confirmation and certificate have been emailed to " : "Your confirmation and certificate will be emailed to "}
+                  {hi ? (
+                    session.membership
+                      ? emailSent ? "आपकी सदस्यता पावती और प्रमाणपत्र ईमेल कर दिए गए हैं: " : "आपकी सदस्यता पावती और प्रमाणपत्र ईमेल पर भेजे जाएंगे: "
+                      : emailSent ? "आपकी पावती और प्रमाणपत्र ईमेल कर दिए गए हैं: " : "आपकी पावती और प्रमाणपत्र ईमेल पर भेजे जाएंगे: "
+                  ) : (
+                    session.membership
+                      ? emailSent ? "Your membership confirmation and certificate have been emailed to " : "Your membership confirmation and certificate will be emailed to "
+                      : emailSent ? "Your confirmation and certificate have been emailed to " : "Your confirmation and certificate will be emailed to "
+                  )}
                   <strong className="wrap-anywhere">{session.email}</strong>.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   {certificateUrl && (
                     <a href={certificateUrl} target="_blank" rel="noopener" className="btn-secondary">
                       <Award className="w-4 h-4" />
-                      <span>View certificate</span>
+                      <span>{hi ? "प्रमाणपत्र देखें" : "View certificate"}</span>
                     </a>
                   )}
                   {passUrl && (
                     <a href={passUrl} target="_blank" rel="noopener" className="btn-secondary">
                       <Award className="w-4 h-4" />
-                      <span>View entry pass</span>
+                      <span>{hi ? "प्रवेश पास देखें" : "View entry pass"}</span>
                     </a>
                   )}
-                  <button onClick={handleClose} className="btn-primary px-8">Close</button>
+                  <button onClick={handleClose} className="btn-primary px-8">
+                    {hi ? "बंद करें" : "Close"}
+                  </button>
                 </div>
               </div>
             )}

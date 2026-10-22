@@ -34,11 +34,20 @@ export default function MembershipPage() {
       nameHi: "साधारण सदस्यता",
       price: 1100,
       period: findPlan("basic")!.period,
+      periodHi: "प्रति वर्ष",
       desc: findPlan("basic")!.description,
+      descHi: "सेवा और आध्यात्मिक ज्ञान की पावन यात्रा शुरू करने वाले भक्तों के लिए आदर्श।",
       features: findPlan("basic")!.benefits,
+      featuresHi: [
+        "वार्षिक ट्रस्ट सदस्यता प्रमाणपत्र",
+        "मासिक आध्यात्मिक समाचार पत्र एवं ई-पुस्तकें",
+        "वार्षिक आध्यात्मिक सम्मेलन में आमंत्रण",
+        "प्रत्यक्ष सेवा में सहभागिता के अवसर",
+      ],
       highlight: false,
       cardStyle: "bg-[#FFF9F2] border border-[#E7D8C8] shadow-warm-sm hover:border-[#E86F1D]/40 relative",
       badgeText: null,
+      badgeTextHi: null,
       badgeStyle: "",
       priceColor: "text-[#E86F1D]",
       checkColor: "text-[#2F5A43]",
@@ -49,11 +58,20 @@ export default function MembershipPage() {
       nameHi: "रजत (सिल्वर) सदस्यता",
       price: 5100,
       period: findPlan("silver")!.period,
+      periodHi: "प्रति वर्ष",
       desc: findPlan("silver")!.description,
+      descHi: "शिक्षा और स्वास्थ्य शिविरों को प्रायोजित करने के इच्छुक समर्पित भक्तों के लिए।",
       features: findPlan("silver")!.benefits,
+      featuresHi: [
+        "साधारण सदस्यता के सभी लाभ",
+        "१ गुरुकुल विद्यार्थी की शिक्षा का संपूर्ण प्रायोजन",
+        "आश्रम से विशेष प्रसाद एवं आशीर्वाद पत्र",
+        "भागवत कथा आयोजनों में प्राथमिकता सीटिंग",
+      ],
       highlight: false,
       cardStyle: "bg-gradient-to-b from-[#FAFBFD] to-[#EEF1F6] border-2 border-[#C0C7D2] shadow-warm-sm hover:border-[#9AA5B5] relative",
       badgeText: findPlan("silver")!.badge,
+      badgeTextHi: "सिल्वर श्रेणी",
       badgeStyle: "bg-[#E2E6ED] text-[#4A5568] border border-[#CBD2DC]",
       priceColor: "text-[#3B4656]",
       checkColor: "text-[#4A5E6D]",
@@ -64,11 +82,20 @@ export default function MembershipPage() {
       nameHi: "स्वर्ण (गोल्ड) सदस्यता",
       price: 11000,
       period: findPlan("gold")!.period,
+      periodHi: "प्रति वर्ष",
       desc: findPlan("gold")!.description,
+      descHi: "महिला कौशल कार्यशालाओं और किसान मार्गदर्शन को सशक्त बनाने हेतु।",
       features: findPlan("gold")!.benefits,
+      featuresHi: [
+        "रजत सदस्यता के सभी लाभ",
+        "महिला कौशल प्रशिक्षण किट का प्रायोजन",
+        "ट्रस्ट सदस्य नामावली में विशेष सम्मान",
+        "ट्रस्ट बोर्ड से प्रत्यक्ष सेवा प्रगति अपडेट",
+      ],
       highlight: true,
       cardStyle: "bg-gradient-to-b from-[#FFFDF7] via-[#FFF9EA] to-[#FFF3D6] border-2 border-[#D4A359] shadow-warm-md hover:border-[#C68A2E] relative",
       badgeText: findPlan("gold")!.badge,
+      badgeTextHi: "सर्वाधिक लोकप्रिय",
       badgeStyle: "bg-gradient-to-r from-[#D48820] to-[#E86F1D] text-white shadow-warm-sm",
       priceColor: "text-[#C67A18]",
       checkColor: "text-[#2F5A43]",
@@ -79,11 +106,20 @@ export default function MembershipPage() {
       nameHi: "प्लेटिनम सदस्यता",
       price: 51000,
       period: findPlan("platinum")!.period,
+      periodHi: "आजीवन / संरक्षक",
       desc: findPlan("platinum")!.description,
+      descHi: "ट्रस्ट के वृहद स्वास्थ्य शिविरों व आधारभूत सेवा प्रकल्पों के लिए संरक्षक स्तर।",
       features: findPlan("platinum")!.benefits,
+      featuresHi: [
+        "आजीवन ट्रस्टी सम्मान एवं सुसज्जित प्रशस्ति पत्र",
+        "ग्रामीण स्वास्थ्य शिविर का संपूर्ण प्रायोजन",
+        "मंच पर विशिष्ट सम्मान एवं वीआईपी स्थान",
+        "आश्रम परिसर में स्थायी नाम पट्टिका",
+      ],
       highlight: false,
       cardStyle: "bg-gradient-to-b from-[#F9FAFC] via-[#F2F4F8] to-[#E5E9F0] border-2 border-[#A3AFBF] shadow-warm-sm hover:border-[#8291A5] relative",
       badgeText: findPlan("platinum")!.badge,
+      badgeTextHi: "संरक्षक श्रेणी",
       badgeStyle: "bg-[#2B3545] text-white shadow-sm",
       priceColor: "text-[#242C37]",
       checkColor: "text-[#3B4856]",
@@ -139,8 +175,8 @@ export default function MembershipPage() {
 
   return (
     <div className="w-full space-y-0">
-      {/* HERO SECTION - RECREATED FROM REFERENCE (PANORAMIC ON DESKTOP, EXACT 4:5 HERO ON MOBILE) */}
-      <section className="relative overflow-hidden bg-[#1F150E] md:bg-[#F6EDE2] border-b border-[#E7D8C8] md:min-h-[calc(100vh-80px)] md:flex md:items-center">
+      {/* HERO SECTION - RECREATED FROM REFERENCE (PANORAMIC ON DESKTOP, 100VH ON MOBILE & LAPTOP) */}
+      <section className="relative overflow-hidden bg-[#1F150E] md:bg-[#F6EDE2] border-b border-[#E7D8C8] min-h-[calc(100vh-68px)] sm:min-h-[calc(100vh-74px)] min-[1000px]:min-h-[calc(100vh-76px)] xl:min-h-[calc(100vh-82px)] md:flex md:items-center">
         {/* Desktop Panoramic Background Banner (hidden on mobile) */}
         <div className="hidden md:block absolute inset-0 z-0">
           <Image
@@ -155,19 +191,19 @@ export default function MembershipPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-[#F6EDE2] via-[#F6EDE2] via-40% lg:via-50% to-transparent" />
         </div>
 
-        {/* MOBILE HERO (4:5 Banner with Bottom Overlay - Exact Home Page Format) */}
-        <div className="md:hidden relative z-1 w-full aspect-[4/5] flex items-center justify-center overflow-hidden">
+        {/* MOBILE HERO (100VH Full Viewport Height with Bottom Overlay) */}
+        <div className="md:hidden relative z-1 w-full h-[calc(100vh-68px)] min-h-[540px] flex items-center justify-center overflow-hidden">
           <Image
             src="/images/membership-mobile-hero.png"
             alt="Together for a Better Tomorrow - Namo Bhagwate Vasudevaya"
             fill
             priority
             unoptimized
-            className="w-full h-full object-cover block select-none pointer-events-none"
+            className="w-full h-full object-cover object-top block select-none pointer-events-none"
           />
 
           {/* Mobile Overlay Action Bar (Clean gradient at bottom of mobile banner) */}
-          <div className="absolute bottom-0 inset-x-0 z-20 w-full px-4 pt-10 pb-4 bg-gradient-to-t from-black/95 via-black/60 to-transparent flex flex-col items-center gap-1.5 text-center pointer-events-auto">
+          <div className="absolute bottom-0 inset-x-0 z-20 w-full px-4 pt-16 pb-6 bg-gradient-to-t from-black/95 via-black/70 to-transparent flex flex-col items-center gap-2 text-center pointer-events-auto">
             <h2 className="font-editorial text-sm sm:text-base font-extrabold text-white tracking-wide leading-tight drop-shadow-md">
               {lang === "hi" ? "एक बेहतर कल के लिए साथ" : "Together for a Better Tomorrow"}
             </h2>
@@ -249,9 +285,11 @@ export default function MembershipPage() {
       <section className="section-py" id="membership-plans">
         <div className="page-container">
           <div className="text-center max-w-2xl mx-auto section-header space-y-2">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#B8893E]">CHOOSE YOUR MEMBERSHIP TIER</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-[#B8893E]">
+              {lang === "hi" ? "सदस्यता श्रेणी चुनें" : "CHOOSE YOUR MEMBERSHIP TIER"}
+            </p>
             <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
-              Join Our Seva Circle
+              {lang === "hi" ? "हमारे सेवा परिवार से जुड़ें" : "Join Our Seva Circle"}
             </h2>
           </div>
 
@@ -263,7 +301,7 @@ export default function MembershipPage() {
               >
                 {tier.badgeText && (
                   <div className={`absolute -top-3.5 left-1/2 -translate-x-1/2 px-3.5 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full z-10 whitespace-nowrap ${tier.badgeStyle}`}>
-                    {tier.badgeText}
+                    {lang === "hi" && tier.badgeTextHi ? tier.badgeTextHi : tier.badgeText}
                   </div>
                 )}
 
@@ -272,18 +310,22 @@ export default function MembershipPage() {
                     <h3 className="font-editorial text-2xl font-bold text-[#2B201A]">
                       {lang === "hi" ? tier.nameHi : tier.name}
                     </h3>
-                    <p className="text-xs text-[#2B201A]/75 mt-1 leading-relaxed">{tier.desc}</p>
+                    <p className="text-xs text-[#2B201A]/75 mt-1 leading-relaxed">
+                      {lang === "hi" && tier.descHi ? tier.descHi : tier.desc}
+                    </p>
                   </div>
 
                   <div className="py-3 border-y border-[#2B201A]/10">
                     <span className={`font-sans text-3xl font-bold tracking-tight ${tier.priceColor}`}>
                       ₹{tier.price.toLocaleString("en-IN")}
                     </span>
-                    <span className="text-xs text-[#2B201A]/60 ml-1.5 font-semibold">INR / {tier.period}</span>
+                    <span className="text-xs text-[#2B201A]/60 ml-1.5 font-semibold">
+                      INR / {lang === "hi" && tier.periodHi ? tier.periodHi : tier.period}
+                    </span>
                   </div>
 
                   <ul className="space-y-2.5 text-xs text-[#2B201A]/85 font-sans pt-1">
-                    {tier.features.map((feat, idx) => (
+                    {(lang === "hi" && tier.featuresHi ? tier.featuresHi : tier.features).map((feat, idx) => (
                       <li key={idx} className="flex items-start gap-2">
                         <Check className={`w-4 h-4 shrink-0 mt-0.5 ${tier.checkColor}`} />
                         <span>{feat}</span>
@@ -294,10 +336,10 @@ export default function MembershipPage() {
 
                 <div className="card-action">
                   <button
-                    onClick={() => openDonateModal(tier.name, tier.price, true)}
+                    onClick={() => openDonateModal(lang === "hi" ? tier.nameHi : tier.name, tier.price, true)}
                     className={tier.buttonStyle}
                   >
-                    Join Now — ₹{tier.price.toLocaleString("en-IN")}
+                    {lang === "hi" ? `सदस्यता लें — ₹${tier.price.toLocaleString("en-IN")}` : `Join Now — ₹${tier.price.toLocaleString("en-IN")}`}
                   </button>
                 </div>
               </div>
@@ -546,19 +588,29 @@ export default function MembershipPage() {
         <div className="page-container max-w-3xl">
           <div className="card-warm p-8 sm:p-12 space-y-8">
             <div className="text-center space-y-2">
-              <p className="text-xs font-bold uppercase tracking-widest text-[#E86F1D]">REGISTRATION</p>
-              <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">Membership Registration</h2>
-              <p className="text-sm text-[#2B201A]/75">Choose your plan and share your details to complete your membership.</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-[#E86F1D]">
+                {lang === "hi" ? "पंजीकरण" : "REGISTRATION"}
+              </p>
+              <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
+                {lang === "hi" ? "सदस्यता पंजीकरण" : "Membership Registration"}
+              </h2>
+              <p className="text-sm text-[#2B201A]/75">
+                {lang === "hi"
+                  ? "अपनी सदस्यता योजना चुनें और सदस्यता पूर्ण करने के लिए अपना विवरण साझा करें।"
+                  : "Choose your plan and share your details to complete your membership."}
+              </p>
             </div>
 
             <form onSubmit={handleFormSubmit} noValidate className="space-y-5">
               <fieldset>
                 <legend className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-2">
-                  Membership Plan *
+                  {lang === "hi" ? "सदस्यता योजना चुनें *" : "Membership Plan *"}
                 </legend>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {MEMBERSHIP_PLANS.map((p) => {
                     const selected = planId === p.id;
+                    const tierMatch = tiers.find((t) => t.price === p.price);
+                    const displayName = lang === "hi" && tierMatch?.nameHi ? tierMatch.nameHi : p.name;
                     return (
                       <label
                         key={p.id}
@@ -575,7 +627,7 @@ export default function MembershipPage() {
                             onChange={() => setPlanId(p.id)}
                             className="accent-[#E86F1D]"
                           />
-                          <span className="text-sm font-semibold text-[#2B201A]">{p.name}</span>
+                          <span className="text-sm font-semibold text-[#2B201A]">{displayName}</span>
                         </span>
                         <span className="text-sm font-bold text-[#E86F1D] tabular-nums">{formatINR(p.price)}</span>
                       </label>
@@ -587,14 +639,14 @@ export default function MembershipPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="mem-fullname" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
-                    Full Name *
+                    {lang === "hi" ? "पूरा नाम *" : "Full Name *"}
                   </label>
                   <input
                     id="mem-fullname"
                     type="text"
                     required
                     maxLength={60}
-                    placeholder="Enter your full name"
+                    placeholder={lang === "hi" ? "अपना पूरा नाम दर्ज करें" : "Enter your full name"}
                     value={formData.fullName}
                     onChange={(e) => {
                       setFormData({ ...formData, fullName: e.target.value });
@@ -612,7 +664,7 @@ export default function MembershipPage() {
 
                 <div>
                   <label htmlFor="mem-email" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
-                    Email Address *
+                    {lang === "hi" ? "ईमेल पता *" : "Email Address *"}
                   </label>
                   <input
                     id="mem-email"
@@ -637,7 +689,7 @@ export default function MembershipPage() {
 
                 <div>
                   <label htmlFor="mem-phone" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
-                    Phone Number *
+                    {lang === "hi" ? "मोबाइल नंबर *" : "Phone Number *"}
                   </label>
                   <input
                     id="mem-phone"
@@ -666,13 +718,15 @@ export default function MembershipPage() {
               <p className="flex items-start gap-2 text-xs text-[#2B201A]/70 bg-[#FFF9F2] border border-[#E7D8C8] rounded-xl p-3">
                 <ShieldCheck className="w-4 h-4 text-[#2F5A43] shrink-0" />
                 <span>
-                  Next, you&apos;ll pay by UPI to the Trust&apos;s account. Once the Trust confirms your payment, your membership
-                  confirmation and certificate are emailed to you.
+                  {lang === "hi"
+                    ? "इसके बाद, आप ट्रस्ट के आधिकारिक खाते में UPI द्वारा भुगतान करेंगे। भुगतान की पुष्टि होते ही, आपकी सदस्यता पावती और प्रमाणपत्र आपके ईमेल पर भेज दिया जाएगा।"
+                    : "Next, you'll pay by UPI to the Trust's account. Once the Trust confirms your payment, your membership confirmation and certificate are emailed to you."}
                 </span>
               </p>
 
               <button type="submit" className="btn-primary w-full">
-                Continue to Payment — {formatINR((MEMBERSHIP_PLANS.find((p) => p.id === planId) ?? MEMBERSHIP_PLANS[0]).price)}
+                {lang === "hi" ? "भुगतान के लिए आगे बढ़ें — " : "Continue to Payment — "}
+                {formatINR((MEMBERSHIP_PLANS.find((p) => p.id === planId) ?? MEMBERSHIP_PLANS[0]).price)}
               </button>
             </form>
           </div>

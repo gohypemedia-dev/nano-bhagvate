@@ -17,11 +17,11 @@ export default function Footer() {
   return (
     <footer className="bg-[#FBF2E7] border-t border-[#E7D8C8] text-[#2B201A] relative pt-16 pb-12">
       <div className="page-container">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-[#E7D8C8]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.3fr_0.9fr_1fr_1.3fr] gap-8 xl:gap-10 pb-12 border-b border-[#E7D8C8]">
           {/* Brand & About */}
           <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="relative w-12 h-12 rounded-full overflow-hidden border border-[#B8893E] bg-white">
+            <div className="flex items-center gap-3.5">
+              <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-[#B8893E] bg-white shadow-sm shrink-0">
                 <Image
                   src="/images/logo.jpg"
                   alt="Namo Bhagwate Vasudevaya Trust Logo"
@@ -29,11 +29,11 @@ export default function Footer() {
                   className="object-contain p-0.5"
                 />
               </div>
-              <div>
-                <h3 className="font-editorial text-lg font-bold text-[#2B201A]">
+              <div className="flex flex-col justify-center">
+                <h3 className="font-editorial text-lg xl:text-xl font-bold text-[#2B201A] leading-tight">
                   NAMO BHAGWATE
                 </h3>
-                <p className="text-xs font-semibold tracking-wider text-[#B8893E]">
+                <p className="text-[10.5px] xl:text-[11.5px] font-extrabold tracking-[0.14em] text-[#B8893E] uppercase">
                   VASUDEVAYA TRUST
                 </p>
               </div>
@@ -93,7 +93,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 2: Our Work (Strictly NO Gallery link!) */}
+          {/* Column 2: Our Work (Strictly Charitable Initiatives, policies stay in bottom bar) */}
           <div className="space-y-3">
             <h4 className="font-editorial text-lg font-bold text-[#E86F1D] border-b border-[#E7D8C8] pb-1.5 inline-block">
               {lang === "hi" ? "हमारा कार्य" : "Our Work"}
@@ -111,17 +111,17 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/books" className="hover:text-[#E86F1D] transition-colors">
-                  {lang === "hi" ? "गन्ना खेती मार्गदर्शिका (Books)" : "Books & Publications"}
+                  {lang === "hi" ? "साहित्य एवं पुस्तकें (Books)" : "Books & Publications"}
                 </Link>
               </li>
               <li>
-                <Link href="/shipping-policy" className="hover:text-[#E86F1D] transition-colors">
-                  {lang === "hi" ? "शिपिंग नीति (Shipping Policy)" : "Shipping Policy"}
+                <Link href="/initiatives" className="hover:text-[#E86F1D] transition-colors">
+                  {lang === "hi" ? "गुरुकुल एवं शिक्षा संस्कार" : "Gurukul & Vedic Education"}
                 </Link>
               </li>
               <li>
-                <Link href="/refund-policy" className="hover:text-[#E86F1D] transition-colors">
-                  {lang === "hi" ? "रिफंड एवं रद्दीकरण (Refunds)" : "Refunds & Cancellations"}
+                <Link href="/initiatives" className="hover:text-[#E86F1D] transition-colors">
+                  {lang === "hi" ? "अन्नदान एवं राहत सेवा" : "Annadanam & Food Relief"}
                 </Link>
               </li>
             </ul>
@@ -147,8 +147,8 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-[#B8893E] shrink-0" />
-                <a href="mailto:help@namobhagwatevasudevaya.com" className="text-[#2B201A]/85 hover:text-[#E86F1D] break-all font-semibold">
-                  help@namobhagwatevasudevaya.com
+                <a href="mailto:contact@namobhagwate.org" className="text-[#2B201A]/85 hover:text-[#E86F1D] font-semibold text-xs sm:text-sm whitespace-nowrap">
+                  contact@namobhagwate.org
                 </a>
               </li>
             </ul>

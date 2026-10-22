@@ -109,17 +109,17 @@ export default function GalleryVideoCard({
             {event}
           </p>
         )}
-        <h4 className="font-editorial text-xs sm:text-sm font-bold text-white line-clamp-1 drop-shadow-xs">
+        <h4 className="font-editorial text-xs sm:text-sm font-bold text-white line-clamp-2 drop-shadow-sm leading-snug">
           {title}
         </h4>
-        <p className="text-[10px] text-white/70 flex items-center gap-1">
+        <p className="text-[10px] text-white/80 flex items-center gap-1 font-medium">
           {isPlaying ? (
-            <span className="text-[#E86F1D] font-medium">
-              {lang === "hi" ? "▶ चल रहा है • बड़ा देखने के लिए क्लिक करें" : "▶ Playing • Click for full audio"}
+            <span className="text-[#E86F1D] font-semibold">
+              {lang === "hi" ? "▶ चल रहा है • ऑडियो सहित देखने के लिए टैप करें" : "▶ Playing • Tap for full audio"}
             </span>
           ) : (
             <span>
-              {lang === "hi" ? "होवर करें प्ले करने के लिए" : "Hover to play preview"}
+              {lang === "hi" ? "वीडियो देखने के लिए टैप करें" : "Tap / Click to watch video"}
             </span>
           )}
         </p>

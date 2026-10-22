@@ -88,12 +88,16 @@ export default function ContactPage() {
       {/* HERO SECTION */}
       <section className="relative py-14 md:py-20 bg-[#FBF2E7] border-b border-[#E7D8C8]">
         <div className="page-container text-center space-y-4 max-w-4xl">
-          <p className="text-xs font-bold uppercase tracking-widest text-[#E86F1D]">REACH OUT TO US</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-[#E86F1D]">
+            {lang === "hi" ? "संपर्क करें" : "REACH OUT TO US"}
+          </p>
           <h1 className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2B201A]">
-            Let’s Stay Connected
+            {lang === "hi" ? "हमसे जुड़े रहें" : "Let’s Stay Connected"}
           </h1>
           <p className="text-base sm:text-lg text-[#2B201A]/85 leading-relaxed font-sans max-w-2xl mx-auto">
-            For membership, donations, programs, events, or general enquiries, reach out to the Trust and our team will guide you to the right next step.
+            {lang === "hi"
+              ? "सदस्यता, दान, सेवा प्रकल्पों, आयोजनों या किसी भी सामान्य जानकारी के लिए, ट्रस्ट से संपर्क करें। हमारी टीम आपकी पूरी सहायता करेगी।"
+              : "For membership, donations, programs, events, or general enquiries, reach out to the Trust and our team will guide you to the right next step."}
           </p>
         </div>
       </section>
@@ -105,20 +109,28 @@ export default function ContactPage() {
             {/* Left Contact Form */}
             <div className="lg:col-span-7 card-warm p-8 sm:p-10 space-y-6">
               <h2 className="font-editorial text-3xl font-bold text-[#2B201A]">
-                Send Us a Message
+                {lang === "hi" ? "हमें संदेश भेजें" : "Send Us a Message"}
               </h2>
 
               {formSubmitted ? (
                 <div className="p-8 bg-[#FFF9F2] rounded-2xl text-center space-y-4 border border-[#2F5A43]">
                   <CheckCircle2 className="w-12 h-12 text-[#2F5A43] mx-auto" />
                   <h3 className="font-editorial text-2xl font-bold text-[#2B201A]">
-                    Message Sent Successfully!
+                    {lang === "hi" ? "संदेश सफलतापूर्वक भेजा गया!" : "Message Sent Successfully!"}
                   </h3>
                   <p className="text-sm text-[#2B201A]/85">
-                    Thank you, <strong>{formData.fullName}</strong>. Your enquiry has been logged and our team will respond to <strong>{formData.email}</strong> within 24 hours.
+                    {lang === "hi" ? (
+                      <>
+                        धन्यवाद, <strong>{formData.fullName}</strong>! आपकी पूछताछ दर्ज कर ली गई है और हमारी टीम २४ घंटे के भीतर <strong>{formData.email}</strong> पर संपर्क करेगी।
+                      </>
+                    ) : (
+                      <>
+                        Thank you, <strong>{formData.fullName}</strong>. Your enquiry has been logged and our team will respond to <strong>{formData.email}</strong> within 24 hours.
+                      </>
+                    )}
                   </p>
                   <button onClick={() => setFormSubmitted(false)} className="btn-primary">
-                    Send Another Message
+                    {lang === "hi" ? "एक और संदेश भेजें" : "Send Another Message"}
                   </button>
                 </div>
               ) : (
@@ -126,14 +138,14 @@ export default function ContactPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="contact-fullname" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
-                        Full Name *
+                        {lang === "hi" ? "पूरा नाम *" : "Full Name *"}
                       </label>
                       <input
                         id="contact-fullname"
                         type="text"
                         required
                         maxLength={60}
-                        placeholder="Your full name"
+                        placeholder={lang === "hi" ? "आपका पूरा नाम" : "Your full name"}
                         value={formData.fullName}
                         onChange={(e) => {
                           setFormData({ ...formData, fullName: e.target.value });
@@ -151,7 +163,7 @@ export default function ContactPage() {
 
                     <div>
                       <label htmlFor="contact-email" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
-                        Email Address *
+                        {lang === "hi" ? "ईमेल पता *" : "Email Address *"}
                       </label>
                       <input
                         id="contact-email"
@@ -178,7 +190,8 @@ export default function ContactPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="contact-phone" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
-                        Phone Number <span className="font-normal text-[#2B201A]/50">(optional)</span>
+                        {lang === "hi" ? "मोबाइल नंबर " : "Phone Number "}
+                        <span className="font-normal text-[#2B201A]/50">({lang === "hi" ? "वैकल्पिक" : "optional"})</span>
                       </label>
                       <input
                         id="contact-phone"
@@ -204,13 +217,13 @@ export default function ContactPage() {
 
                     <div>
                       <label htmlFor="contact-subject" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
-                        Subject
+                        {lang === "hi" ? "विषय" : "Subject"}
                       </label>
                       <input
                         id="contact-subject"
                         type="text"
                         maxLength={120}
-                        placeholder="e.g., Membership Enquiry"
+                        placeholder={lang === "hi" ? "उदा. सदस्यता या सेवा पूछताछ" : "e.g., Membership Enquiry"}
                         value={formData.subject}
                         onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                         className="input-warm"
@@ -220,14 +233,14 @@ export default function ContactPage() {
 
                   <div>
                     <label htmlFor="contact-message" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
-                      Message *
+                      {lang === "hi" ? "संदेश *" : "Message *"}
                     </label>
                     <textarea
                       id="contact-message"
                       required
                       rows={5}
                       maxLength={2000}
-                      placeholder="How can Namo Bhagwate Vasudevaya Trust assist you today?"
+                      placeholder={lang === "hi" ? "नमो भगवते वासुदेवाय ट्रस्ट आपकी क्या सहायता कर सकता है?" : "How can Namo Bhagwate Vasudevaya Trust assist you today?"}
                       value={formData.message}
                       onChange={(e) => {
                         setFormData({ ...formData, message: e.target.value });
@@ -245,7 +258,7 @@ export default function ContactPage() {
 
                   <button type="submit" className="btn-primary w-full">
                     <Send className="w-4 h-4" />
-                    <span>Send Message</span>
+                    <span>{lang === "hi" ? "संदेश भेजें" : "Send Message"}</span>
                   </button>
                 </form>
               )}
@@ -255,7 +268,7 @@ export default function ContactPage() {
             <div className="lg:col-span-5 space-y-6">
               <div className="card-warm space-y-6">
                 <h2 className="font-editorial text-2xl font-bold text-[#2B201A]">
-                  Trust Contact Details
+                  {lang === "hi" ? "ट्रस्ट संपर्क विवरण" : "Trust Contact Details"}
                 </h2>
 
                 <ul className="space-y-4 text-sm">
@@ -264,7 +277,7 @@ export default function ContactPage() {
                       <MapPin className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-[#2B201A]">Office Address</h4>
+                      <h4 className="font-bold text-[#2B201A]">{lang === "hi" ? "कार्यालय का पता" : "Office Address"}</h4>
                       <p className="text-[#2B201A]/85 text-xs leading-relaxed mt-0.5">
                         P6/10, 4th Floor, DLF Phase 2, Gurugram, Haryana 122008, India
                       </p>
@@ -276,7 +289,7 @@ export default function ContactPage() {
                       <Phone className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-[#2B201A]">Phone / WhatsApp</h4>
+                      <h4 className="font-bold text-[#2B201A]">{lang === "hi" ? "फ़ोन / व्हाट्सएप" : "Phone / WhatsApp"}</h4>
                       <a href="tel:+918860665000" className="text-xs text-[#E86F1D] hover:underline font-semibold">
                         +91 88606 65000
                       </a>
@@ -288,7 +301,7 @@ export default function ContactPage() {
                       <Mail className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-[#2B201A]">Email Address</h4>
+                      <h4 className="font-bold text-[#2B201A]">{lang === "hi" ? "ईमेल पता" : "Email Address"}</h4>
                       <a href="mailto:help@namobhagwatevasudevaya.com" className="text-xs text-[#E86F1D] hover:underline font-semibold">
                         help@namobhagwatevasudevaya.com
                       </a>
@@ -300,9 +313,9 @@ export default function ContactPage() {
                       <Clock className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-[#2B201A]">Seva Office Hours</h4>
+                      <h4 className="font-bold text-[#2B201A]">{lang === "hi" ? "सेवा कार्यालय का समय" : "Seva Office Hours"}</h4>
                       <p className="text-xs text-[#2B201A]/85">
-                        Monday – Saturday: 9:30 AM – 6:30 PM (IST)
+                        {lang === "hi" ? "सोमवार – शनिवार: सुबह ९:३० – सायं ६:३० (IST)" : "Monday – Saturday: 9:30 AM – 6:30 PM (IST)"}
                       </p>
                     </div>
                   </li>
@@ -313,10 +326,12 @@ export default function ContactPage() {
               <div className="card-warm bg-[#FFF9F2] text-center space-y-3">
                 <MapPin className="w-8 h-8 text-[#B8893E] mx-auto animate-bounce" />
                 <h4 className="font-editorial text-xl font-bold text-[#2B201A]">
-                  DLF Phase 2, Gurugram Ashram
+                  {lang === "hi" ? "डीएलएफ फेज़ २, गुरुग्राम आश्रम" : "DLF Phase 2, Gurugram Ashram"}
                 </h4>
                 <p className="text-xs text-[#2B201A]/75 max-w-xs mx-auto">
-                  Visitors and devotees are welcome during office hours. Please call ahead for group satsang appointments.
+                  {lang === "hi"
+                    ? "कार्यालय समय के दौरान भक्तों एवं आगंतुकों का स्वागत है। सामूहिक सत्संग व भेंट हेतु कृपया पूर्व सूचना दें।"
+                    : "Visitors and devotees are welcome during office hours. Please call ahead for group satsang appointments."}
                 </p>
               </div>
             </div>

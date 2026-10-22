@@ -78,8 +78,8 @@ export default function AboutPage() {
 
   return (
     <div className="w-full space-y-0 text-[#2B201A] font-sans">
-      {/* 1. HERO SECTION - RECREATED FROM REFERENCE (PANORAMIC ON DESKTOP, EXACT 4:5 HERO ON MOBILE) */}
-      <section className="relative overflow-hidden bg-[#1F150E] md:bg-[#F7EDE1] border-b border-[#E7D8C8] md:min-h-[calc(100vh-80px)] md:flex md:items-center">
+      {/* 1. HERO SECTION - RECREATED FROM REFERENCE (PANORAMIC ON DESKTOP, 100VH ON MOBILE & LAPTOP) */}
+      <section className="relative overflow-hidden bg-[#1F150E] md:bg-[#F7EDE1] border-b border-[#E7D8C8] min-h-[calc(100vh-68px)] sm:min-h-[calc(100vh-74px)] min-[1000px]:min-h-[calc(100vh-76px)] xl:min-h-[calc(100vh-82px)] md:flex md:items-center">
         {/* Desktop Panoramic Background Banner (hidden on mobile) */}
         <div className="hidden md:block absolute inset-0 z-0">
           <Image
@@ -94,19 +94,19 @@ export default function AboutPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-[#F7EDE1] via-[#F7EDE1] via-50% lg:via-56% to-transparent" />
         </div>
 
-        {/* MOBILE HERO (4:5 Banner with Bottom Overlay - Exact Home Page Mobile Standard) */}
-        <div className="md:hidden relative z-1 w-full aspect-[4/5] flex items-center justify-center overflow-hidden">
+        {/* MOBILE HERO (100VH Full Viewport Height with Bottom Overlay) */}
+        <div className="md:hidden relative z-1 w-full h-[calc(100vh-68px)] min-h-[540px] flex items-center justify-center overflow-hidden">
           <Image
             src="/images/about-mobile-hero.png"
             alt="Lord Krishna and Children - Rooted in Wisdom. Driven by Service."
             fill
             priority
             unoptimized
-            className="w-full h-full object-cover block select-none pointer-events-none"
+            className="w-full h-full object-cover object-top block select-none pointer-events-none"
           />
 
           {/* Mobile Overlay Action Bar */}
-          <div className="absolute bottom-0 inset-x-0 z-20 w-full px-4 pt-10 pb-4 bg-gradient-to-t from-black/95 via-black/60 to-transparent flex flex-col items-center gap-1.5 text-center pointer-events-auto">
+          <div className="absolute bottom-0 inset-x-0 z-20 w-full px-4 pt-16 pb-6 bg-gradient-to-t from-black/95 via-black/70 to-transparent flex flex-col items-center gap-2 text-center pointer-events-auto">
             <h2 className="font-editorial text-sm sm:text-base font-extrabold text-white tracking-wide leading-tight drop-shadow-md">
               {lang === "hi" ? "ज्ञान में निष्ठा • सेवा में समर्पण" : "Rooted in Wisdom • Driven by Service"}
             </h2>

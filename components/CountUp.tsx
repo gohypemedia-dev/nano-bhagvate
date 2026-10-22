@@ -21,7 +21,8 @@ export default function CountUp({
   className = "",
   locale = "en-IN",
 }: CountUpProps) {
-  const [count, setCount] = useState(start);
+  // Initial SSR value is the verified target number, so Google, link previews and page source match the final count
+  const [count, setCount] = useState(end);
   const elementRef = useRef<HTMLSpanElement>(null);
   const hasAnimatedRef = useRef(false);
 
@@ -34,6 +35,7 @@ export default function CountUp({
         const [entry] = entries;
         if (entry.isIntersecting && !hasAnimatedRef.current) {
           hasAnimatedRef.current = true;
+          setCount(start);
 
           const startTime = performance.now();
 

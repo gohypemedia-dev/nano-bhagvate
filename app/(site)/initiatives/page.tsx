@@ -24,6 +24,12 @@ export default function InitiativesPage() {
         "Mental health awareness and stress management initiatives",
         "Free distribution of essential medicines and health kits",
       ],
+      bulletsHi: [
+        "ग्रामीण व वंचित क्षेत्रों में निःशुल्क चिकित्सा शिविर",
+        "समग्र स्वास्थ्य हेतु योग एवं आयुर्वेदिक आरोग्य कार्यक्रम",
+        "मानसिक स्वास्थ्य जागरूकता एवं तनाव प्रबंधन कार्यशालाएँ",
+        "आवश्यक औषधियों व स्वास्थ्य किटों का निःशुल्क वितरण",
+      ],
     },
     {
       id: "education",
@@ -38,6 +44,12 @@ export default function InitiativesPage() {
         "Free education and study material for underprivileged children",
         "Seamless integration of Vedic wisdom with modern science & IT",
         "Moral values (Sanskar) and character building workshops",
+      ],
+      bulletsHi: [
+        "गुरुकुल स्थापना एवं पारंपरिक वैदिक शिक्षा प्रबंधन",
+        "वंचित वर्ग के बच्चों को निःशुल्क शिक्षा व पाठ्य सामग्री",
+        "वैदिक ज्ञान के साथ आधुनिक विज्ञान व कंप्यूटर शिक्षा का समन्वय",
+        "संस्कार निर्माण, सदाचार व व्यक्तित्व विकास कार्यशालाएँ",
       ],
     },
     {
@@ -54,6 +66,12 @@ export default function InitiativesPage() {
         "Social, legal, and financial literacy guidance for women",
         "Self-defense and confidence building camps",
       ],
+      bulletsHi: [
+        "सिलाई, हस्तशिल्प व डिजिटल कौशल संवर्धन कार्यशालाएँ",
+        "महिला स्वावलंबन एवं लघु स्वरोजगार हेतु प्रत्यक्ष सहयोग",
+        "महिलाओं के लिए सामाजिक, विधिक व वित्तीय साक्षरता मार्गदर्शन",
+        "आत्मरक्षा, आत्मबल एवं नेतृत्व क्षमता विकास शिविर",
+      ],
     },
     {
       id: "welfare",
@@ -69,13 +87,19 @@ export default function InitiativesPage() {
         "Care and medical support for elderly and underprivileged citizens",
         "Disaster relief and emergency humanitarian assistance",
       ],
+      bulletsHi: [
+        "नियमित अन्नदान (भंडारा) एवं गर्म वस्त्र वितरण अभियान",
+        "अनाथ बच्चों, विधवाओं व निर्बल वर्गों के लिए सर्वांगीण सहायता",
+        "वरिष्ठ नागरिकों व असहाय जनों की नियमित सेवा व चिकित्सा सहयोग",
+        "आपदा राहत एवं आपातकालीन मानवीय सहायता सेवाएं",
+      ],
     },
   ];
 
   return (
     <div className="w-full space-y-0">
-      {/* HERO SECTION - RECREATED FROM REFERENCE (PANORAMIC ON DESKTOP, EXACT 4:5 HERO ON MOBILE) */}
-      <section className="relative overflow-hidden bg-[#1F150E] md:bg-[#F6EDE2] border-b border-[#E7D8C8] md:min-h-[calc(100vh-80px)] md:flex md:items-center">
+      {/* HERO SECTION - RECREATED FROM REFERENCE (PANORAMIC ON DESKTOP, 100VH ON MOBILE & LAPTOP) */}
+      <section className="relative overflow-hidden bg-[#1F150E] md:bg-[#F6EDE2] border-b border-[#E7D8C8] min-h-[calc(100vh-68px)] sm:min-h-[calc(100vh-74px)] min-[1000px]:min-h-[calc(100vh-76px)] xl:min-h-[calc(100vh-82px)] md:flex md:items-center">
         {/* Desktop Panoramic Background Banner (hidden on mobile) */}
         <div className="hidden md:block absolute inset-0 z-0">
           <Image
@@ -90,19 +114,19 @@ export default function InitiativesPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-[#F6EDE2] via-[#F6EDE2] via-38% lg:via-46% to-transparent" />
         </div>
 
-        {/* MOBILE HERO (4:5 Banner with Bottom Overlay - Exact Home Page Format) */}
-        <div className="md:hidden relative z-1 w-full aspect-[4/5] flex items-center justify-center overflow-hidden">
+        {/* MOBILE HERO (100VH Full Viewport Height with Bottom Overlay) */}
+        <div className="md:hidden relative z-1 w-full h-[calc(100vh-68px)] min-h-[540px] flex items-center justify-center overflow-hidden">
           <Image
             src="/images/initiatives-mobile-hero.png"
             alt="Transforming Lives Through Service - Namo Bhagwate Vasudevaya"
             fill
             priority
             unoptimized
-            className="w-full h-full object-cover block select-none pointer-events-none"
+            className="w-full h-full object-cover object-top block select-none pointer-events-none"
           />
 
           {/* Mobile Overlay Action Bar (Clean gradient at bottom of mobile banner) */}
-          <div className="absolute bottom-0 inset-x-0 z-20 w-full px-4 pt-10 pb-4 bg-gradient-to-t from-black/95 via-black/60 to-transparent flex flex-col items-center gap-1.5 text-center pointer-events-auto">
+          <div className="absolute bottom-0 inset-x-0 z-20 w-full px-4 pt-16 pb-6 bg-gradient-to-t from-black/95 via-black/70 to-transparent flex flex-col items-center gap-2 text-center pointer-events-auto">
             <h2 className="font-editorial text-sm sm:text-base font-extrabold text-white tracking-wide leading-tight drop-shadow-md">
               {lang === "hi" ? "सेवा से जीवन • सशक्तिकरण एवं परिवर्तन" : "Transforming Lives • Through Service"}
             </h2>
@@ -220,7 +244,7 @@ export default function InitiativesPage() {
 
                       {/* 5. Bullet Points */}
                       <ul className="space-y-3 text-sm text-[#2B201A]/85 font-sans pt-1">
-                        {item.bullets.map((bullet, i) => (
+                        {(lang === "hi" && item.bulletsHi ? item.bulletsHi : item.bullets).map((bullet, i) => (
                           <li key={i} className="flex items-start gap-2.5">
                             <CheckCircle2 className="w-4 h-4 text-[#2F5A43] shrink-0 mt-0.5" />
                             <span>{bullet}</span>
@@ -232,13 +256,13 @@ export default function InitiativesPage() {
                     {/* 6. Support Initiative and Volunteer With Us Buttons (BOTTOM) */}
                     <div className="pt-4 card-action flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 border-t border-[#E7D8C8] mt-auto">
                       <button
-                        onClick={() => openDonateModal(item.title)}
+                        onClick={() => openDonateModal(lang === "hi" ? item.titleHi : item.title)}
                         className="btn-primary flex-1"
                       >
-                        Support Initiative
+                        {lang === "hi" ? "सेवा में सहयोग करें" : "Support Initiative"}
                       </button>
                       <Link href="/contact" className="btn-outline flex-1 text-center">
-                        Volunteer With Us
+                        {lang === "hi" ? "स्वयंसेवक बनें" : "Volunteer With Us"}
                       </Link>
                     </div>
                   </div>
@@ -252,26 +276,40 @@ export default function InitiativesPage() {
       <section className="section-py bg-[#FBF2E7]/50 border-t border-[#E7D8C8]">
         <div className="page-container max-w-5xl">
           <div className="bg-gradient-to-r from-[#2B201A] to-[#3D2C24] text-white rounded-3xl p-8 sm:p-12 text-center border-2 border-[#B8893E] shadow-2xl space-y-6">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#B8893E]">JOIN THE SEVA MISSION</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-[#B8893E]">
+              {lang === "hi" ? "पावन सेवा मिशन से जुड़ें" : "JOIN THE SEVA MISSION"}
+            </p>
             <h2 className="font-editorial text-3xl sm:text-4xl font-bold leading-tight">
-              Serve with us. Support an initiative.
-              <br />
-              Help turn compassion into action.
+              {lang === "hi" ? (
+                <>
+                  हमारे साथ सेवा करें • प्रकल्प में सहयोग दें
+                  <br />
+                  करुणा को प्रत्यक्ष सेवा में बदलें
+                </>
+              ) : (
+                <>
+                  Serve with us. Support an initiative.
+                  <br />
+                  Help turn compassion into action.
+                </>
+              )}
             </h2>
             <p className="text-sm sm:text-base text-white/85 max-w-xl mx-auto font-sans">
-              Every contribution directly powers our health camps, Gurukul education, women skill workshops, and farmer advisory programs.
+              {lang === "hi"
+                ? "आपका प्रत्येक अंशदान सीधे चिकित्सा शिविरों, गुरुकुल शिक्षा, महिला कौशल कार्यशालाओं और जनकल्याण सेवाओं को सशक्त बनाता है।"
+                : "Every contribution directly powers our health camps, Gurukul education, women skill workshops, and farmer advisory programs."}
             </p>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4 pt-4 max-w-md mx-auto">
               <Link href="/membership" className="btn-secondary flex-1 text-center">
-                Become a Member
+                {lang === "hi" ? "सदस्यता ग्रहण करें" : "Become a Member"}
               </Link>
               <button
-                onClick={() => openDonateModal("General Donation")}
+                onClick={() => openDonateModal(lang === "hi" ? "सामान्य पुण्य दान" : "General Donation")}
                 className="btn-primary flex-1"
               >
                 <Heart className="w-4 h-4 fill-current text-white" />
-                <span>Donate Now</span>
+                <span>{lang === "hi" ? "दान सहयोग करें" : "Donate Now"}</span>
               </button>
             </div>
           </div>

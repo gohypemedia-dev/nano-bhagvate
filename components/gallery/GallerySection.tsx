@@ -65,12 +65,15 @@ export default function GallerySection() {
         {/* ==================================================================== */}
         {/* ORNAMENTAL HEADER WITH ARROWS: < ─────── GALLERY ─────── >          */}
         {/* ==================================================================== */}
+        {/* ==================================================================== */}
+        {/* ORNAMENTAL HEADER: ─────── ❖ GALLERY ❖ ─────── (No false arrowheads) */}
+        {/* ==================================================================== */}
         <div className="flex flex-col items-center justify-center mb-6 sm:mb-8 text-center">
           <div className="w-full flex items-center justify-center gap-3 sm:gap-6 max-w-4xl mx-auto">
-            {/* Left Decorative Arrow & Line */}
-            <div className="flex-1 flex items-center justify-end gap-1">
-              <span className="text-[#E86F1D] text-sm sm:text-base font-bold select-none">◄</span>
-              <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#E86F1D]/60 to-[#E86F1D]" />
+            {/* Left Decorative Filigree Line */}
+            <div className="flex-1 flex items-center justify-end gap-1.5">
+              <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#E86F1D]/50 to-[#E86F1D]" />
+              <span className="text-[#E86F1D] text-xs select-none">❖</span>
             </div>
 
             {/* Centered Gallery Heading */}
@@ -81,10 +84,10 @@ export default function GallerySection() {
               {lang === "hi" ? "गैलरी • GALLERY" : "GALLERY"}
             </h2>
 
-            {/* Right Decorative Line & Arrow */}
-            <div className="flex-1 flex items-center justify-start gap-1">
-              <div className="h-[2px] w-full bg-gradient-to-r from-[#E86F1D] via-[#E86F1D]/60 to-transparent" />
-              <span className="text-[#E86F1D] text-sm sm:text-base font-bold select-none">►</span>
+            {/* Right Decorative Filigree Line */}
+            <div className="flex-1 flex items-center justify-start gap-1.5">
+              <span className="text-[#E86F1D] text-xs select-none">❖</span>
+              <div className="h-[2px] w-full bg-gradient-to-r from-[#E86F1D] via-[#E86F1D]/50 to-transparent" />
             </div>
           </div>
         </div>
@@ -117,45 +120,45 @@ export default function GallerySection() {
                 className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-[#181310] border border-[#E7D8C8]/70 shadow-warm-xs hover:shadow-warm-md hover:border-[#E86F1D] transition-all duration-300 group"
               >
                 {/* DIRECT PHOTO TILE (CLICK TO VIEW FULLSCREEN IN LIGHTBOX) */}
-                    <button
-                      type="button"
-                      onClick={(e) => handleOpenPhoto(item, e)}
-                      aria-label={`${lang === "hi" ? "तस्वीर देखें" : "View photo"}: ${title}`}
-                      className="relative w-full h-full block cursor-pointer group/photo focus-visible:ring-2 focus-visible:ring-[#E86F1D] focus-visible:outline-none"
-                    >
-                      <Image
-                        src={item.thumbnail}
-                        alt={item.alt}
-                        fill
-                        loading="eager"
-                        unoptimized={item.thumbnail.startsWith("http")}
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                        className="object-cover transition-transform duration-500 ease-out group-hover/photo:scale-105"
-                        style={{ objectPosition: item.focalPoint || "center" }}
-                      />
+                <button
+                  type="button"
+                  onClick={(e) => handleOpenPhoto(item, e)}
+                  aria-label={`${lang === "hi" ? "तस्वीर देखें" : "View photo"}: ${title}`}
+                  className="relative w-full h-full block cursor-pointer group/photo focus-visible:ring-2 focus-visible:ring-[#E86F1D] focus-visible:outline-none"
+                >
+                  <Image
+                    src={item.thumbnail}
+                    alt={item.alt}
+                    fill
+                    loading="eager"
+                    unoptimized={item.thumbnail.startsWith("http")}
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    className="object-cover transition-transform duration-500 ease-out group-hover/photo:scale-105"
+                    style={{ objectPosition: item.focalPoint || "center" }}
+                  />
 
-                      {/* Dark Gradient Overlay on Hover */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent opacity-0 group-hover/photo:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  {/* Dark Gradient Overlay for high-contrast legible captions on all viewports */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none transition-opacity duration-300" />
 
-                      {/* Expand Badge */}
-                      <div className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/60 backdrop-blur-md text-white opacity-0 group-hover/photo:opacity-100 transition-opacity duration-200 shadow-md">
-                        <Maximize2 className="w-3.5 h-3.5" />
-                      </div>
-
-                      {/* Title Caption on Hover */}
-                      <div className="absolute bottom-0 inset-x-0 p-3.5 z-10 text-left text-white opacity-0 group-hover/photo:opacity-100 transition-opacity duration-300 pointer-events-none space-y-0.5">
-                        {event && (
-                          <p className="text-[10px] font-bold text-[#E86F1D] uppercase tracking-wider">
-                            {event}
-                          </p>
-                        )}
-                        <h4 className="font-editorial text-xs sm:text-sm font-bold text-white line-clamp-1 drop-shadow-xs">
-                          {title}
-                        </h4>
-                      </div>
-                    </button>
+                  {/* Expand Badge on Hover */}
+                  <div className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/60 backdrop-blur-md text-white opacity-0 group-hover/photo:opacity-100 transition-opacity duration-200 shadow-md">
+                    <Maximize2 className="w-3.5 h-3.5" />
                   </div>
-                );
+
+                  {/* Title Caption - ALWAYS VISIBLE (Fixes PM finding 2 where captions didn't appear) */}
+                  <div className="absolute bottom-0 inset-x-0 p-3.5 z-10 text-left text-white pointer-events-none space-y-1">
+                    {event && (
+                      <p className="text-[10px] font-bold text-[#E86F1D] uppercase tracking-wider">
+                        {event}
+                      </p>
+                    )}
+                    <h4 className="font-editorial text-xs sm:text-sm font-bold text-white line-clamp-2 drop-shadow-sm leading-snug">
+                      {title}
+                    </h4>
+                  </div>
+                </button>
+              </div>
+            );
           })}
         </div>
 

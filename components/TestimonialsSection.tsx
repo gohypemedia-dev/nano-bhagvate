@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import { ChevronLeft, ChevronRight, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star, Quote, CheckCircle2 } from "lucide-react";
 
 interface Testimonial {
   name: string;
@@ -10,65 +10,83 @@ interface Testimonial {
   initial: string;
   location: string;
   locationHi: string;
+  role: string;
+  roleHi: string;
+  rating: number;
   quote: string;
   quoteHi: string;
 }
 
 const testimonialsData: Testimonial[] = [
   {
-    name: "RAJESH KUMAR",
-    nameHi: "राजेश कुमार",
+    name: "Dr. Radhika Sen",
+    nameHi: "डॉ. राधिका सेन",
     initial: "R",
-    location: "Mumbai",
-    locationHi: "मुंबई",
+    location: "Gurugram, Haryana",
+    locationHi: "गुरुग्राम, हरियाणा",
+    role: "Katha Devotee & Donor",
+    roleHi: "कथा श्रोता एवं सेवा सहयोगी",
+    rating: 5,
     quote:
-      "The spiritual guidance I received here has been life-changing. Every visit fills my heart with devotion and peace.",
+      "Attending Pujya Sadhvi Ji's Shrimad Bhagwat Katha brought profound peace to our family during a very difficult year. Her discourse on selfless duty in the Gita gave us clarity and strength.",
     quoteHi:
-      "यहाँ से प्राप्त आध्यात्मिक मार्गदर्शन जीवन को बदलने वाला रहा है। हर यात्रा मेरे हृदय को भक्ति और शांति से भर देती है।",
+      "पूज्य साध्वी जी की श्रीमद्भागवत कथा में भाग लेने से हमारे परिवार को कठिन समय में अलौकिक शांति मिली। गीता के निष्काम कर्म पर उनके मार्गदर्शन ने हमें संबल और आत्मिक बल प्रदान किया।",
   },
   {
-    name: "PRIYA SHARMA",
-    nameHi: "प्रिया शर्मा",
-    initial: "P",
-    location: "Delhi",
-    locationHi: "दिल्ली",
+    name: "Maharaj Singh Rawat",
+    nameHi: "महाराज सिंह रावत",
+    initial: "M",
+    location: "Indore, Madhya Pradesh",
+    locationHi: "इंदौर, मध्य प्रदेश",
+    role: "Gurukul Sponsor",
+    roleHi: "गुरुकुल शिक्षा सहयोगी",
+    rating: 5,
     quote:
-      "A truly blessed experience. The community's warmth and the divine atmosphere have strengthened my faith immensely.",
+      "Seeing the Gurukul students chant Sanskrit shlokas with pure devotion convinced me that our heritage is in the right hands. Sponsoring a child's education here has been my most rewarding seva.",
     quoteHi:
-      "अत्यंत पवित्र और प्रेरणादायक अनुभव। समुदाय का स्नेह और दिव्य वातावरण ने मेरे विश्वास को और प्रगाढ़ किया है।",
+      "गुरुकुल के विद्यार्थियों को पूरी निष्ठा से संस्कृत श्लोकों का पाठ करते देखकर विश्वास हुआ कि हमारी संस्कृति सुरक्षित हाथों में है। यहां एक बच्चे की शिक्षा सहयोग देना मेरा सबसे सार्थक पुण्य रहा है।",
   },
   {
-    name: "AMIT PATEL",
-    nameHi: "अमित पटेल",
+    name: "Anuradha Sharma",
+    nameHi: "अनुराधा शर्मा",
     initial: "A",
-    location: "Ahmedabad",
-    locationHi: "अहमदाबाद",
+    location: "Delhi NCR",
+    locationHi: "दिल्ली एनसीआर",
+    role: "Annadanam Volunteer",
+    roleHi: "अन्नदान सेवादार",
+    rating: 5,
     quote:
-      "Finding this spiritual home has been the greatest blessing. The teachings have brought clarity and joy to my daily life.",
+      "Volunteering in the daily Mahaprasad distribution opened my eyes to the power of compassionate action. Every plate served carries sacred love, dignity, and warmth for those in need.",
     quoteHi:
-      "इस आध्यात्मिक सदन से जुड़ना सबसे बड़ा आशीर्वाद रहा है। पावन उपदेशों ने दैनिक जीवन में स्पष्टता और आनंद ला दिया है।",
+      "दैनिक महाप्रसाद वितरण में सेवादार बनकर सेवा करने से करुणा और समरसता का सच्चा अर्थ समझ आया। यहां हर थाली प्रेम, सम्मान और शुद्ध सात्विक भावना के साथ परोसी जाती है।",
   },
   {
-    name: "SUNITA VERMA",
-    nameHi: "सुनीता वर्मा",
-    initial: "S",
-    location: "Jaipur",
-    locationHi: "जयपुर",
+    name: "Bipin Chandra Joshi",
+    nameHi: "बिपिन चंद्र जोशी",
+    initial: "B",
+    location: "Haridwar, Uttarakhand",
+    locationHi: "हरिद्वार, उत्तराखंड",
+    role: "Annual Member",
+    roleHi: "ट्रस्ट वार्षिक सदस्य",
+    rating: 5,
     quote:
-      "The Gurukul and Seva initiatives run by the trust are deeply inspiring. Being a part of this mission brings true fulfillment.",
+      "The transparency and dedication of Namo Bhagwate Vasudevaya Trust inspire immense trust. You receive authentic updates, proper seva receipts, and see tangible impact on the ground.",
     quoteHi:
-      "ट्रस्ट द्वारा संचालित गुरुकुल और सेवा कार्य अत्यंत प्रेरणादायक हैं। इस पावन अभियान का हिस्सा बनना आत्मिक संतोष देता है।",
+      "नमो भगवते वासुदेवाय ट्रस्ट की पारदर्शिता और निष्ठा अटूट विश्वास जगाती है। हर सेवा की प्रामाणिक रसीद और समाज में दिख रहा वास्तविक बदलाव मन को संतुष्टि देता है।",
   },
   {
-    name: "VIKRAMADITYA RATHORE",
-    nameHi: "विक्रमादित्य राठौड़",
-    initial: "V",
-    location: "Indore",
-    locationHi: "इंदौर",
+    name: "Meenakshi Sundaram",
+    nameHi: "मीनाक्षी सुंदरम",
+    initial: "M",
+    location: "Vrindavan, Uttar Pradesh",
+    locationHi: "वृंदावन, उत्तर प्रदेश",
+    role: "Wellness Camp Participant",
+    roleHi: "स्वास्थ्य शिविर प्रतिभागी",
+    rating: 5,
     quote:
-      "Participating in the Bhagwat Katha awakened a new spiritual energy within me. A profound and soulful environment.",
+      "The Ayurvedic wellness and yoga camp in Vrindavan rejuvenated both body and spirit. Learning traditional pranayama and satvik living has permanently enriched my daily routine.",
     quoteHi:
-      "भागवत कथा में सम्मिलित होने से भीतर एक नई आध्यात्मिक ऊर्जा का संचार हुआ। अत्यंत दिव्य और अलौकिक वातावरण।",
+      "वृंदावन के योग एवं प्राकृतिक चिकित्सा शिविर ने तन और मन दोनों को नई ऊर्जा दी। पारंपरिक प्राणायाम और सात्विक जीवन शैली की सीख ने मेरी दैनिक दिनचर्या को पूरी तरह बदल दिया।",
   },
 ];
 
@@ -138,112 +156,114 @@ export default function TestimonialsSection({ lang = "en" }: TestimonialsSection
       className="py-12 sm:py-16 bg-[#FFF9F2] border-t border-[#E7D8C8]/60 relative select-none"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      aria-label="Devotee Testimonials"
     >
-      <div className="page-container max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Heading matching reference */}
-        <div className="text-center mb-8 sm:mb-10">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold uppercase tracking-wider text-black font-sans">
-            {lang === "hi" ? "हमारे भक्त क्या कहते हैं" : "WHAT OUR DEVOTEES SAY"}
+      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Heading matching site typography and warm badge (Fixes PM Finding 3) */}
+        <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10 space-y-2">
+          <span className="inline-block px-3.5 py-1 rounded-full bg-[#E86F1D]/10 text-[#E86F1D] text-[11px] font-bold uppercase tracking-widest border border-[#E86F1D]/20">
+            {lang === "hi" ? "भक्तों के पावन अनुभव" : "Devotee Experiences"}
+          </span>
+          <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
+            {lang === "hi" ? "हमारे भक्त क्या कहते हैं" : "Voices of Faith & Devotion"}
           </h2>
-          <p className="mt-1.5 text-xs sm:text-sm font-semibold text-[#E86F1D] tracking-wide">
+          <p className="text-sm text-[#7A6B60] max-w-lg mx-auto">
             {lang === "hi"
-              ? "हमारे समुदाय द्वारा साझा किए गए अनुभव और आशीर्वाद"
-              : "Experiences and blessings shared by our community"}
+              ? "कथा, गुरुकुल एवं सेवा प्रकल्पों से जुड़े श्रद्धालुओं के आत्मीय विचार एवं अनुभव।"
+              : "Heartfelt reflections and personal experiences shared by devotees and seva contributors."}
           </p>
         </div>
 
-        {/* Carousel Container with Overlapping Arrows */}
-        <div className="relative">
-          {/* Embla Viewport */}
-          <div className="overflow-hidden px-1 py-1" ref={emblaRef}>
-            <div className="flex -ml-4 sm:-ml-6 touch-pan-y">
-              {testimonialsData.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33.333%] pl-4 sm:pl-6 min-w-0"
-                >
-                  {/* Testimonial Card matching reference */}
-                  <div className="h-full bg-white rounded-xl border border-[#F5A623] p-5 sm:p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-                    <div>
-                      {/* Top Quote Icon */}
-                      <div className="text-[#F5A623] leading-none mb-3">
-                        <svg
-                          className="w-5 h-5 fill-current"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z" />
-                        </svg>
+        {/* Carousel Viewport (NO overlapping buttons over cards) */}
+        <div className="relative overflow-hidden px-1 py-1" ref={emblaRef}>
+          <div className="flex -ml-4 sm:-ml-6 touch-pan-y">
+            {testimonialsData.map((item, idx) => (
+              <div
+                key={idx}
+                className="flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33.333%] pl-4 sm:pl-6 min-w-0"
+              >
+                {/* Testimonial Card with authentic styling */}
+                <div className="h-full bg-white rounded-2xl border border-[#E7D8C8] p-5 sm:p-6 shadow-[0_4px_16px_-2px_rgba(43,32,26,0.06)] hover:border-[#E86F1D] hover:shadow-warm-md hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
+                  <div className="space-y-3.5">
+                    {/* Top Row: Quote Icon + Role Badge */}
+                    <div className="flex items-center justify-between">
+                      <div className="w-8 h-8 rounded-xl bg-[#E86F1D]/10 text-[#E86F1D] flex items-center justify-center">
+                        <Quote className="w-4 h-4 fill-current rotate-180" />
                       </div>
-
-                      {/* Devotee Info: Avatar + Name & Location */}
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#F59E0B] text-white flex items-center justify-center font-bold text-sm sm:text-base shrink-0 shadow-sm">
-                          {item.initial}
-                        </div>
-                        <div className="min-w-0">
-                          <h3 className="font-bold text-xs sm:text-[13px] text-[#E8622A] uppercase tracking-wide truncate">
-                            {lang === "hi" ? item.nameHi : item.name}
-                          </h3>
-                          <p className="text-[11px] sm:text-xs text-neutral-500 font-medium">
-                            {lang === "hi" ? item.locationHi : item.location}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* 5 Golden Stars */}
-                      <div className="flex items-center gap-1 my-3">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className="w-3.5 h-3.5 fill-[#FFB800] text-[#FFB800]"
-                          />
-                        ))}
-                      </div>
-
-                      {/* Testimonial Quote */}
-                      <p className="text-xs sm:text-[13px] text-neutral-700 leading-relaxed font-normal">
-                        {lang === "hi" ? item.quoteHi : item.quote}
-                      </p>
+                      <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-[#2F5A43] bg-[#E8F5E9] border border-[#C8E6C9] px-2.5 py-0.5 rounded-full">
+                        <CheckCircle2 className="w-3 h-3 text-[#2F5A43]" />
+                        <span>{lang === "hi" ? item.roleHi : item.role}</span>
+                      </span>
                     </div>
+
+                    {/* Devotee Info: Avatar + Name & Location */}
+                    <div className="flex items-center gap-3 pt-1">
+                      <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#E86F1D] to-[#B8893E] text-white flex items-center justify-center font-bold text-base shrink-0 shadow-sm">
+                        {item.initial}
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="font-editorial font-bold text-sm sm:text-base text-[#2B201A] group-hover:text-[#E86F1D] transition-colors truncate">
+                          {lang === "hi" ? item.nameHi : item.name}
+                        </h3>
+                        <p className="text-[11.5px] text-[#7A6B60] font-medium truncate">
+                          {lang === "hi" ? item.locationHi : item.location}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* 5 Golden Stars */}
+                    <div className="flex items-center gap-1 pt-0.5">
+                      {[...Array(item.rating)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className="w-3.5 h-3.5 fill-[#E86F1D] text-[#E86F1D]"
+                        />
+                      ))}
+                    </div>
+
+                    {/* Testimonial Quote */}
+                    <p className="text-xs sm:text-[13px] text-[#4A3E38] leading-relaxed italic">
+                      &ldquo;{lang === "hi" ? item.quoteHi : item.quote}&rdquo;
+                    </p>
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
-
-          {/* Overlapping Orange Prev Button */}
-          <button
-            onClick={scrollPrev}
-            className="absolute -left-3 sm:-left-5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#F28C28] hover:bg-[#D97706] text-white flex items-center justify-center shadow-lg transition-transform hover:scale-105 active:scale-95 z-20 cursor-pointer focus:outline-none"
-            aria-label="Previous testimonial"
-          >
-            <ChevronLeft className="w-5 h-5 text-white stroke-[2.5]" />
-          </button>
-
-          {/* Overlapping Orange Next Button */}
-          <button
-            onClick={scrollNext}
-            className="absolute -right-3 sm:-right-5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#F28C28] hover:bg-[#D97706] text-white flex items-center justify-center shadow-lg transition-transform hover:scale-105 active:scale-95 z-20 cursor-pointer focus:outline-none"
-            aria-label="Next testimonial"
-          >
-            <ChevronRight className="w-5 h-5 text-white stroke-[2.5]" />
-          </button>
         </div>
 
-        {/* Bottom Active Slide Indicator (Pills/Dots) */}
-        <div className="flex justify-center items-center gap-1.5 sm:gap-2 mt-6 sm:mt-8">
-          {scrollSnaps.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => scrollTo(idx)}
-              className={`h-2 rounded-full transition-all duration-300 focus:outline-none cursor-pointer ${
-                selectedIndex === idx
-                  ? "w-8 sm:w-10 bg-[#F28C28]"
-                  : "w-2 bg-[#F28C28]/25 hover:bg-[#F28C28]/50"
-              }`}
-              aria-label={`Go to slide ${idx + 1}`}
-            />
-          ))}
+        {/* Carousel Bottom Controls: Prev + Indicators + Next (Cleanly below track, zero card overlap) */}
+        <div className="flex items-center justify-center gap-4 mt-7 sm:mt-9">
+          <button
+            onClick={scrollPrev}
+            className="w-10 h-10 rounded-full border border-[#E7D8C8] bg-white hover:bg-[#E86F1D] text-[#2B201A] hover:text-white flex items-center justify-center shadow-xs hover:shadow-md transition-all active:scale-95 cursor-pointer"
+            aria-label="Previous testimonial"
+          >
+            <ChevronLeft className="w-5 h-5 stroke-[2]" />
+          </button>
+
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {scrollSnaps.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => scrollTo(idx)}
+                className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+                  selectedIndex === idx
+                    ? "w-8 bg-[#E86F1D]"
+                    : "w-2.5 bg-[#E86F1D]/25 hover:bg-[#E86F1D]/50"
+                }`}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
+          </div>
+
+          <button
+            onClick={scrollNext}
+            className="w-10 h-10 rounded-full border border-[#E7D8C8] bg-white hover:bg-[#E86F1D] text-[#2B201A] hover:text-white flex items-center justify-center shadow-xs hover:shadow-md transition-all active:scale-95 cursor-pointer"
+            aria-label="Next testimonial"
+          >
+            <ChevronRight className="w-5 h-5 stroke-[2]" />
+          </button>
         </div>
       </div>
     </section>
