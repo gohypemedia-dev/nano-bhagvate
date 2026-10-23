@@ -24,6 +24,7 @@ import EventDetailsModal, { EventItem } from "@/components/EventDetailsModal";
 import GallerySection from "@/components/gallery/GallerySection";
 import CountUp from "@/components/CountUp";
 import TestimonialsSection from "@/components/TestimonialsSection";
+import ParallaxPillarCard from "@/components/ParallaxPillarCard";
 
 export default function HomePage() {
   const { lang, openDonateModal } = useApp();
@@ -693,139 +694,67 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-7 items-stretch">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
             {/* 1. Mission */}
-            <div className="relative rounded-3xl bg-white p-6 sm:p-7 border border-[#E7D8C8] shadow-[0_8px_24px_-4px_rgba(43,32,26,0.06)] hover:border-[#E86F1D] hover:shadow-[0_16px_36px_-6px_rgba(232,111,29,0.15)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-[#E86F1D]/10 text-[#E86F1D] flex items-center justify-center group-hover:scale-105 group-hover:bg-[#E86F1D] group-hover:text-white transition-all duration-300 shadow-sm">
-                    <Compass className="w-6 h-6 stroke-[1.75]" />
-                  </div>
-                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#8C6B3E] bg-[#FBF2E7] border border-[#E7D8C8] px-3 py-1 rounded-full">
-                    {lang === "hi" ? "हमारा संकल्प" : "SANKALPA"}
-                  </span>
-                </div>
-                <div>
-                  <h3 className="font-editorial text-2xl font-bold text-[#2B201A] group-hover:text-[#E86F1D] transition-colors">
-                    {lang === "hi" ? "हमारा ध्येय (Mission)" : "Our Mission"}
-                  </h3>
-                  <p className="text-sm sm:text-[15px] text-[#5C4D43] leading-relaxed mt-2">
-                    {lang === "hi"
-                      ? "शिक्षा, नैतिक मूल्यों, निःस्वार्थ सेवा और आध्यात्मिक मार्गदर्शन के माध्यम से समाज के हर वर्ग को सशक्त बनाना, युवाओं और महिलाओं को स्वावलंबी बनाना तथा सांस्कृतिक धरोहर को सुदृढ़ करना।"
-                      : "To empower every section of society through education, moral values, selfless service, and spiritual guidance, while helping youth and women become self-reliant and strengthening cultural heritage."}
-                  </p>
-                </div>
-              </div>
-              <div className="pt-5 mt-5 border-t border-[#E7D8C8]/60">
-                <Link
-                  href="/about"
-                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#2B201A] group-hover:bg-[#E86F1D] hover:bg-[#E86F1D] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:shadow-md transition-all group/btn"
-                >
-                  <span>{lang === "hi" ? "ध्येय के बारे में जानें" : "Learn About Our Mission"}</span>
-                  <ArrowRight className="w-4 h-4 text-[#E86F1D] group-hover:text-white group-hover:translate-x-1 group-hover/btn:text-white group-hover/btn:translate-x-1 transition-all" />
-                </Link>
-              </div>
-            </div>
+            <ParallaxPillarCard
+              imageSrc="/images/vedic-gurukul-hd.jpg"
+              imageAlt="Our Mission"
+              badgeText={lang === "hi" ? "हमारा संकल्प" : "SANKALPA"}
+              title={lang === "hi" ? "हमारा ध्येय" : "Our Mission"}
+              description={
+                lang === "hi"
+                  ? "शिक्षा, नैतिक मूल्यों, निःस्वार्थ सेवा और आध्यात्मिक मार्गदर्शन के माध्यम से समाज के हर वर्ग को सशक्त बनाना तथा युवाओं और महिलाओं को स्वावलंबी बनाना।"
+                  : "To empower every section of society through education, moral values, selfless service, and spiritual guidance, helping youth and women become self-reliant."
+              }
+              buttonText={lang === "hi" ? "ध्येय के बारे में जानें" : "Learn About Mission"}
+              href="/about"
+            />
 
             {/* 2. Vision */}
-            <div className="relative rounded-3xl bg-white p-6 sm:p-7 border border-[#E7D8C8] shadow-[0_8px_24px_-4px_rgba(43,32,26,0.06)] hover:border-[#E86F1D] hover:shadow-[0_16px_36px_-6px_rgba(232,111,29,0.15)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-[#E86F1D]/10 text-[#E86F1D] flex items-center justify-center group-hover:scale-105 group-hover:bg-[#E86F1D] group-hover:text-white transition-all duration-300 shadow-sm">
-                    <Sun className="w-6 h-6 stroke-[1.75]" />
-                  </div>
-                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#8C6B3E] bg-[#FBF2E7] border border-[#E7D8C8] px-3 py-1 rounded-full">
-                    {lang === "hi" ? "दिव्य दृष्टि" : "VISION"}
-                  </span>
-                </div>
-                <div>
-                  <h3 className="font-editorial text-2xl font-bold text-[#2B201A] group-hover:text-[#E86F1D] transition-colors">
-                    {lang === "hi" ? "हमारा दृष्टिकोण (Vision)" : "Our Vision"}
-                  </h3>
-                  <p className="text-sm sm:text-[15px] text-[#5C4D43] leading-relaxed mt-2">
-                    {lang === "hi"
-                      ? "आध्यात्मिक मूल्यों, सांस्कृतिक विरासत, शिक्षा और मानवता पर आधारित ऐसे समाज का निर्माण करना, जहां प्रत्येक व्यक्ति गरिमा, शांति और परस्पर सद्भाव के साथ जीवन व्यतीत कर सके।"
-                      : "To help build a society rooted in spiritual values, cultural heritage, education, and humanity, where every individual can live with dignity, peace, and harmony."}
-                  </p>
-                </div>
-              </div>
-              <div className="pt-5 mt-5 border-t border-[#E7D8C8]/60">
-                <Link
-                  href="/founder"
-                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#2B201A] group-hover:bg-[#E86F1D] hover:bg-[#E86F1D] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:shadow-md transition-all group/btn"
-                >
-                  <span>{lang === "hi" ? "संस्थापक दृष्टिकोण देखें" : "Explore Founder's Vision"}</span>
-                  <ArrowRight className="w-4 h-4 text-[#E86F1D] group-hover:text-white group-hover:translate-x-1 group-hover/btn:text-white group-hover/btn:translate-x-1 transition-all" />
-                </Link>
-              </div>
-            </div>
+            <ParallaxPillarCard
+              imageSrc="/images/founder.jpg"
+              imageAlt="Our Vision"
+              badgeText={lang === "hi" ? "दिव्य दृष्टि" : "VISION"}
+              title={lang === "hi" ? "हमारा दृष्टिकोण" : "Our Vision"}
+              description={
+                lang === "hi"
+                  ? "आध्यात्मिक मूल्यों, सांस्कृतिक विरासत, शिक्षा और मानवता पर आधारित ऐसे समरस समाज का निर्माण करना, जहां प्रत्येक व्यक्ति गरिमा, शांति और सद्भाव से जी सके।"
+                  : "To help build a society rooted in spiritual values, cultural heritage, and humanity, where every individual lives with dignity, peace, and harmony."
+              }
+              buttonText={lang === "hi" ? "संस्थापक दृष्टि देखें" : "Explore Founder's Vision"}
+              href="/founder"
+            />
 
             {/* 3. Join Us */}
-            <div className="relative rounded-3xl bg-white p-6 sm:p-7 border border-[#E7D8C8] shadow-[0_8px_24px_-4px_rgba(43,32,26,0.06)] hover:border-[#E86F1D] hover:shadow-[0_16px_36px_-6px_rgba(232,111,29,0.15)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-[#E86F1D]/10 text-[#E86F1D] flex items-center justify-center group-hover:scale-105 group-hover:bg-[#E86F1D] group-hover:text-white transition-all duration-300 shadow-sm">
-                    <Users className="w-6 h-6 stroke-[1.75]" />
-                  </div>
-                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#8C6B3E] bg-[#FBF2E7] border border-[#E7D8C8] px-3 py-1 rounded-full">
-                    {lang === "hi" ? "सेवा परिवार" : "COMMUNITY"}
-                  </span>
-                </div>
-                <div>
-                  <h3 className="font-editorial text-2xl font-bold text-[#2B201A] group-hover:text-[#E86F1D] transition-colors">
-                    {lang === "hi" ? "हमसे जुड़ें (Join Us)" : "Join Us"}
-                  </h3>
-                  <p className="text-sm sm:text-[15px] text-[#5C4D43] leading-relaxed mt-2">
-                    {lang === "hi"
-                      ? "सेवा, संस्कृति और आत्मिक उन्नति के लिए समर्पित एक पावन परिवार का अंग बनें। साथ मिलकर हम गांवों और शहरों में वास्तविक और सकारात्मक बदलाव ला सकते हैं।"
-                      : "Become part of a community committed to seva, culture, and spiritual growth. Together, we can create practical and compassionate change in villages and cities alike."}
-                  </p>
-                </div>
-              </div>
-              <div className="pt-5 mt-5 border-t border-[#E7D8C8]/60">
-                <Link
-                  href="/membership"
-                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#2B201A] group-hover:bg-[#E86F1D] hover:bg-[#E86F1D] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:shadow-md transition-all group/btn"
-                >
-                  <span>{lang === "hi" ? "सेवा सदस्य बनें" : "Become a Member"}</span>
-                  <ArrowRight className="w-4 h-4 text-[#E86F1D] group-hover:text-white group-hover:translate-x-1 group-hover/btn:text-white group-hover/btn:translate-x-1 transition-all" />
-                </Link>
-              </div>
-            </div>
+            <ParallaxPillarCard
+              imageSrc="/images/card-charity-seva.jpg"
+              imageAlt="Join Us"
+              badgeText={lang === "hi" ? "सेवा परिवार" : "COMMUNITY"}
+              title={lang === "hi" ? "हमसे जुड़ें" : "Join Us"}
+              description={
+                lang === "hi"
+                  ? "सेवा, संस्कृति और आत्मिक उन्नति के लिए समर्पित एक पावन परिवार का अंग बनें। साथ मिलकर हम गांवों और शहरों में सकारात्मक बदलाव ला सकते हैं।"
+                  : "Become part of a sacred community committed to seva, culture, and spiritual growth to create lasting practical change in villages and cities alike."
+              }
+              buttonText={lang === "hi" ? "सेवा सदस्य बनें" : "Become a Member"}
+              href="/membership"
+            />
 
             {/* 4. Support Us */}
-            <div className="relative rounded-3xl bg-white p-6 sm:p-7 border border-[#E7D8C8] shadow-[0_8px_24px_-4px_rgba(43,32,26,0.06)] hover:border-[#E86F1D] hover:shadow-[0_16px_36px_-6px_rgba(232,111,29,0.15)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-[#E86F1D]/10 text-[#E86F1D] flex items-center justify-center group-hover:scale-105 group-hover:bg-[#E86F1D] group-hover:text-white transition-all duration-300 shadow-sm">
-                    <Heart className="w-6 h-6 stroke-[1.75]" />
-                  </div>
-                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#8C6B3E] bg-[#FBF2E7] border border-[#E7D8C8] px-3 py-1 rounded-full">
-                    {lang === "hi" ? "पुण्य सेवा" : "PUNYA SEVA"}
-                  </span>
-                </div>
-                <div>
-                  <h3 className="font-editorial text-2xl font-bold text-[#2B201A] group-hover:text-[#E86F1D] transition-colors">
-                    {lang === "hi" ? "सहयोग करें (Support Us)" : "Support Us"}
-                  </h3>
-                  <p className="text-sm sm:text-[15px] text-[#5C4D43] leading-relaxed mt-2">
-                    {lang === "hi"
-                      ? "आपका एक छोटा सा सहयोग समाज सेवा, गुरुकुल शिक्षा, आध्यात्मिक आयोजनों, किसान कल्याण और अन्नदान कार्यक्रमों को निरंतर जारी रखने में अमूल्य योगदान देता है।"
-                      : "Your contribution helps sustain social service, Gurukul education, spiritual initiatives, farmer awareness workshops, and community welfare programs that create lasting impact."}
-                  </p>
-                </div>
-              </div>
-              <div className="pt-5 mt-5 border-t border-[#E7D8C8]/60">
-                <button
-                  onClick={() => openDonateModal("General Donation")}
-                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#2B201A] group-hover:bg-[#E86F1D] hover:bg-[#E86F1D] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:shadow-md transition-all cursor-pointer group/btn"
-                >
-                  <Heart className="w-4 h-4 text-[#E86F1D] group-hover:text-white group-hover/btn:text-white transition-colors" />
-                  <span>{lang === "hi" ? "सहयोग राशि दान करें" : "Support Our Seva"}</span>
-                  <ArrowRight className="w-4 h-4 text-[#E86F1D] group-hover:text-white group-hover:translate-x-1 group-hover/btn:text-white group-hover/btn:translate-x-1 transition-all" />
-                </button>
-              </div>
-            </div>
+            <ParallaxPillarCard
+              imageSrc="/images/card-seva-rect.webp"
+              imageAlt="Support Us"
+              badgeText={lang === "hi" ? "पुण्य सेवा" : "PUNYA SEVA"}
+              title={lang === "hi" ? "सहयोग करें" : "Support Us"}
+              description={
+                lang === "hi"
+                  ? "आपका एक छोटा सा सहयोग समाज सेवा, गुरुकुल शिक्षा, आध्यात्मिक आयोजनों, किसान कल्याण और अन्नदान कार्यक्रमों को निरंतर जारी रखने में अमूल्य योगदान देता है।"
+                  : "Your contribution helps sustain social service, Gurukul education, spiritual initiatives, farmer awareness, and community welfare programs."
+              }
+              buttonText={lang === "hi" ? "सहयोग राशि दान करें" : "Support Our Seva"}
+              isDonateButton={true}
+              onClick={() => openDonateModal("General Donation")}
+            />
           </div>
         </div>
       </section>
