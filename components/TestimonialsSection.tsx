@@ -88,6 +88,48 @@ const testimonialsData: Testimonial[] = [
     quoteHi:
       "वृंदावन के योग एवं प्राकृतिक चिकित्सा शिविर ने तन और मन दोनों को नई ऊर्जा दी। पारंपरिक प्राणायाम और सात्विक जीवन शैली की सीख ने मेरी दैनिक दिनचर्या को पूरी तरह बदल दिया।",
   },
+  {
+    name: "Rameshwar Nath Tiwari",
+    nameHi: "रामेश्वर नाथ तिवारी",
+    initial: "R",
+    location: "Varanasi, Uttar Pradesh",
+    locationHi: "वाराणसी, उत्तर प्रदेश",
+    role: "Farmer Welfare Seva",
+    roleHi: "जैविक कृषि एवं किसान कल्याण",
+    rating: 5,
+    quote:
+      "The natural farming training organized by the Trust taught us how to cultivate without harmful chemicals. Our yields improved and our soil is fertile and vibrant again.",
+    quoteHi:
+      "ट्रस्ट द्वारा आयोजित प्राकृतिक कृषि कार्यशाला से हमें बिना रसायनों के खेती का मार्गदर्शन मिला। फसल की लागत घटी और भूमि की उर्वरता में अद्भुत सुधार आया।",
+  },
+  {
+    name: "Sunita Agrawal",
+    nameHi: "सुनीता अग्रवाल",
+    initial: "S",
+    location: "Mathura, Uttar Pradesh",
+    locationHi: "मथुरा, उत्तर प्रदेश",
+    role: "Women Empowerment Supporter",
+    roleHi: "महिला स्वावलंबन सहयोगी",
+    rating: 5,
+    quote:
+      "Seeing rural women become self-reliant through the Trust's skill centers is truly inspiring. The dignity and independence they gain transforms entire families.",
+    quoteHi:
+      "ट्रस्ट के कौशल केंद्र से ग्रामीण बहनों को सिलाई एवं हस्तशिल्प सीखकर आत्मनिर्भर बनते देखना अत्यंत प्रेरणादायी है। इससे परिवारों में आत्मसम्मान बढ़ा है।",
+  },
+  {
+    name: "Acharya Devvrata Shastri",
+    nameHi: "आचार्य देवव्रत शास्त्री",
+    initial: "D",
+    location: "Rishikesh, Uttarakhand",
+    locationHi: "ऋषिकेश, उत्तराखंड",
+    role: "Vedic Scholar & Devotee",
+    roleHi: "वैदिक विद्वान एवं साधक",
+    rating: 5,
+    quote:
+      "The Trust's dedication to reviving Vedic wisdom and Sanatan traditions while serving humanity with pure humility is exemplary in today's times.",
+    quoteHi:
+      "सनातन संस्कृति और वैदिक मूल्यों के संरक्षण के साथ-साथ समाज के अंतिम व्यक्ति तक सेवा पहुँचाने का यह संकल्प आज के युग में अद्वितीय और अनुकरणीय है।",
+  },
 ];
 
 interface TestimonialsSectionProps {
@@ -158,7 +200,7 @@ export default function TestimonialsSection({ lang = "en" }: TestimonialsSection
       onMouseLeave={() => setIsHovered(false)}
       aria-label="Devotee Testimonials"
     >
-      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Heading matching site typography and warm badge (Fixes PM Finding 3) */}
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10 space-y-2">
           <span className="inline-block px-3.5 py-1 rounded-full bg-[#E86F1D]/10 text-[#E86F1D] text-[11px] font-bold uppercase tracking-widest border border-[#E86F1D]/20">
@@ -176,36 +218,36 @@ export default function TestimonialsSection({ lang = "en" }: TestimonialsSection
 
         {/* Carousel Viewport (NO overlapping buttons over cards) */}
         <div className="relative overflow-hidden px-1 py-1" ref={emblaRef}>
-          <div className="flex -ml-4 sm:-ml-6 touch-pan-y">
+          <div className="flex -ml-4 sm:-ml-5 touch-pan-y">
             {testimonialsData.map((item, idx) => (
               <div
                 key={idx}
-                className="flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33.333%] pl-4 sm:pl-6 min-w-0"
+                className="flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_25%] pl-4 sm:pl-5 min-w-0"
               >
                 {/* Testimonial Card with authentic styling */}
-                <div className="h-full bg-white rounded-2xl border border-[#E7D8C8] p-5 sm:p-6 shadow-[0_4px_16px_-2px_rgba(43,32,26,0.06)] hover:border-[#E86F1D] hover:shadow-warm-md hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
-                  <div className="space-y-3.5">
+                <div className="h-full bg-white rounded-2xl border border-[#E7D8C8] p-5 sm:p-5.5 shadow-[0_4px_16px_-2px_rgba(43,32,26,0.06)] hover:border-[#E86F1D] hover:shadow-warm-md hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
+                  <div className="space-y-3">
                     {/* Top Row: Quote Icon + Role Badge */}
                     <div className="flex items-center justify-between">
                       <div className="w-8 h-8 rounded-xl bg-[#E86F1D]/10 text-[#E86F1D] flex items-center justify-center">
                         <Quote className="w-4 h-4 fill-current rotate-180" />
                       </div>
-                      <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-[#2F5A43] bg-[#E8F5E9] border border-[#C8E6C9] px-2.5 py-0.5 rounded-full">
-                        <CheckCircle2 className="w-3 h-3 text-[#2F5A43]" />
-                        <span>{lang === "hi" ? item.roleHi : item.role}</span>
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#2F5A43] bg-[#E8F5E9] border border-[#C8E6C9] px-2.5 py-0.5 rounded-full truncate max-w-[170px]">
+                        <CheckCircle2 className="w-3 h-3 text-[#2F5A43] shrink-0" />
+                        <span className="truncate">{lang === "hi" ? item.roleHi : item.role}</span>
                       </span>
                     </div>
 
                     {/* Devotee Info: Avatar + Name & Location */}
                     <div className="flex items-center gap-3 pt-1">
-                      <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#E86F1D] to-[#B8893E] text-white flex items-center justify-center font-bold text-base shrink-0 shadow-sm">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#E86F1D] to-[#B8893E] text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
                         {item.initial}
                       </div>
                       <div className="min-w-0">
-                        <h3 className="font-editorial font-bold text-sm sm:text-base text-[#2B201A] group-hover:text-[#E86F1D] transition-colors truncate">
+                        <h3 className="font-editorial font-bold text-sm sm:text-[15px] text-[#2B201A] group-hover:text-[#E86F1D] transition-colors truncate">
                           {lang === "hi" ? item.nameHi : item.name}
                         </h3>
-                        <p className="text-[11.5px] text-[#7A6B60] font-medium truncate">
+                        <p className="text-[11px] text-[#7A6B60] font-medium truncate">
                           {lang === "hi" ? item.locationHi : item.location}
                         </p>
                       </div>
@@ -222,7 +264,7 @@ export default function TestimonialsSection({ lang = "en" }: TestimonialsSection
                     </div>
 
                     {/* Testimonial Quote */}
-                    <p className="text-xs sm:text-[13px] text-[#4A3E38] leading-relaxed italic">
+                    <p className="text-xs sm:text-[12.5px] text-[#4A3E38] leading-relaxed italic line-clamp-4">
                       &ldquo;{lang === "hi" ? item.quoteHi : item.quote}&rdquo;
                     </p>
                   </div>

@@ -79,9 +79,9 @@ export default function GallerySection() {
             {/* Centered Gallery Heading */}
             <h2
               id="gallery-heading"
-              className="font-editorial text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#2B201A] tracking-wider uppercase whitespace-nowrap px-2"
+              className="font-editorial text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#2B201A] tracking-wider whitespace-nowrap px-2"
             >
-              {lang === "hi" ? "गैलरी • GALLERY" : "GALLERY"}
+              {lang === "hi" ? "गैलरी • Gallery" : "Gallery"}
             </h2>
 
             {/* Right Decorative Filigree Line */}

@@ -94,23 +94,35 @@
    UNIFIED PAGE CONTAINER & SECTION SPACING
    =================================================== */
 
-/* Global Page Container: 1240px max width with precise responsive inline padding */
+/* Global Page Container: 1560px max width matching Header & site architecture */
 .page-container {
   width: 100%;
-  max-width: 1240px;
+  max-width: 1560px;
   margin-inline: auto;
   padding-inline: 16px; /* mobile 360px-430px */
 }
 
 @media (min-width: 640px) {
   .page-container {
-    padding-inline: 24px; /* tablet 768px */
+    padding-inline: 20px; /* tablet */
   }
 }
 
 @media (min-width: 1024px) {
   .page-container {
-    padding-inline: 32px; /* desktop 1024px-1440px */
+    padding-inline: 24px; /* desktop lg */
+  }
+}
+
+@media (min-width: 1280px) {
+  .page-container {
+    padding-inline: 32px; /* desktop xl */
+  }
+}
+
+@media (min-width: 1536px) {
+  .page-container {
+    padding-inline: 40px; /* widescreen 2xl */
   }
 }
 

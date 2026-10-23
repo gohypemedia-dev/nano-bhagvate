@@ -150,7 +150,7 @@ export default function InitiativesPage() {
 
         {/* Desktop Hero Content (hidden on mobile) */}
         <div className="hidden md:block relative z-10 page-container py-8 sm:py-12 md:py-24 w-full">
-          <div className="max-w-xl lg:max-w-2xl space-y-4 sm:space-y-5">
+          <div className="max-w-xl lg:max-w-2xl xl:max-w-3xl space-y-4 sm:space-y-5">
             {/* Main Title matching reference */}
             <h1 className="font-editorial text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-bold text-[#1F1712] leading-[1.12] tracking-tight">
               {lang === "hi" ? (

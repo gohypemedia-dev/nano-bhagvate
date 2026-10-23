@@ -135,7 +135,7 @@ export default function FounderPage() {
 
         {/* Desktop Hero Content (hidden on mobile) */}
         <div className="hidden md:block relative z-10 page-container py-8 sm:py-12 md:py-24 w-full">
-          <div className="max-w-xl lg:max-w-2xl space-y-4 sm:space-y-5">
+          <div className="max-w-xl lg:max-w-2xl xl:max-w-3xl space-y-4 sm:space-y-5">
             {/* Main Title matching reference */}
             <h1 className="font-editorial text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-bold text-[#1F1712] leading-[1.12] tracking-tight">
               {lang === "hi" ? (
@@ -197,7 +197,7 @@ export default function FounderPage() {
 
       {/* 2. AUTHENTIC FOUNDER NARRATIVE: "NAMO BHAGWATE VASUDEVAYA TRUST" */}
       <section className="py-14 sm:py-20 bg-[#FBF6EE]" id="founder-story">
-        <div className="page-container max-w-4xl space-y-8">
+        <div className="page-container max-w-5xl lg:max-w-6xl space-y-8">
           <div className="text-center space-y-2">
             <h2 className="font-editorial text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-wider text-[#1F1712]">
               {lang === "hi" ? "नमो भगवते वासुदेवाय ट्रस्ट" : "NAMO BHAGWATE VASUDEVAYA TRUST"}
@@ -339,7 +339,7 @@ export default function FounderPage() {
 
       {/* 5. OUR COMMITMENT TO SOCIETY (11 SEVA AREAS EXACTLY MATCHING ORIGINAL SITE) */}
       <section className="py-16 sm:py-24 bg-[#FBF6EE]">
-        <div className="page-container max-w-5xl space-y-12">
+        <div className="page-container space-y-12">
           {/* Section Heading */}
           <div className="text-center space-y-2.5 max-w-2xl mx-auto">
             <h2 className="font-editorial text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-wider text-[#1F1712]">

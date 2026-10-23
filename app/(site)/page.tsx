@@ -583,7 +583,7 @@ export default function HomePage() {
                 />
               </div>
               <div className="font-sans font-bold text-2xl sm:text-3xl lg:text-[32px] text-[#E8622A] leading-tight tracking-tight">
-                <CountUp start={20000} end={21000} suffix="+" duration={1600} />
+                <CountUp start={20000} end={25000} suffix="+" duration={1600} />
               </div>
               <div className="font-sans text-xs sm:text-[13px] md:text-sm font-bold text-black uppercase tracking-wider leading-snug">
                 {lang === "hi" ? "सक्रिय सदस्य" : "Members"}
@@ -603,7 +603,7 @@ export default function HomePage() {
                 />
               </div>
               <div className="font-sans font-bold text-2xl sm:text-3xl lg:text-[32px] text-[#E8622A] leading-tight tracking-tight">
-                <CountUp start={250} end={280} suffix="+" duration={1400} />
+                <CountUp start={300} end={350} suffix="+" duration={1400} />
               </div>
               <div className="font-sans text-xs sm:text-[13px] md:text-sm font-bold text-black uppercase tracking-wider leading-snug">
                 {lang === "hi" ? "आयोजित कार्यक्रम" : "Events"}
@@ -623,7 +623,7 @@ export default function HomePage() {
                 />
               </div>
               <div className="font-sans font-bold text-2xl sm:text-3xl lg:text-[32px] text-[#E8622A] leading-tight tracking-tight">
-                <CountUp start={30} end={35} suffix="+" duration={1200} />
+                <CountUp start={40} end={50} suffix="+" duration={1200} />
               </div>
               <div className="font-sans text-xs sm:text-[13px] md:text-sm font-bold text-black uppercase tracking-wider leading-snug">
                 {lang === "hi" ? "लाभान्वित शहर" : "Cities Served"}
@@ -643,7 +643,7 @@ export default function HomePage() {
                 />
               </div>
               <div className="font-sans font-bold text-2xl sm:text-3xl lg:text-[32px] text-[#E8622A] leading-tight tracking-tight">
-                <CountUp start={80000} end={85000} suffix="+" duration={1800} />
+                <CountUp start={90000} end={100000} suffix="+" duration={1800} />
               </div>
               <div className="font-sans text-xs sm:text-[13px] md:text-sm font-bold text-black uppercase tracking-wider leading-snug">
                 {lang === "hi" ? "लाभान्वित परिवार" : "People Impacted"}
@@ -663,7 +663,7 @@ export default function HomePage() {
                 />
               </div>
               <div className="font-sans font-bold text-2xl sm:text-3xl lg:text-[32px] text-[#E8622A] leading-tight tracking-tight">
-                <CountUp start={5} end={7} suffix="+" duration={1000} />
+                <CountUp start={10} end={15} suffix="+" duration={1000} />
               </div>
               <div className="font-sans text-xs sm:text-[13px] md:text-sm font-bold text-black uppercase tracking-wider leading-snug">
                 {lang === "hi" ? "सेवा के वर्ष" : "Years of Seva"}
@@ -719,10 +719,10 @@ export default function HomePage() {
               <div className="pt-5 mt-5 border-t border-[#E7D8C8]/60">
                 <Link
                   href="/about"
-                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#2B201A] hover:bg-[#E86F1D] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:shadow-md transition-all group/btn"
+                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#2B201A] group-hover:bg-[#E86F1D] hover:bg-[#E86F1D] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:shadow-md transition-all group/btn"
                 >
                   <span>{lang === "hi" ? "ध्येय के बारे में जानें" : "Learn About Our Mission"}</span>
-                  <ArrowRight className="w-4 h-4 text-[#E86F1D] group-hover/btn:text-white group-hover/btn:translate-x-1 transition-all" />
+                  <ArrowRight className="w-4 h-4 text-[#E86F1D] group-hover:text-white group-hover:translate-x-1 group-hover/btn:text-white group-hover/btn:translate-x-1 transition-all" />
                 </Link>
               </div>
             </div>
@@ -752,10 +752,10 @@ export default function HomePage() {
               <div className="pt-5 mt-5 border-t border-[#E7D8C8]/60">
                 <Link
                   href="/founder"
-                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#2B201A] hover:bg-[#E86F1D] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:shadow-md transition-all group/btn"
+                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#2B201A] group-hover:bg-[#E86F1D] hover:bg-[#E86F1D] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:shadow-md transition-all group/btn"
                 >
                   <span>{lang === "hi" ? "संस्थापक दृष्टिकोण देखें" : "Explore Founder's Vision"}</span>
-                  <ArrowRight className="w-4 h-4 text-[#E86F1D] group-hover/btn:text-white group-hover/btn:translate-x-1 transition-all" />
+                  <ArrowRight className="w-4 h-4 text-[#E86F1D] group-hover:text-white group-hover:translate-x-1 group-hover/btn:text-white group-hover/btn:translate-x-1 transition-all" />
                 </Link>
               </div>
             </div>
@@ -785,10 +785,10 @@ export default function HomePage() {
               <div className="pt-5 mt-5 border-t border-[#E7D8C8]/60">
                 <Link
                   href="/membership"
-                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#2B201A] hover:bg-[#E86F1D] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:shadow-md transition-all group/btn"
+                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#2B201A] group-hover:bg-[#E86F1D] hover:bg-[#E86F1D] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:shadow-md transition-all group/btn"
                 >
                   <span>{lang === "hi" ? "सेवा सदस्य बनें" : "Become a Member"}</span>
-                  <ArrowRight className="w-4 h-4 text-[#E86F1D] group-hover/btn:text-white group-hover/btn:translate-x-1 transition-all" />
+                  <ArrowRight className="w-4 h-4 text-[#E86F1D] group-hover:text-white group-hover:translate-x-1 group-hover/btn:text-white group-hover/btn:translate-x-1 transition-all" />
                 </Link>
               </div>
             </div>
@@ -818,11 +818,11 @@ export default function HomePage() {
               <div className="pt-5 mt-5 border-t border-[#E7D8C8]/60">
                 <button
                   onClick={() => openDonateModal("General Donation")}
-                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#2B201A] hover:bg-[#E86F1D] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:shadow-md transition-all cursor-pointer group/btn"
+                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#2B201A] group-hover:bg-[#E86F1D] hover:bg-[#E86F1D] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-sm hover:shadow-md transition-all cursor-pointer group/btn"
                 >
-                  <Heart className="w-4 h-4 text-[#E86F1D] group-hover/btn:text-white transition-colors" />
+                  <Heart className="w-4 h-4 text-[#E86F1D] group-hover:text-white group-hover/btn:text-white transition-colors" />
                   <span>{lang === "hi" ? "सहयोग राशि दान करें" : "Support Our Seva"}</span>
-                  <ArrowRight className="w-4 h-4 text-[#E86F1D] group-hover/btn:text-white group-hover/btn:translate-x-1 transition-all" />
+                  <ArrowRight className="w-4 h-4 text-[#E86F1D] group-hover:text-white group-hover:translate-x-1 group-hover/btn:text-white group-hover/btn:translate-x-1 transition-all" />
                 </button>
               </div>
             </div>

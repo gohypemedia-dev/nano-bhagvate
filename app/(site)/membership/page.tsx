@@ -230,7 +230,7 @@ export default function MembershipPage() {
 
         {/* Desktop Hero Content (hidden on mobile) */}
         <div className="hidden md:block relative z-10 page-container py-8 sm:py-12 md:py-24 w-full">
-          <div className="max-w-xl lg:max-w-2xl space-y-4 sm:space-y-5">
+          <div className="max-w-xl lg:max-w-2xl xl:max-w-3xl space-y-4 sm:space-y-5">
             {/* Main Title */}
             <h1 className="font-editorial text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#2B201A] leading-[1.18] tracking-tight">
               {lang === "hi" ? (

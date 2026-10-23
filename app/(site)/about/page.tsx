@@ -130,7 +130,7 @@ export default function AboutPage() {
 
         {/* Desktop Hero Content (hidden on mobile) */}
         <div className="hidden md:block relative z-10 page-container py-8 sm:py-12 md:py-24 w-full">
-          <div className="max-w-xl lg:max-w-2xl space-y-4 sm:space-y-5">
+          <div className="max-w-xl lg:max-w-2xl xl:max-w-3xl space-y-4 sm:space-y-5">
             {/* Main Title matching reference */}
             <h1 className="font-editorial text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-bold text-[#1F1712] leading-[1.12] tracking-tight">
               {lang === "hi" ? (
@@ -194,7 +194,7 @@ export default function AboutPage() {
 
       {/* 2. AUTHENTIC NARRATIVE: "ABOUT US" & "OUR MISSION" */}
       <section className="py-12 sm:py-16 md:py-20 bg-[#FBF6EE]" id="about-story">
-        <div className="page-container max-w-4xl space-y-12 sm:space-y-16">
+        <div className="page-container max-w-5xl lg:max-w-6xl space-y-12 sm:space-y-16">
           {/* ABOUT US BLOCK */}
           <div className="space-y-4 sm:space-y-5 text-center sm:text-left">
             <div className="flex items-center justify-center sm:justify-start gap-2.5">
@@ -234,13 +234,6 @@ export default function AboutPage() {
                 )}
               </p>
             </div>
-          </div>
-
-          {/* ELEGANT DIVIDER */}
-          <div className="w-full flex items-center justify-center gap-3 py-2 text-[#E86F1D]/40">
-            <span className="h-px w-24 bg-[#E7D8C8]" />
-            <span className="text-sm">✦ ✦ ✦</span>
-            <span className="h-px w-24 bg-[#E7D8C8]" />
           </div>
 
           {/* OUR MISSION BLOCK */}
@@ -355,7 +348,7 @@ export default function AboutPage() {
 
       {/* 5. WE ARE COMMITTED TO (4 PILLAR MODULES FAITHFULLY MATCHING ORIGINAL SITE) */}
       <section className="py-16 sm:py-24 bg-[#FBF6EE]">
-        <div className="page-container max-w-5xl space-y-12">
+        <div className="page-container space-y-12">
           {/* Section Heading */}
           <div className="text-center space-y-2.5 max-w-2xl mx-auto">
             <h2 className="font-editorial text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-wider text-[#1F1712]">
