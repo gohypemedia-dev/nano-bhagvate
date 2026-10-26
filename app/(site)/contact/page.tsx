@@ -11,6 +11,11 @@ import {
   validateMobile,
   validateName,
 } from "@/lib/validation/donation";
+import {
+  TextReveal,
+  ParagraphReveal,
+  SectionReveal,
+} from "@/components/animation";
 
 function validateMessage(msg: string): string | null {
   const cleaned = msg.trim();
@@ -91,14 +96,14 @@ export default function ContactPage() {
           <p className="text-xs font-bold uppercase tracking-widest text-[#E86F1D]">
             {lang === "hi" ? "संपर्क करें" : "REACH OUT TO US"}
           </p>
-          <h1 className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2B201A]">
+          <TextReveal as="h1" className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2B201A]">
             {lang === "hi" ? "हमसे जुड़े रहें" : "Let’s Stay Connected"}
-          </h1>
-          <p className="text-base sm:text-lg text-[#2B201A]/85 leading-relaxed font-sans max-w-2xl mx-auto">
+          </TextReveal>
+          <ParagraphReveal className="text-base sm:text-lg text-[#2B201A]/85 leading-relaxed font-sans max-w-2xl mx-auto">
             {lang === "hi"
               ? "सदस्यता, दान, सेवा प्रकल्पों, आयोजनों या किसी भी सामान्य जानकारी के लिए, ट्रस्ट से संपर्क करें। हमारी टीम आपकी पूरी सहायता करेगी।"
               : "For membership, donations, programs, events, or general enquiries, reach out to the Trust and our team will guide you to the right next step."}
-          </p>
+          </ParagraphReveal>
         </div>
       </section>
 
@@ -107,7 +112,7 @@ export default function ContactPage() {
         <div className="page-container">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
             {/* Left Contact Form */}
-            <div className="lg:col-span-7 card-warm p-8 sm:p-10 space-y-6">
+            <SectionReveal as="div" yOffset={30} className="lg:col-span-7 card-warm p-8 sm:p-10 space-y-6">
               <h2 className="font-editorial text-3xl font-bold text-[#2B201A]">
                 {lang === "hi" ? "हमें संदेश भेजें" : "Send Us a Message"}
               </h2>
@@ -262,10 +267,10 @@ export default function ContactPage() {
                   </button>
                 </form>
               )}
-            </div>
+            </SectionReveal>
 
             {/* Right Contact Info Details & Map Card */}
-            <div className="lg:col-span-5 space-y-6">
+            <SectionReveal as="div" yOffset={30} delay={0.2} className="lg:col-span-5 space-y-6">
               <div className="card-warm space-y-6">
                 <h2 className="font-editorial text-2xl font-bold text-[#2B201A]">
                   {lang === "hi" ? "ट्रस्ट संपर्क विवरण" : "Trust Contact Details"}
@@ -334,7 +339,7 @@ export default function ContactPage() {
                     : "Visitors and devotees are welcome during office hours. Please call ahead for group satsang appointments."}
                 </p>
               </div>
-            </div>
+            </SectionReveal>
           </div>
         </div>
       </section>

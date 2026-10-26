@@ -5,6 +5,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { HeartPulse, GraduationCap, Users, HeartHandshake, CheckCircle2, Heart } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+import {
+  TextReveal,
+  ParagraphReveal,
+  SectionReveal,
+  StaggerContainer,
+  StaggerItem,
+  ParallaxSection,
+  ParallaxImage,
+} from "@/components/animation";
 
 export default function InitiativesPage() {
   const { lang, openDonateModal } = useApp();
@@ -101,7 +110,7 @@ export default function InitiativesPage() {
       {/* HERO SECTION - RECREATED FROM REFERENCE (PANORAMIC ON DESKTOP, 100VH ON MOBILE & LAPTOP) */}
       <section className="relative overflow-hidden bg-[#1F150E] md:bg-[#F6EDE2] border-b border-[#E7D8C8] min-h-[calc(100vh-68px)] sm:min-h-[calc(100vh-74px)] min-[1000px]:min-h-[calc(100vh-76px)] xl:min-h-[calc(100vh-82px)] md:flex md:items-center">
         {/* Desktop Panoramic Background Banner (hidden on mobile) */}
-        <div className="hidden md:block absolute inset-0 z-0">
+        <ParallaxImage offset={45} className="hidden md:block absolute inset-0 z-0">
           <Image
             src="/images/initiatives-hero-banner.png"
             alt="Transforming Lives Through Service"
@@ -112,24 +121,26 @@ export default function InitiativesPage() {
           />
           {/* Smooth Warm Mist Gradient on Desktop */}
           <div className="absolute inset-0 bg-gradient-to-r from-[#F6EDE2] via-[#F6EDE2] via-38% lg:via-46% to-transparent" />
-        </div>
+        </ParallaxImage>
 
         {/* MOBILE HERO (100VH Full Viewport Height with Bottom Overlay) */}
         <div className="md:hidden relative z-1 w-full h-[calc(100vh-68px)] min-h-[540px] flex items-center justify-center overflow-hidden">
-          <Image
-            src="/images/initiatives-mobile-hero.png"
-            alt="Transforming Lives Through Service - Namo Bhagwate Vasudevaya"
-            fill
-            priority
-            unoptimized
-            className="w-full h-full object-cover object-top block select-none pointer-events-none"
-          />
+          <ParallaxImage offset={30} className="absolute inset-0 w-full h-full">
+            <Image
+              src="/images/initiatives-mobile-hero.png"
+              alt="Transforming Lives Through Service - Namo Bhagwate Vasudevaya"
+              fill
+              priority
+              unoptimized
+              className="w-full h-full object-cover object-top block select-none pointer-events-none"
+            />
+          </ParallaxImage>
 
           {/* Mobile Overlay Action Bar (Clean gradient at bottom of mobile banner) */}
           <div className="absolute bottom-0 inset-x-0 z-20 w-full px-4 pt-16 pb-6 bg-gradient-to-t from-black/95 via-black/70 to-transparent flex flex-col items-center gap-2 text-center pointer-events-auto">
-            <h2 className="font-editorial text-sm sm:text-base font-extrabold text-white tracking-wide leading-tight drop-shadow-md">
+            <TextReveal as="h2" className="font-editorial text-sm sm:text-base font-extrabold text-white tracking-wide leading-tight drop-shadow-md">
               {lang === "hi" ? "सेवा से जीवन • सशक्तिकरण एवं परिवर्तन" : "Transforming Lives • Through Service"}
-            </h2>
+            </TextReveal>
             <div className="flex items-center justify-center gap-2.5 w-full max-w-xs pt-1">
               <a
                 href="#all-initiatives"
@@ -152,7 +163,7 @@ export default function InitiativesPage() {
         <div className="hidden md:block relative z-10 page-container py-8 sm:py-12 md:py-24 w-full">
           <div className="max-w-xl lg:max-w-2xl xl:max-w-3xl space-y-4 sm:space-y-5">
             {/* Main Title matching reference */}
-            <h1 className="font-editorial text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-bold text-[#1F1712] leading-[1.12] tracking-tight">
+            <TextReveal as="h1" className="font-editorial text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-bold text-[#1F1712] leading-[1.12] tracking-tight">
               {lang === "hi" ? (
                 <>
                   सेवा से जीवन <br />
@@ -164,14 +175,14 @@ export default function InitiativesPage() {
                   <span className="text-[#E86F1D]">Through Service</span>
                 </>
               )}
-            </h1>
+            </TextReveal>
 
             {/* Description matching exact reference text */}
-            <p className="text-sm sm:text-base md:text-lg text-[#3E3129] leading-relaxed font-sans font-medium">
+            <ParagraphReveal className="text-sm sm:text-base md:text-lg text-[#3E3129] leading-relaxed font-sans font-medium">
               {lang === "hi"
                 ? "ऐसे सार्थक सेवा प्रकल्पों से जुड़ें जो व्यक्तियों को सशक्त बनाते हैं, समाज को पोषित करते हैं और स्थायी सामाजिक बदलाव लाते हैं। श्रीमद्भगवद्गीता के शाश्वत ज्ञान से प्रेरित होकर, हमारा प्रत्येक प्रकल्प करुणा, सेवा और समग्र विकास के प्रति हमारी निष्ठा को दर्शाता है।"
                 : "Discover meaningful initiatives that empower individuals, nurture communities, and create lasting social impact. Guided by the timeless wisdom of the Bhagavad Gita, every initiative reflects our commitment to compassion, service, and holistic development."}
-            </p>
+            </ParagraphReveal>
 
             {/* Trust Points / Micro Badges */}
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-1 text-[#2B201A]/85 font-semibold">
@@ -210,13 +221,13 @@ export default function InitiativesPage() {
       </section>
 
       {/* 4 PRIMARY INITIATIVE CARDS */}
-      <section className="section-py" id="all-initiatives">
+      <SectionReveal className="section-py" id="all-initiatives">
         <div className="page-container">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-stretch">
+          <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-stretch">
             {initiatives.map((item, idx) => (
+              <StaggerItem key={item.id} className="h-full">
                 <div
-                  key={item.id}
-                  className="card-warm p-0 overflow-hidden flex flex-col justify-between"
+                  className="card-warm p-0 overflow-hidden flex flex-col justify-between h-full"
                 >
                   {/* 1. Initiative Image (TOP) */}
                   <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#2B201A]">
@@ -267,19 +278,20 @@ export default function InitiativesPage() {
                     </div>
                   </div>
                 </div>
-              ))}
-          </div>
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
         </div>
-      </section>
+      </SectionReveal>
 
       {/* PREMIUM CTA BANNER */}
-      <section className="section-py bg-[#FBF2E7]/50 border-t border-[#E7D8C8]">
+      <SectionReveal className="section-py bg-[#FBF2E7]/50 border-t border-[#E7D8C8]">
         <div className="page-container max-w-5xl">
           <div className="bg-gradient-to-r from-[#2B201A] to-[#3D2C24] text-white rounded-3xl p-8 sm:p-12 text-center border-2 border-[#B8893E] shadow-2xl space-y-6">
             <p className="text-xs font-bold uppercase tracking-widest text-[#B8893E]">
               {lang === "hi" ? "पावन सेवा मिशन से जुड़ें" : "JOIN THE SEVA MISSION"}
             </p>
-            <h2 className="font-editorial text-3xl sm:text-4xl font-bold leading-tight">
+            <TextReveal as="h2" className="font-editorial text-3xl sm:text-4xl font-bold leading-tight">
               {lang === "hi" ? (
                 <>
                   हमारे साथ सेवा करें • प्रकल्प में सहयोग दें
@@ -293,12 +305,12 @@ export default function InitiativesPage() {
                   Help turn compassion into action.
                 </>
               )}
-            </h2>
-            <p className="text-sm sm:text-base text-white/85 max-w-xl mx-auto font-sans">
+            </TextReveal>
+            <ParagraphReveal className="text-sm sm:text-base text-white/85 max-w-xl mx-auto font-sans">
               {lang === "hi"
                 ? "आपका प्रत्येक अंशदान सीधे चिकित्सा शिविरों, गुरुकुल शिक्षा, महिला कौशल कार्यशालाओं और जनकल्याण सेवाओं को सशक्त बनाता है।"
                 : "Every contribution directly powers our health camps, Gurukul education, women skill workshops, and farmer advisory programs."}
-            </p>
+            </ParagraphReveal>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4 pt-4 max-w-md mx-auto">
               <Link href="/membership" className="btn-secondary flex-1 text-center">
@@ -314,7 +326,7 @@ export default function InitiativesPage() {
             </div>
           </div>
         </div>
-      </section>
+      </SectionReveal>
 
       {/* STRICT RULE CONFIRMED: ZERO GALLERY SECTION HERE! */}
     </div>

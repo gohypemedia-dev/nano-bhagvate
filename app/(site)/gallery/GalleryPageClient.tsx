@@ -12,6 +12,7 @@ import { useApp } from "@/context/AppContext";
 import { galleryData, GalleryItem } from "@/data/gallery";
 import GalleryModal from "@/components/gallery/GalleryModal";
 import GalleryVideoCard from "@/components/gallery/GalleryVideoCard";
+import { StaggerContainer, StaggerItem } from "@/components/animation";
 
 type FilterType = "all" | "photos" | "videos";
 
@@ -183,72 +184,77 @@ export default function GalleryPageClient({ initialItems }: { initialItems?: Gal
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-4 items-stretch">
+            <StaggerContainer
+              key={activeFilter}
+              stagger={0.05}
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-4 items-stretch"
+            >
               {visibleItems.map((item) => {
                 const title = lang === "hi" && item.titleHi ? item.titleHi : item.title;
                 const event = lang === "hi" && item.eventHi ? item.eventHi : item.event;
                 const isVideo = item.type === "video";
 
-            if (isVideo) {
-              return (
-                <GalleryVideoCard
-                  key={item.id}
-                  item={item}
-                  title={title}
-                  event={event}
-                  lang={lang}
-                  onOpen={(e) => handleOpenPhoto(item, e)}
-                />
-              );
-            }
-
-            return (
-              <div
-                key={item.id}
-                className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-[#181310] border border-[#E7D8C8]/70 shadow-warm-xs hover:shadow-warm-md hover:border-[#E86F1D] transition-all duration-300 group"
-              >
-                      {/* DIRECT PHOTO TILE (CLICK TO VIEW FULL-SCREEN IN LIGHTBOX) */}
-                      <button
-                        type="button"
-                        onClick={(e) => handleOpenPhoto(item, e)}
-                        aria-label={`${lang === "hi" ? "तस्वीर देखें" : "View photo"}: ${title}`}
-                        className="relative w-full h-full block cursor-pointer group/photo focus-visible:ring-2 focus-visible:ring-[#E86F1D] focus-visible:outline-none"
-                      >
-                        <Image
-                          src={item.thumbnail}
-                          alt={item.alt}
-                          fill
-                          loading="lazy"
-                          unoptimized={item.thumbnail.startsWith("http")}
-                          sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                          className="object-cover transition-transform duration-500 ease-out group-hover/photo:scale-105"
-                          style={{ objectPosition: item.focalPoint || "center" }}
-                        />
-
-                        {/* Subtle Dark Gradient Overlay on Hover */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent opacity-0 group-hover/photo:opacity-100 transition-opacity duration-300 pointer-events-none" />
-
-                        {/* Expand Icon Badge */}
-                        <div className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/60 backdrop-blur-md text-white opacity-0 group-hover/photo:opacity-100 transition-opacity duration-200 shadow-md">
-                          <Maximize2 className="w-3.5 h-3.5" />
-                        </div>
-
-                        {/* Caption Bar on Hover */}
-                        <div className="absolute bottom-0 inset-x-0 p-3.5 z-10 text-left text-white opacity-0 group-hover/photo:opacity-100 transition-opacity duration-300 pointer-events-none space-y-0.5">
-                          {event && (
-                            <p className="text-[10px] font-bold text-[#E86F1D] uppercase tracking-wider">
-                              {event}
-                            </p>
-                          )}
-                          <h4 className="font-editorial text-xs sm:text-sm font-bold text-white line-clamp-1 drop-shadow-xs">
-                            {title}
-                          </h4>
-                        </div>
-                      </button>
-                    </div>
+                if (isVideo) {
+                  return (
+                    <StaggerItem key={item.id}>
+                      <GalleryVideoCard
+                        item={item}
+                        title={title}
+                        event={event}
+                        lang={lang}
+                        onOpen={(e) => handleOpenPhoto(item, e)}
+                      />
+                    </StaggerItem>
                   );
+                }
+
+                return (
+                  <StaggerItem
+                    key={item.id}
+                    className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-[#181310] border border-[#E7D8C8]/70 shadow-warm-xs hover:shadow-warm-md hover:border-[#E86F1D] transition-all duration-300 group"
+                  >
+                    {/* DIRECT PHOTO TILE (CLICK TO VIEW FULL-SCREEN IN LIGHTBOX) */}
+                    <button
+                      type="button"
+                      onClick={(e) => handleOpenPhoto(item, e)}
+                      aria-label={`${lang === "hi" ? "तस्वीर देखें" : "View photo"}: ${title}`}
+                      className="relative w-full h-full block cursor-pointer group/photo focus-visible:ring-2 focus-visible:ring-[#E86F1D] focus-visible:outline-none"
+                    >
+                      <Image
+                        src={item.thumbnail}
+                        alt={item.alt}
+                        fill
+                        loading="lazy"
+                        unoptimized={item.thumbnail.startsWith("http")}
+                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                        className="object-cover transition-transform duration-500 ease-out group-hover/photo:scale-105"
+                        style={{ objectPosition: item.focalPoint || "center" }}
+                      />
+
+                      {/* Subtle Dark Gradient Overlay on Hover */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent opacity-0 group-hover/photo:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+                      {/* Expand Icon Badge */}
+                      <div className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/60 backdrop-blur-md text-white opacity-0 group-hover/photo:opacity-100 transition-opacity duration-200 shadow-md">
+                        <Maximize2 className="w-3.5 h-3.5" />
+                      </div>
+
+                      {/* Caption Bar on Hover */}
+                      <div className="absolute bottom-0 inset-x-0 p-3.5 z-10 text-left text-white opacity-0 group-hover/photo:opacity-100 transition-opacity duration-300 pointer-events-none space-y-0.5">
+                        {event && (
+                          <p className="text-[10px] font-bold text-[#E86F1D] uppercase tracking-wider">
+                            {event}
+                          </p>
+                        )}
+                        <h4 className="font-editorial text-xs sm:text-sm font-bold text-white line-clamp-1 drop-shadow-xs">
+                          {title}
+                        </h4>
+                      </div>
+                    </button>
+                  </StaggerItem>
+                );
               })}
-            </div>
+            </StaggerContainer>
           )}
 
           {/* LOAD MORE BUTTON */}

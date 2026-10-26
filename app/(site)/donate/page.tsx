@@ -3,6 +3,13 @@
 import React from "react";
 import { Heart, BookOpen, Sprout, GraduationCap, Sun, ShieldCheck, QrCode } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+import {
+  TextReveal,
+  ParagraphReveal,
+  SectionReveal,
+  StaggerContainer,
+  StaggerItem,
+} from "@/components/animation";
 
 export default function DonatePage() {
   const { lang, openDonateModal } = useApp();
@@ -61,30 +68,30 @@ export default function DonatePage() {
       <section className="relative py-14 md:py-20 bg-[#FBF2E7] border-b border-[#E7D8C8]">
         <div className="page-container text-center space-y-4 max-w-4xl">
           <p className="text-xs font-bold uppercase tracking-widest text-[#E86F1D]">SEVA & CHARITY</p>
-          <h1 className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2B201A]">
+          <TextReveal as="h1" className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2B201A]">
             Be the Reason Someone Smiles
-          </h1>
-          <p className="text-base sm:text-lg text-[#2B201A]/85 leading-relaxed font-sans max-w-2xl mx-auto">
+          </TextReveal>
+          <ParagraphReveal className="text-base sm:text-lg text-[#2B201A]/85 leading-relaxed font-sans max-w-2xl mx-auto">
             Your contribution helps bring hope, dignity, learning, and support to communities through the Trust’s spiritual, educational, and humanitarian initiatives.
-          </p>
+          </ParagraphReveal>
         </div>
       </section>
 
       {/* 5 DONATION PROGRAM CARDS */}
       <section className="section-py">
         <div className="page-container">
-          <div className="text-center max-w-2xl mx-auto section-header space-y-2">
+          <SectionReveal className="text-center max-w-2xl mx-auto section-header space-y-2">
             <p className="text-xs font-bold uppercase tracking-widest text-[#B8893E]">CHOOSE A CAUSE</p>
-            <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
+            <TextReveal as="h2" className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
               Direct Your Seva Contribution
-            </h2>
-          </div>
+            </TextReveal>
+          </SectionReveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
             {programs.map((prog) => {
               const IconComp = prog.icon;
               return (
-                <div key={prog.id} className="card-warm">
+                <StaggerItem key={prog.id} className="card-warm">
                   <div className="card-body space-y-4">
                     <div className={`w-12 h-12 rounded-2xl ${prog.bg} ${prog.color} flex items-center justify-center`}>
                       <IconComp className="w-6 h-6 stroke-[2]" />
@@ -106,17 +113,17 @@ export default function DonatePage() {
                       <span>Donate Now</span>
                     </button>
                   </div>
-                </div>
+                </StaggerItem>
               );
             })}
-          </div>
+          </StaggerContainer>
         </div>
       </section>
 
       {/* CENTERED SCAN & SUPPORT PANEL */}
       <section className="section-py bg-[#FBF2E7]/60 border-t border-[#E7D8C8]">
         <div className="page-container max-w-4xl">
-          <div className="card-warm border-2 border-[#B8893E]/50 text-center p-8 sm:p-12 space-y-6">
+          <SectionReveal className="card-warm border-2 border-[#B8893E]/50 text-center p-8 sm:p-12 space-y-6">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-[#FFF9F2] border border-[#B8893E]/30 rounded-full text-xs font-bold uppercase tracking-widest text-[#B8893E] mx-auto">
               <QrCode className="w-4 h-4" />
               <span>OFFICIAL UPI QR CODE</span>
@@ -136,7 +143,7 @@ export default function DonatePage() {
               <ShieldCheck className="w-4 h-4 text-[#2F5A43]" />
               <span>Payments go directly to the Trust&apos;s UPI account. Confirmation emails are sent after verification.</span>
             </div>
-          </div>
+          </SectionReveal>
         </div>
       </section>
     </div>

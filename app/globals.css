@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "lenis/dist/lenis.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -89,6 +90,53 @@
   .lang-hi {
     font-family: var(--font-devanagari), Georgia, serif;
   }
+}
+
+/* ===================================================
+   LUXURY THEME SCROLLBAR (MATCHING DEVOTIONAL PALETTE)
+   =================================================== */
+
+/* Firefox & Standard CSS */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #E86F1D #FAF3EA;
+}
+
+/* WebKit / Chromium / Edge / Safari */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FAF3EA;
+  border-left: 1px solid #E7D8C8;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #E86F1D 0%, #D48820 100%);
+  border-radius: 9999px;
+  border: 2px solid #FAF3EA;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #D45A0E 0%, #B87212 100%);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #B8580A;
+}
+
+/* Remove default browser arrow buttons */
+::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+::-webkit-scrollbar-corner {
+  background: #FAF3EA;
 }
 
 /* ===================================================

@@ -23,6 +23,14 @@ import GallerySection from "@/components/gallery/GallerySection";
 import CountUp from "@/components/CountUp";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import ParallaxPillarCard from "@/components/ParallaxPillarCard";
+import {
+  TextReveal,
+  ParagraphReveal,
+  SectionReveal,
+  StaggerContainer,
+  StaggerItem,
+  ParallaxSection,
+} from "@/components/animation";
 
 export default function HomePage() {
   const { lang, openDonateModal } = useApp();
@@ -164,14 +172,16 @@ export default function HomePage() {
         {/* 100VH Full Viewport Height with original banner & sleek bottom action bar */}
         {/* ============================================================ */}
         <div className="hidden sm:block relative w-full h-[calc(100vh-74px)] min-[1000px]:h-[calc(100vh-76px)] xl:h-[calc(100vh-82px)] min-h-[580px] overflow-hidden">
-          {/* Original Hero Photo - completely clear and untouched */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/desktop-hero-original.webp"
-            alt="Namo Bhagwate Vasudevaya Trust - Pujya Sadhvi Vijeshanand Saraswati Ji"
-            className="w-full h-full object-cover object-center block select-none pointer-events-none"
-            loading="eager"
-          />
+          {/* Parallax Hero Photo */}
+          <ParallaxSection offset={45} className="w-full h-full">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/desktop-hero-original.webp"
+              alt="Namo Bhagwate Vasudevaya Trust - Pujya Sadhvi Vijeshanand Saraswati Ji"
+              className="w-full h-[115%] -mt-[5%] object-cover object-center block select-none pointer-events-none"
+              loading="eager"
+            />
+          </ParallaxSection>
 
           {/* Semantic live H1 for SEO */}
           <h1 className="sr-only">Namo Bhagwate Vasudevaya Trust</h1>
@@ -180,22 +190,20 @@ export default function HomePage() {
           <div className="absolute bottom-0 inset-x-0 z-20 w-full px-6 md:px-10 lg:px-14 py-5 md:py-6 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex flex-col md:flex-row md:items-end md:justify-between gap-4 pointer-events-none">
             {/* Left: Badge + Heading + Purpose summary */}
             <div className="flex flex-col items-start gap-1.5 text-left pointer-events-auto max-w-xl">
-              <h2 className="font-editorial text-xl md:text-2xl lg:text-3xl font-extrabold text-white tracking-wide leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
-                {lang === "hi" ? (
-                  <>
-                    धर्म में निहित • <span className="text-[#E86F1D]">सेवा के प्रति समर्पित</span>
-                  </>
-                ) : (
-                  <>
-                    Rooted in Dharma • <span className="text-[#E86F1D]">Dedicated to Seva</span>
-                  </>
-                )}
-              </h2>
-              <p className="text-xs lg:text-[13px] text-white/90 font-medium leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
-                {lang === "hi"
-                  ? "भगवद गीता के सार्वभौमिक सिद्धांतों पर आधारित आध्यात्मिक ज्ञान, समाज सेवा एवं जनकल्याण को समर्पित।"
-                  : ""}
-              </p>
+              <TextReveal
+                as="h2"
+                className="font-editorial text-xl md:text-2xl lg:text-3xl font-extrabold text-white tracking-wide leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+                text={
+                  lang === "hi"
+                    ? "धर्म में निहित • सेवा के प्रति समर्पित"
+                    : "Rooted in Dharma • Dedicated to Seva"
+                }
+              />
+              {lang === "hi" && (
+                <ParagraphReveal className="text-xs lg:text-[13px] text-white/90 font-medium leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
+                  <p>भगवद गीता के सार्वभौमिक सिद्धांतों पर आधारित आध्यात्मिक ज्ञान, समाज सेवा एवं जनकल्याण को समर्पित।</p>
+                </ParagraphReveal>
+              )}
             </div>
 
             {/* Right: CTA Buttons */}
@@ -222,20 +230,24 @@ export default function HomePage() {
         {/* 100VH Full Viewport Height with original mobile artwork */}
         {/* ============================================================ */}
         <div className="sm:hidden relative z-10 w-full h-[calc(100vh-68px)] min-h-[540px] flex items-center justify-center overflow-hidden">
-          {/* Original Mobile Photo */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/mobile-hero-original.webp"
-            alt="Namo Bhagwate Vasudevaya Trust - Pujya Sadhvi Vijeshanand Saraswati Ji"
-            className="w-full h-full object-cover object-top block select-none pointer-events-none drop-shadow-2xl"
-            loading="eager"
-          />
+          {/* Parallax Mobile Photo */}
+          <ParallaxSection offset={30} className="w-full h-full">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/mobile-hero-original.webp"
+              alt="Namo Bhagwate Vasudevaya Trust - Pujya Sadhvi Vijeshanand Saraswati Ji"
+              className="w-full h-[112%] -mt-[4%] object-cover object-top block select-none pointer-events-none drop-shadow-2xl"
+              loading="eager"
+            />
+          </ParallaxSection>
 
           {/* Mobile Overlay Action Bar */}
           <div className="absolute bottom-0 inset-x-0 z-20 w-full px-4 pt-16 pb-6 bg-gradient-to-t from-black/95 via-black/70 to-transparent flex flex-col items-center gap-2 text-center pointer-events-auto">
-            <p className="font-editorial text-sm sm:text-base font-extrabold text-white tracking-wide leading-tight drop-shadow-md">
-              {lang === "hi" ? "धर्म में निहित • सेवा के प्रति समर्पित" : "Rooted in Dharma • Dedicated to Seva"}
-            </p>
+            <TextReveal
+              as="p"
+              className="font-editorial text-sm sm:text-base font-extrabold text-white tracking-wide leading-tight drop-shadow-md"
+              text={lang === "hi" ? "धर्म में निहित • सेवा के प्रति समर्पित" : "Rooted in Dharma • Dedicated to Seva"}
+            />
             <div className="flex items-center justify-center gap-2.5 w-full max-w-xs pt-1">
               <Link
                 href="/initiatives"
@@ -254,6 +266,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
 
       {/* HORIZONTAL AUTO-SCROLL MARQUEE TICKER (JUST BELOW HERO) */}
       <div className="w-full bg-[#FFF5EA] border-y border-[#E86F1D]/25 py-2.5 sm:py-3 overflow-hidden select-none relative z-20 shadow-xs">
@@ -293,156 +306,164 @@ export default function HomePage() {
       </div>
 
       {/* THREE PILLAR ACTION CARDS (WIDE HORIZONTAL RECTANGLE WITH TRANSLUCENT TEXT PLATE) */}
-      <section className="pt-8 sm:pt-10 pb-6 sm:pb-7 bg-[#FFF9F2] border-b border-[#E7D8C8]/60">
+      <SectionReveal className="pt-8 sm:pt-10 pb-6 sm:pb-7 bg-[#FFF9F2] border-b border-[#E7D8C8]/60">
         <div className="w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-7 items-stretch">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-7 items-stretch">
             {/* Card 1: Books (WebP compressed per Tech a) */}
-            <div className="relative min-h-[340px] md:h-[325px] h-auto rounded-3xl overflow-hidden shadow-[0_16px_40px_-8px_rgba(43,32,26,0.22),0_8px_20px_-4px_rgba(232,111,29,0.12)] hover:shadow-[0_24px_50px_-10px_rgba(43,32,26,0.32),0_12px_28px_-4px_rgba(232,111,29,0.2)] hover:-translate-y-1.5 transition-all duration-500 group flex flex-col justify-end p-4 sm:p-4.5 border border-[#E7D8C8] hover:border-[#E86F1D]">
-              {/* Full Background Image */}
-              <Image
-                src="/images/card-books-rect.webp"
-                alt="Books & Sacred Literature"
-                fill
-                priority
-                unoptimized
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-106"
-              />
-              {/* Soft Vignette Gradient */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/35 pointer-events-none" />
+            <StaggerItem className="h-full">
+              <div className="relative min-h-[340px] md:h-[325px] h-auto rounded-3xl overflow-hidden shadow-[0_16px_40px_-8px_rgba(43,32,26,0.22),0_8px_20px_-4px_rgba(232,111,29,0.12)] hover:shadow-[0_24px_50px_-10px_rgba(43,32,26,0.32),0_12px_28px_-4px_rgba(232,111,29,0.2)] hover:-translate-y-1.5 transition-all duration-500 group flex flex-col justify-end p-4 sm:p-4.5 border border-[#E7D8C8] hover:border-[#E86F1D]">
+                {/* Full Background Image */}
+                <Image
+                  src="/images/card-books-rect.webp"
+                  alt="Books & Sacred Literature"
+                  fill
+                  priority
+                  unoptimized
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-106"
+                />
+                {/* Soft Vignette Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/35 pointer-events-none" />
 
-              {/* Translucent Text Plate */}
-              <div className="relative z-10 w-full bg-[#FFF9F2]/95 group-hover:bg-[#FFF9F2]/98 backdrop-blur-md border border-white/85 rounded-2xl p-3 sm:p-3.5 md:p-2.5 md:group-hover:p-4 shadow-xl transition-all duration-500 ease-out mt-8 md:mt-0">
-                <div className="max-md:max-h-none max-md:opacity-100 md:max-h-0 md:opacity-0 md:group-hover:max-h-48 md:group-hover:opacity-100 transition-all duration-500 ease-in-out overflow-hidden">
-                  <div className="pb-2.5 pt-0.5 transform md:translate-y-2 md:group-hover:translate-y-0 transition-transform duration-500 ease-out">
-                    <h3 className="font-sans font-black text-[#1E1612] tracking-wider text-sm sm:text-base uppercase mb-1.5 leading-snug">
-                      {lang === "hi" ? "ज्ञान के लिए पुस्तकें, जीवन में परिवर्तन" : "BOOKS FOR KNOWLEDGE, LIFE FOR CHANGE"}
-                    </h3>
-                    <p className="text-xs sm:text-[13px] text-[#5C4D43] line-clamp-2 leading-relaxed font-sans">
-                      {lang === "hi"
-                        ? "हमारे पावन ग्रंथों और ज्ञान संग्रह के माध्यम से आध्यात्मिक ज्ञान प्राप्त करें।"
-                        : "Discover spiritual wisdom through our curated collection of sacred texts and teachings."}
-                    </p>
+                {/* Translucent Text Plate */}
+                <div className="relative z-10 w-full bg-[#FFF9F2]/95 group-hover:bg-[#FFF9F2]/98 backdrop-blur-md border border-white/85 rounded-2xl p-3 sm:p-3.5 md:p-2.5 md:group-hover:p-4 shadow-xl transition-all duration-500 ease-out mt-8 md:mt-0">
+                  <div className="max-md:max-h-none max-md:opacity-100 md:max-h-0 md:opacity-0 md:group-hover:max-h-48 md:group-hover:opacity-100 transition-all duration-500 ease-in-out overflow-hidden">
+                    <div className="pb-2.5 pt-0.5 transform md:translate-y-2 md:group-hover:translate-y-0 transition-transform duration-500 ease-out">
+                      <h3 className="font-sans font-black text-[#1E1612] tracking-wider text-sm sm:text-base uppercase mb-1.5 leading-snug">
+                        {lang === "hi" ? "ज्ञान के लिए पुस्तकें, जीवन में परिवर्तन" : "BOOKS FOR KNOWLEDGE, LIFE FOR CHANGE"}
+                      </h3>
+                      <p className="text-xs sm:text-[13px] text-[#5C4D43] line-clamp-2 leading-relaxed font-sans">
+                        {lang === "hi"
+                          ? "हमारे पावन ग्रंथों और ज्ञान संग्रह के माध्यम से आध्यात्मिक ज्ञान प्राप्त करें।"
+                          : "Discover spiritual wisdom through our curated collection of sacred texts and teachings."}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Bottom Action Row */}
+                  <div className="flex items-center justify-between gap-2 pt-1 md:pt-0">
+                    <span className="hidden md:inline-block text-[11px] font-bold text-[#8C6B3E] uppercase tracking-wider group-hover:opacity-0 transition-opacity duration-300">
+                      {lang === "hi" ? "साहित्य सेवा" : "Sacred Texts"}
+                    </span>
+                    <Link
+                      href="/books"
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#2B201A] hover:bg-[#1E1612] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all w-full md:w-auto"
+                    >
+                      <span>{lang === "hi" ? "पुस्तकें देखें" : "Explore Books"}</span>
+                    </Link>
                   </div>
                 </div>
-
-                {/* Bottom Action Row */}
-                <div className="flex items-center justify-between gap-2 pt-1 md:pt-0">
-                  <span className="hidden md:inline-block text-[11px] font-bold text-[#8C6B3E] uppercase tracking-wider group-hover:opacity-0 transition-opacity duration-300">
-                    {lang === "hi" ? "साहित्य सेवा" : "Sacred Texts"}
-                  </span>
-                  <Link
-                    href="/books"
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#2B201A] hover:bg-[#1E1612] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all w-full md:w-auto"
-                  >
-                    <span>{lang === "hi" ? "पुस्तकें देखें" : "Explore Books"}</span>
-                  </Link>
-                </div>
               </div>
-            </div>
+            </StaggerItem>
 
             {/* Card 2: Donate for Seva (WebP compressed per Tech a) */}
-            <div className="relative min-h-[340px] md:h-[325px] h-auto rounded-3xl overflow-hidden shadow-[0_16px_40px_-8px_rgba(43,32,26,0.22),0_8px_20px_-4px_rgba(232,111,29,0.12)] hover:shadow-[0_24px_50px_-10px_rgba(43,32,26,0.32),0_12px_28px_-4px_rgba(232,111,29,0.2)] hover:-translate-y-1.5 transition-all duration-500 group flex flex-col justify-end p-4 sm:p-4.5 border border-[#E7D8C8] hover:border-[#E86F1D]">
-              {/* Full Background Image */}
-              <Image
-                src="/images/card-seva-rect.webp"
-                alt="Donate for Seva"
-                fill
-                priority
-                unoptimized
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-106"
-              />
-              {/* Soft Vignette Gradient */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/35 pointer-events-none" />
+            <StaggerItem className="h-full">
+              <div className="relative min-h-[340px] md:h-[325px] h-auto rounded-3xl overflow-hidden shadow-[0_16px_40px_-8px_rgba(43,32,26,0.22),0_8px_20px_-4px_rgba(232,111,29,0.12)] hover:shadow-[0_24px_50px_-10px_rgba(43,32,26,0.32),0_12px_28px_-4px_rgba(232,111,29,0.2)] hover:-translate-y-1.5 transition-all duration-500 group flex flex-col justify-end p-4 sm:p-4.5 border border-[#E7D8C8] hover:border-[#E86F1D]">
+                {/* Full Background Image */}
+                <Image
+                  src="/images/card-seva-rect.webp"
+                  alt="Donate for Seva"
+                  fill
+                  priority
+                  unoptimized
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-106"
+                />
+                {/* Soft Vignette Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/35 pointer-events-none" />
 
-              {/* Translucent Text Plate */}
-              <div className="relative z-10 w-full bg-[#FFF9F2]/95 group-hover:bg-[#FFF9F2]/98 backdrop-blur-md border border-white/85 rounded-2xl p-3 sm:p-3.5 md:p-2.5 md:group-hover:p-4 shadow-xl transition-all duration-500 ease-out mt-8 md:mt-0">
-                <div className="max-md:max-h-none max-md:opacity-100 md:max-h-0 md:opacity-0 md:group-hover:max-h-48 md:group-hover:opacity-100 transition-all duration-500 ease-in-out overflow-hidden">
-                  <div className="pb-2.5 pt-0.5 transform md:translate-y-2 md:group-hover:translate-y-0 transition-transform duration-500 ease-out">
-                    <h3 className="font-sans font-black text-[#1E1612] tracking-wider text-sm sm:text-base uppercase mb-1.5 leading-snug">
-                      {lang === "hi" ? "सेवा हेतु सहयोग" : "DONATE FOR SEVA"}
-                    </h3>
-                    <p className="text-xs sm:text-[13px] text-[#5C4D43] line-clamp-2 leading-relaxed font-sans">
-                      {lang === "hi"
-                        ? "अपने उदार सहयोग से मानवता की सेवा के हमारे पावन संकल्प में सहभागी बनें।"
-                        : "Support our mission to serve humanity through your generous contributions."}
-                    </p>
+                {/* Translucent Text Plate */}
+                <div className="relative z-10 w-full bg-[#FFF9F2]/95 group-hover:bg-[#FFF9F2]/98 backdrop-blur-md border border-white/85 rounded-2xl p-3 sm:p-3.5 md:p-2.5 md:group-hover:p-4 shadow-xl transition-all duration-500 ease-out mt-8 md:mt-0">
+                  <div className="max-md:max-h-none max-md:opacity-100 md:max-h-0 md:opacity-0 md:group-hover:max-h-48 md:group-hover:opacity-100 transition-all duration-500 ease-in-out overflow-hidden">
+                    <div className="pb-2.5 pt-0.5 transform md:translate-y-2 md:group-hover:translate-y-0 transition-transform duration-500 ease-out">
+                      <h3 className="font-sans font-black text-[#1E1612] tracking-wider text-sm sm:text-base uppercase mb-1.5 leading-snug">
+                        {lang === "hi" ? "सेवा हेतु सहयोग" : "DONATE FOR SEVA"}
+                      </h3>
+                      <p className="text-xs sm:text-[13px] text-[#5C4D43] line-clamp-2 leading-relaxed font-sans">
+                        {lang === "hi"
+                          ? "अपने उदार सहयोग से मानवता की सेवा के हमारे पावन संकल्प में सहभागी बनें।"
+                          : "Support our mission to serve humanity through your generous contributions."}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Bottom Action Row */}
+                  <div className="flex items-center justify-between gap-2 pt-1 md:pt-0">
+                    <span className="hidden md:inline-flex text-[11px] font-bold text-[#E86F1D] uppercase tracking-wider group-hover:opacity-0 transition-opacity duration-300 items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-[#E86F1D] animate-ping" />
+                      <span>{lang === "hi" ? "पुण्य सेवा" : "Support Seva"}</span>
+                    </span>
+                    <button
+                      onClick={() => openDonateModal("General Donation")}
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer w-full md:w-auto"
+                    >
+                      <Heart className="w-3.5 h-3.5 fill-current" />
+                      <span>{lang === "hi" ? "अभी सहयोग करें" : "Donate Now"}</span>
+                    </button>
                   </div>
                 </div>
-
-                {/* Bottom Action Row */}
-                <div className="flex items-center justify-between gap-2 pt-1 md:pt-0">
-                  <span className="hidden md:inline-flex text-[11px] font-bold text-[#E86F1D] uppercase tracking-wider group-hover:opacity-0 transition-opacity duration-300 items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-[#E86F1D] animate-ping" />
-                    <span>{lang === "hi" ? "पुण्य सेवा" : "Support Seva"}</span>
-                  </span>
-                  <button
-                    onClick={() => openDonateModal("General Donation")}
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer w-full md:w-auto"
-                  >
-                    <Heart className="w-3.5 h-3.5 fill-current" />
-                    <span>{lang === "hi" ? "अभी सहयोग करें" : "Donate Now"}</span>
-                  </button>
-                </div>
               </div>
-            </div>
+            </StaggerItem>
 
             {/* Card 3: Sacred Wisdom / Bhagavad Gita Inspiration (Fixes Tech finding e) */}
-            <div className="relative min-h-[340px] md:h-[325px] h-auto rounded-3xl overflow-hidden shadow-[0_16px_40px_-8px_rgba(43,32,26,0.22),0_8px_20px_-4px_rgba(232,111,29,0.12)] hover:shadow-[0_24px_50px_-10px_rgba(43,32,26,0.32),0_12px_28px_-4px_rgba(232,111,29,0.2)] hover:-translate-y-1.5 transition-all duration-500 group flex flex-col justify-end p-4 sm:p-4.5 border border-[#E7D8C8] hover:border-[#E86F1D]">
-              {/* Full Background Image (WebP compressed per Tech a) */}
-              <Image
-                src="/images/card-thought-rect.webp"
-                alt="Sacred Wisdom - Bhagavad Gita"
-                fill
-                priority
-                unoptimized
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-106"
-              />
-              {/* Soft Vignette Gradient */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/35 pointer-events-none" />
+            <StaggerItem className="h-full">
+              <div className="relative min-h-[340px] md:h-[325px] h-auto rounded-3xl overflow-hidden shadow-[0_16px_40px_-8px_rgba(43,32,26,0.22),0_8px_20px_-4px_rgba(232,111,29,0.12)] hover:shadow-[0_24px_50px_-10px_rgba(43,32,26,0.32),0_12px_28px_-4px_rgba(232,111,29,0.2)] hover:-translate-y-1.5 transition-all duration-500 group flex flex-col justify-end p-4 sm:p-4.5 border border-[#E7D8C8] hover:border-[#E86F1D]">
+                {/* Full Background Image (WebP compressed per Tech a) */}
+                <Image
+                  src="/images/card-thought-rect.webp"
+                  alt="Sacred Wisdom - Bhagavad Gita"
+                  fill
+                  priority
+                  unoptimized
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-106"
+                />
+                {/* Soft Vignette Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/35 pointer-events-none" />
 
-              {/* Translucent Text Plate */}
-              <div className="relative z-10 w-full bg-[#FFF9F2]/95 group-hover:bg-[#FFF9F2]/98 backdrop-blur-md border border-white/85 rounded-2xl p-3 sm:p-3.5 md:p-2.5 md:group-hover:p-4 shadow-xl transition-all duration-500 ease-out mt-8 md:mt-0">
-                <div className="max-md:max-h-none max-md:opacity-100 md:max-h-0 md:opacity-0 md:group-hover:max-h-48 md:group-hover:opacity-100 transition-all duration-500 ease-in-out overflow-hidden">
-                  <div className="pb-2.5 pt-0.5 transform md:translate-y-2 md:group-hover:translate-y-0 transition-transform duration-500 ease-out">
-                    <h3 className="font-sans font-black text-[#1E1612] tracking-wider text-sm sm:text-base uppercase mb-1.5 leading-snug">
-                      {lang === "hi" ? "“ निष्काम कर्म ही धर्म ”" : "“ SELFLESS ACTION IS DHARMA ”"}
-                    </h3>
-                    <p className="text-xs sm:text-[13px] text-[#5C4D43] italic leading-relaxed font-sans line-clamp-3 border-l-2 border-[#E86F1D] pl-2.5">
-                      {lang === "hi"
-                        ? "“कर्मण्येवाधिकारस्ते मा फलेषु कदाचन। फल की आसक्ति त्यागकर निष्काम भाव से की गई सेवा ही मानव जीवन को दिव्यता प्रदान करती है।” — श्रीमद्भगवद्गीता"
-                        : "“You have a right to perform your prescribed duties, but never to the fruits of action. Selfless service without attachment brings supreme inner peace.” — Bhagavad Gita 2.47"}
-                    </p>
+                {/* Translucent Text Plate */}
+                <div className="relative z-10 w-full bg-[#FFF9F2]/95 group-hover:bg-[#FFF9F2]/98 backdrop-blur-md border border-white/85 rounded-2xl p-3 sm:p-3.5 md:p-2.5 md:group-hover:p-4 shadow-xl transition-all duration-500 ease-out mt-8 md:mt-0">
+                  <div className="max-md:max-h-none max-md:opacity-100 md:max-h-0 md:opacity-0 md:group-hover:max-h-48 md:group-hover:opacity-100 transition-all duration-500 ease-in-out overflow-hidden">
+                    <div className="pb-2.5 pt-0.5 transform md:translate-y-2 md:group-hover:translate-y-0 transition-transform duration-500 ease-out">
+                      <h3 className="font-sans font-black text-[#1E1612] tracking-wider text-sm sm:text-base uppercase mb-1.5 leading-snug">
+                        {lang === "hi" ? "“ निष्काम कर्म ही धर्म ”" : "“ SELFLESS ACTION IS DHARMA ”"}
+                      </h3>
+                      <p className="text-xs sm:text-[13px] text-[#5C4D43] italic leading-relaxed font-sans line-clamp-3 border-l-2 border-[#E86F1D] pl-2.5">
+                        {lang === "hi"
+                          ? "“कर्मण्येवाधिकारस्ते मा फलेषु कदाचन। फल की आसक्ति त्यागकर निष्काम भाव से की गई सेवा ही मानव जीवन को दिव्यता प्रदान करती है।” — श्रीमद्भगवद्गीता"
+                          : "“You have a right to perform your prescribed duties, but never to the fruits of action. Selfless service without attachment brings supreme inner peace.” — Bhagavad Gita 2.47"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Bottom Action Row */}
+                  <div className="flex items-center justify-between gap-2 pt-1 md:pt-0">
+                    <span className="hidden md:inline-block text-[11px] font-bold text-[#8C6B3E] uppercase tracking-wider group-hover:opacity-0 transition-opacity duration-300">
+                      {lang === "hi" ? "गीता प्रेरणा" : "Gita Wisdom"}
+                    </span>
+                    <Link
+                      href="/founder"
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#2B201A] hover:bg-[#1E1612] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all w-full md:w-auto"
+                    >
+                      <span>{lang === "hi" ? "संस्थापक दृष्टिकोण" : "Founder's Vision"}</span>
+                    </Link>
                   </div>
                 </div>
-
-                {/* Bottom Action Row */}
-                <div className="flex items-center justify-between gap-2 pt-1 md:pt-0">
-                  <span className="hidden md:inline-block text-[11px] font-bold text-[#8C6B3E] uppercase tracking-wider group-hover:opacity-0 transition-opacity duration-300">
-                    {lang === "hi" ? "गीता प्रेरणा" : "Gita Wisdom"}
-                  </span>
-                  <Link
-                    href="/founder"
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#2B201A] hover:bg-[#1E1612] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all w-full md:w-auto"
-                  >
-                    <span>{lang === "hi" ? "संस्थापक दृष्टिकोण" : "Founder's Vision"}</span>
-                  </Link>
-                </div>
               </div>
-            </div>
-          </div>
+            </StaggerItem>
+          </StaggerContainer>
         </div>
-      </section>
+      </SectionReveal>
 
       {/* UPCOMING EVENTS */}
-      <section id="events" className="pt-6 sm:pt-8 pb-14 sm:pb-20 bg-[#FBF2E7]/60 border-y border-[#E7D8C8]">
+      <SectionReveal id="events" className="pt-6 sm:pt-8 pb-14 sm:pb-20 bg-[#FBF2E7]/60 border-y border-[#E7D8C8]">
         <div className="w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-8">
-            <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
-              Upcoming Events & Spiritual Discourses
-            </h2>
+            <TextReveal
+              as="h2"
+              className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]"
+              text="Upcoming Events & Spiritual Discourses"
+            />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
             {[...events]
               .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
               .slice(0, 3)
@@ -457,75 +478,76 @@ export default function HomePage() {
                       : "/images/event-gurukul-graphic.jpg";
 
                 return (
-                  <div
-                    key={event.id}
-                    onClick={() => {
-                      setSelectedEvent(event);
-                      setEventModalOpen(true);
-                    }}
-                    className="rounded-3xl overflow-hidden bg-white border border-[#E7D8C8] shadow-[0_10px_30px_-8px_rgba(43,32,26,0.1)] hover:shadow-[0_20px_40px_-10px_rgba(43,32,26,0.2)] hover:-translate-y-1.5 transition-all duration-300 group flex flex-col justify-between cursor-pointer"
-                  >
-                    {/* Top Illustration Area with Date Badge */}
-                    <div className="relative w-full h-[220px] sm:h-[240px] bg-white flex items-center justify-center p-3 overflow-hidden border-b border-[#F0E4D5]">
-                      {/* Orange Date Badge */}
-                      <div className="absolute top-3.5 left-3.5 z-10 px-3.5 py-1.5 rounded-lg bg-[#E86F1D] text-white text-xs font-black tracking-wider uppercase shadow-md">
-                        {formatCardDate(event.startDate)}
+                  <StaggerItem key={event.id} className="h-full">
+                    <div
+                      onClick={() => {
+                        setSelectedEvent(event);
+                        setEventModalOpen(true);
+                      }}
+                      className="rounded-3xl overflow-hidden bg-white border border-[#E7D8C8] shadow-[0_10px_30px_-8px_rgba(43,32,26,0.1)] hover:shadow-[0_20px_40px_-10px_rgba(43,32,26,0.2)] hover:-translate-y-1.5 transition-all duration-300 group flex flex-col justify-between cursor-pointer h-full"
+                    >
+                      {/* Top Illustration Area with Date Badge */}
+                      <div className="relative w-full h-[220px] sm:h-[240px] bg-white flex items-center justify-center p-3 overflow-hidden border-b border-[#F0E4D5]">
+                        {/* Orange Date Badge */}
+                        <div className="absolute top-3.5 left-3.5 z-10 px-3.5 py-1.5 rounded-lg bg-[#E86F1D] text-white text-xs font-black tracking-wider uppercase shadow-md">
+                          {formatCardDate(event.startDate)}
+                        </div>
+
+                        {/* Centered Graphic Emblem */}
+                        <div className="relative w-full h-full">
+                          <Image
+                            src={graphicSrc}
+                            alt={event.title}
+                            fill
+                            className="object-contain p-2 group-hover:scale-105 transition-transform duration-500 ease-out"
+                          />
+                        </div>
                       </div>
 
-                      {/* Centered Graphic Emblem */}
-                      <div className="relative w-full h-full">
-                        <Image
-                          src={graphicSrc}
-                          alt={event.title}
-                          fill
-                          className="object-contain p-2 group-hover:scale-105 transition-transform duration-500 ease-out"
-                        />
+                      {/* Bottom Text Plate */}
+                      <div className="bg-[#FFF9F2] p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-3">
+                        <div className="space-y-2">
+                          <h3 className="font-sans font-black text-[#1E1612] tracking-wider text-base sm:text-lg uppercase leading-snug group-hover:text-[#E86F1D] transition-colors">
+                            {lang === "hi" && event.titleHi ? event.titleHi : event.title}
+                          </h3>
+                          <p className="text-xs sm:text-sm text-[#4A3E38] leading-relaxed line-clamp-3 font-sans">
+                            {lang === "hi" && event.summaryHi ? event.summaryHi : event.summary}
+                          </p>
+                        </div>
+
+                        {/* Location with MapPin icon and word-wrap without truncation (Fixes Image 3 finding 3) */}
+                        <div className="pt-2 flex items-center justify-between border-t border-[#E7D8C8]/60 mt-2 gap-2">
+                          <span className="text-xs font-semibold text-[#8C6B3E] flex items-center gap-1.5 min-w-0">
+                            <MapPin className="w-3.5 h-3.5 text-[#E86F1D] shrink-0" />
+                            <span className="leading-tight break-words">{event.location}</span>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedEvent(event);
+                              setEventModalOpen(true);
+                            }}
+                            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#E86F1D] hover:text-[#C75A10] uppercase tracking-wider group/btn cursor-pointer shrink-0"
+                          >
+                            <span>{lang === "hi" ? "विवरण देखें" : "View Details"}</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
-
-                    {/* Bottom Text Plate */}
-                    <div className="bg-[#FFF9F2] p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-3">
-                      <div className="space-y-2">
-                        <h3 className="font-sans font-black text-[#1E1612] tracking-wider text-base sm:text-lg uppercase leading-snug group-hover:text-[#E86F1D] transition-colors">
-                          {lang === "hi" && event.titleHi ? event.titleHi : event.title}
-                        </h3>
-                        <p className="text-xs sm:text-sm text-[#4A3E38] leading-relaxed line-clamp-3 font-sans">
-                          {lang === "hi" && event.summaryHi ? event.summaryHi : event.summary}
-                        </p>
-                      </div>
-
-                      {/* Location with MapPin icon and word-wrap without truncation (Fixes Image 3 finding 3) */}
-                      <div className="pt-2 flex items-center justify-between border-t border-[#E7D8C8]/60 mt-2 gap-2">
-                        <span className="text-xs font-semibold text-[#8C6B3E] flex items-center gap-1.5 min-w-0">
-                          <MapPin className="w-3.5 h-3.5 text-[#E86F1D] shrink-0" />
-                          <span className="leading-tight break-words">{event.location}</span>
-                        </span>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedEvent(event);
-                            setEventModalOpen(true);
-                          }}
-                          className="inline-flex items-center gap-1.5 text-xs font-bold text-[#E86F1D] hover:text-[#C75A10] uppercase tracking-wider group/btn cursor-pointer shrink-0"
-                        >
-                          <span>{lang === "hi" ? "विवरण देखें" : "View Details"}</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                  </StaggerItem>
                 );
               })}
-          </div>
+          </StaggerContainer>
         </div>
-      </section>
+      </SectionReveal>
 
       {/* IMPACT COUNTERS STRIP (Unified single verified dataset per Image 3 finding 4 & 2019 registration) */}
-      <section className="py-8 sm:py-12 bg-[#FFF8F0] border-y border-[#E7D8C8]/60">
+      <SectionReveal className="py-8 sm:py-12 bg-[#FFF8F0] border-y border-[#E7D8C8]/60">
         <div className="page-container">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-4 items-center justify-between text-center">
+          <StaggerContainer className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-4 items-center justify-between text-center">
             {/* 1. Members: Verified 21,000+ */}
-            <div className="flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2 relative lg:after:content-[''] lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 lg:after:w-[1px] lg:after:h-[60%] lg:after:bg-[#E6E6E6]/60">
+            <StaggerItem className="flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2 relative lg:after:content-[''] lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 lg:after:w-[1px] lg:after:h-[60%] lg:after:bg-[#E6E6E6]/60">
               <div className="w-11 h-11 sm:w-12 sm:h-12 relative flex items-center justify-center">
                 <Image
                   src="https://namobhagwatevasudevaya.com/cdn/shop/files/ChatGPT_Image_May_22_2026_12_53_41_PM.png?v=1779434644&width=200"
@@ -542,10 +564,10 @@ export default function HomePage() {
               <div className="font-sans text-xs sm:text-[13px] md:text-sm font-bold text-black uppercase tracking-wider leading-snug">
                 {lang === "hi" ? "सक्रिय सदस्य" : "Members"}
               </div>
-            </div>
+            </StaggerItem>
 
             {/* 2. Events: Verified 280+ */}
-            <div className="flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2 relative lg:after:content-[''] lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 lg:after:w-[1px] lg:after:h-[60%] lg:after:bg-[#E6E6E6]/60">
+            <StaggerItem className="flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2 relative lg:after:content-[''] lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 lg:after:w-[1px] lg:after:h-[60%] lg:after:bg-[#E6E6E6]/60">
               <div className="w-11 h-11 sm:w-12 sm:h-12 relative flex items-center justify-center">
                 <Image
                   src="https://namobhagwatevasudevaya.com/cdn/shop/files/ChatGPT_Image_May_22_2026_12_57_44_PM.png?v=1779434880&width=200"
@@ -562,10 +584,10 @@ export default function HomePage() {
               <div className="font-sans text-xs sm:text-[13px] md:text-sm font-bold text-black uppercase tracking-wider leading-snug">
                 {lang === "hi" ? "आयोजित कार्यक्रम" : "Events"}
               </div>
-            </div>
+            </StaggerItem>
 
             {/* 3. Cities: Verified 35+ */}
-            <div className="flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2 relative lg:after:content-[''] lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 lg:after:w-[1px] lg:after:h-[60%] lg:after:bg-[#E6E6E6]/60">
+            <StaggerItem className="flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2 relative lg:after:content-[''] lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 lg:after:w-[1px] lg:after:h-[60%] lg:after:bg-[#E6E6E6]/60">
               <div className="w-11 h-11 sm:w-12 sm:h-12 relative flex items-center justify-center">
                 <Image
                   src="https://namobhagwatevasudevaya.com/cdn/shop/files/ChatGPT_Image_May_22_2026_01_03_51_PM.png?v=1779435249&width=200"
@@ -582,10 +604,10 @@ export default function HomePage() {
               <div className="font-sans text-xs sm:text-[13px] md:text-sm font-bold text-black uppercase tracking-wider leading-snug">
                 {lang === "hi" ? "लाभान्वित शहर" : "Cities Served"}
               </div>
-            </div>
+            </StaggerItem>
 
             {/* 4. Impacted: Verified 85,000+ */}
-            <div className="flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2 relative lg:after:content-[''] lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 lg:after:w-[1px] lg:after:h-[60%] lg:after:bg-[#E6E6E6]/60">
+            <StaggerItem className="flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2 relative lg:after:content-[''] lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 lg:after:w-[1px] lg:after:h-[60%] lg:after:bg-[#E6E6E6]/60">
               <div className="w-11 h-11 sm:w-12 sm:h-12 relative flex items-center justify-center">
                 <Image
                   src="https://namobhagwatevasudevaya.com/cdn/shop/files/ChatGPT_Image_May_22_2026_01_06_51_PM.png?v=1779435441&width=200"
@@ -602,10 +624,10 @@ export default function HomePage() {
               <div className="font-sans text-xs sm:text-[13px] md:text-sm font-bold text-black uppercase tracking-wider leading-snug">
                 {lang === "hi" ? "लाभान्वित परिवार" : "People Impacted"}
               </div>
-            </div>
+            </StaggerItem>
 
             {/* 5. Years of Seva: Verified 7+ (matching Trust established in 2019) */}
-            <div className="col-span-2 md:col-span-1 flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2">
+            <StaggerItem className="col-span-2 md:col-span-1 flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2">
               <div className="w-11 h-11 sm:w-12 sm:h-12 relative flex items-center justify-center">
                 <Image
                   src="https://namobhagwatevasudevaya.com/cdn/shop/files/ChatGPT_Image_May_22_2026_01_08_48_PM.png?v=1779435579&width=200"
@@ -622,88 +644,101 @@ export default function HomePage() {
               <div className="font-sans text-xs sm:text-[13px] md:text-sm font-bold text-black uppercase tracking-wider leading-snug">
                 {lang === "hi" ? "सेवा के वर्ष" : "Years of Seva"}
               </div>
-            </div>
-          </div>
+            </StaggerItem>
+          </StaggerContainer>
         </div>
-      </section>
+      </SectionReveal>
 
       {/* SACRED GALLERY & GLIMPSES SECTION */}
       <GallerySection />
 
       {/* FOUR PURPOSE CARDS (PILLARS OF ACTION) */}
-      <section className="pt-7 sm:pt-9 pb-12 sm:pb-16 bg-[#FFF9F2] border-t border-[#E7D8C8]/60">
+      <SectionReveal className="pt-7 sm:pt-9 pb-12 sm:pb-16 bg-[#FFF9F2] border-t border-[#E7D8C8]/60">
         <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10 space-y-2">
-            <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
-              {lang === "hi" ? "हमारे आधारभूत संकल्प" : "Our Foundational Commitments"}
-            </h2>
-            <p className="text-sm text-[#7A6B60] max-w-lg mx-auto">
-              {lang === "hi"
-                ? "सनातन धर्म, शिक्षा, स्वास्थ्य एवं समाज सेवा को समर्पित हमारे चार मुख्य स्तंभ।"
-                : "Dedicated to preserving Sanatan culture, moral education, healthcare, and humanitarian service."}
-            </p>
+            <TextReveal
+              as="h2"
+              className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]"
+              text={lang === "hi" ? "हमारे आधारभूत संकल्प" : "Our Foundational Commitments"}
+            />
+            <ParagraphReveal className="text-sm text-[#7A6B60] max-w-lg mx-auto">
+              <p>
+                {lang === "hi"
+                  ? "सनातन धर्म, शिक्षा, स्वास्थ्य एवं समाज सेवा को समर्पित हमारे चार मुख्य स्तंभ।"
+                  : "Dedicated to preserving Sanatan culture, moral education, healthcare, and humanitarian service."}
+              </p>
+            </ParagraphReveal>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
             {/* 1. Mission */}
-            <ParallaxPillarCard
-              imageSrc="/images/vedic-gurukul-hd.jpg"
-              imageAlt="Our Mission"
-              title={lang === "hi" ? "हमारा ध्येय" : "Our Mission"}
-              description={
-                lang === "hi"
-                  ? "शिक्षा, नैतिक मूल्यों, निःस्वार्थ सेवा और आध्यात्मिक मार्गदर्शन के माध्यम से समाज के हर वर्ग को सशक्त बनाना तथा युवाओं और महिलाओं को स्वावलंबी बनाना।"
-                  : "To empower every section of society through education, moral values, selfless service, and spiritual guidance, helping youth and women become self-reliant."
-              }
-              buttonText={lang === "hi" ? "ध्येय के बारे में जानें" : "Learn About Mission"}
-              href="/about"
-            />
+            <StaggerItem className="h-full">
+              <ParallaxPillarCard
+                imageSrc="/images/vedic-gurukul-hd.jpg"
+                imageAlt="Our Mission"
+                title={lang === "hi" ? "हमारा ध्येय" : "Our Mission"}
+                description={
+                  lang === "hi"
+                    ? "शिक्षा, नैतिक मूल्यों, निःस्वार्थ सेवा और आध्यात्मिक मार्गदर्शन के माध्यम से समाज के हर वर्ग को सशक्त बनाना तथा युवाओं और महिलाओं को स्वावलंबी बनाना।"
+                    : "To empower every section of society through education, moral values, selfless service, and spiritual guidance, helping youth and women become self-reliant."
+                }
+                buttonText={lang === "hi" ? "ध्येय के बारे में जानें" : "Learn About Mission"}
+                href="/about"
+              />
+            </StaggerItem>
 
             {/* 2. Vision */}
-            <ParallaxPillarCard
-              imageSrc="/images/founder.jpg"
-              imageAlt="Our Vision"
-              title={lang === "hi" ? "हमारा दृष्टिकोण" : "Our Vision"}
-              description={
-                lang === "hi"
-                  ? "आध्यात्मिक मूल्यों, सांस्कृतिक विरासत, शिक्षा और मानवता पर आधारित ऐसे समरस समाज का निर्माण करना, जहां प्रत्येक व्यक्ति गरिमा, शांति और सद्भाव से जी सके।"
-                  : "To help build a society rooted in spiritual values, cultural heritage, and humanity, where every individual lives with dignity, peace, and harmony."
-              }
-              buttonText={lang === "hi" ? "संस्थापक दृष्टि देखें" : "Explore Founder's Vision"}
-              href="/founder"
-            />
+            <StaggerItem className="h-full">
+              <ParallaxPillarCard
+                imageSrc="/images/founder.jpg"
+                imageAlt="Our Vision"
+                title={lang === "hi" ? "हमारा दृष्टिकोण" : "Our Vision"}
+                description={
+                  lang === "hi"
+                    ? "आध्यात्मिक मूल्यों, सांस्कृतिक विरासत, शिक्षा और मानवता पर आधारित ऐसे समरस समाज का निर्माण करना, जहां प्रत्येक व्यक्ति गरिमा, शांति और सद्भाव से जी सके।"
+                    : "To help build a society rooted in spiritual values, cultural heritage, and humanity, where every individual lives with dignity, peace, and harmony."
+                }
+                buttonText={lang === "hi" ? "संस्थापक दृष्टि देखें" : "Explore Founder's Vision"}
+                href="/founder"
+              />
+            </StaggerItem>
 
             {/* 3. Join Us */}
-            <ParallaxPillarCard
-              imageSrc="/images/card-charity-seva.jpg"
-              imageAlt="Join Us"
-              title={lang === "hi" ? "हमसे जुड़ें" : "Join Us"}
-              description={
-                lang === "hi"
-                  ? "सेवा, संस्कृति और आत्मिक उन्नति के लिए समर्पित एक पावन परिवार का अंग बनें। साथ मिलकर हम गांवों और शहरों में सकारात्मक बदलाव ला सकते हैं।"
-                  : "Become part of a sacred community committed to seva, culture, and spiritual growth to create lasting practical change in villages and cities alike."
-              }
-              buttonText={lang === "hi" ? "सेवा सदस्य बनें" : "Become a Member"}
-              href="/membership"
-            />
+            <StaggerItem className="h-full">
+              <ParallaxPillarCard
+                imageSrc="/images/card-charity-seva.jpg"
+                imageAlt="Join Us"
+                title={lang === "hi" ? "हमसे जुड़ें" : "Join Us"}
+                description={
+                  lang === "hi"
+                    ? "सेवा, संस्कृति और आत्मिक उन्नति के लिए समर्पित एक पावन परिवार का अंग बनें। साथ मिलकर हम गांवों और शहरों में सकारात्मक बदलाव ला सकते हैं।"
+                    : "Become part of a sacred community committed to seva, culture, and spiritual growth to create lasting practical change in villages and cities alike."
+                }
+                buttonText={lang === "hi" ? "सेवा सदस्य बनें" : "Become a Member"}
+                href="/membership"
+              />
+            </StaggerItem>
 
             {/* 4. Support Us */}
-            <ParallaxPillarCard
-              imageSrc="/images/card-seva-rect.webp"
-              imageAlt="Support Us"
-              title={lang === "hi" ? "सहयोग करें" : "Support Us"}
-              description={
-                lang === "hi"
-                  ? "आपका एक छोटा सा सहयोग समाज सेवा, गुरुकुल शिक्षा, आध्यात्मिक आयोजनों, किसान कल्याण और अन्नदान कार्यक्रमों को निरंतर जारी रखने में अमूल्य योगदान देता है।"
-                  : "Your contribution helps sustain social service, Gurukul education, spiritual initiatives, farmer awareness, and community welfare programs."
-              }
-              buttonText={lang === "hi" ? "सहयोग राशि दान करें" : "Support Our Seva"}
-              isDonateButton={true}
-              onClick={() => openDonateModal("General Donation")}
-            />
-          </div>
+            <StaggerItem className="h-full">
+              <ParallaxPillarCard
+                imageSrc="/images/card-seva-rect.webp"
+                imageAlt="Support Us"
+                title={lang === "hi" ? "सहयोग करें" : "Support Us"}
+                description={
+                  lang === "hi"
+                    ? "आपका एक छोटा सा सहयोग समाज सेवा, गुरुकुल शिक्षा, आध्यात्मिक आयोजनों, किसान कल्याण और अन्नदान कार्यक्रमों को निरंतर जारी रखने में अमूल्य योगदान देता है।"
+                    : "Your contribution helps sustain social service, Gurukul education, spiritual initiatives, farmer awareness, and community welfare programs."
+                }
+                buttonText={lang === "hi" ? "सहयोग राशि दान करें" : "Support Our Seva"}
+                isDonateButton={true}
+                onClick={() => openDonateModal("General Donation")}
+              />
+            </StaggerItem>
+          </StaggerContainer>
         </div>
-      </section>
+      </SectionReveal>
+
 
       {/* DEVOTEE TESTIMONIALS CAROUSEL (Matching reference design) */}
       <TestimonialsSection lang={lang} />

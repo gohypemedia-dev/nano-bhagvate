@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight, Star, Quote, CheckCircle2 } from "lucide-react";
+import { SectionReveal, TextReveal, ParagraphReveal } from "@/components/animation";
 
 interface Testimonial {
   name: string;
@@ -194,27 +195,33 @@ export default function TestimonialsSection({ lang = "en" }: TestimonialsSection
   }, [startAutoplay]);
 
   return (
-    <section
+    <SectionReveal
       className="py-12 sm:py-16 bg-[#FFF9F2] border-t border-[#E7D8C8]/60 relative select-none"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      aria-label="Devotee Testimonials"
     >
-      <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div
+        className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         {/* Section Heading matching site typography and warm badge (Fixes PM Finding 3) */}
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10 space-y-2">
           <span className="inline-block px-3.5 py-1 rounded-full bg-[#E86F1D]/10 text-[#E86F1D] text-[11px] font-bold uppercase tracking-widest border border-[#E86F1D]/20">
             {lang === "hi" ? "भक्तों के पावन अनुभव" : "Devotee Experiences"}
           </span>
-          <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
-            {lang === "hi" ? "हमारे भक्त क्या कहते हैं" : "Voices of Faith & Devotion"}
-          </h2>
-          <p className="text-sm text-[#7A6B60] max-w-lg mx-auto">
-            {lang === "hi"
-              ? "कथा, गुरुकुल एवं सेवा प्रकल्पों से जुड़े श्रद्धालुओं के आत्मीय विचार एवं अनुभव।"
-              : "Heartfelt reflections and personal experiences shared by devotees and seva contributors."}
-          </p>
+          <TextReveal
+            as="h2"
+            className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]"
+            text={lang === "hi" ? "हमारे भक्त क्या कहते हैं" : "Voices of Faith & Devotion"}
+          />
+          <ParagraphReveal className="text-sm text-[#7A6B60] max-w-lg mx-auto">
+            <p>
+              {lang === "hi"
+                ? "कथा, गुरुकुल एवं सेवा प्रकल्पों से जुड़े श्रद्धालुओं के आत्मीय विचार एवं अनुभव।"
+                : "Heartfelt reflections and personal experiences shared by devotees and seva contributors."}
+            </p>
+          </ParagraphReveal>
         </div>
+
 
         {/* Carousel Viewport (NO overlapping buttons over cards) */}
         <div className="relative overflow-hidden px-1 py-1" ref={emblaRef}>
@@ -308,6 +315,8 @@ export default function TestimonialsSection({ lang = "en" }: TestimonialsSection
           </button>
         </div>
       </div>
-    </section>
+    </SectionReveal>
   );
 }
+
+
