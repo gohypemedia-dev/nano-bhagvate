@@ -438,7 +438,9 @@ export default function HomePage() {
         <div className="w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-8">
             <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
-              Upcoming Events & Spiritual Discourses
+              {lang === "hi"
+                ? "आगामी कार्यक्रम एवं आध्यात्मिक सत्संग"
+                : "Upcoming Events & Spiritual Discourses"}
             </h2>
           </div>
 
