@@ -47,7 +47,7 @@ export default function TextReveal({
           whileInView={{ y: "0%", opacity: 1 }}
           viewport={{ once, amount: threshold }}
           transition={{ duration, delay, ease: [0.16, 1, 0.3, 1] as const }}
-          className="overflow-hidden"
+          className="overflow-hidden pt-[0.35em] -mt-[0.35em] pb-[0.2em] -mb-[0.2em]"
         >
           {children}
         </motion.div>
@@ -94,7 +94,7 @@ export default function TextReveal({
       >
         {elements.map((item, index) => (
           <React.Fragment key={`rev-${index}-${item}`}>
-            <span className="inline-block overflow-hidden pb-1 -mb-1 align-top">
+            <span className="inline-block overflow-hidden pt-[0.35em] -mt-[0.35em] pb-[0.2em] -mb-[0.2em] align-top">
               <motion.span
                 variants={itemVariants}
                 className="inline-block"

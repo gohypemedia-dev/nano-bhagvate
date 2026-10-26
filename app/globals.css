@@ -14,8 +14,8 @@
   --color-green: var(--green);
   --color-border: var(--border);
   
-  --font-serif: var(--font-cormorant), Georgia, serif;
-  --font-sans: var(--font-manrope), system-ui, sans-serif;
+  --font-serif: var(--font-cormorant), var(--font-devanagari), Georgia, serif;
+  --font-sans: var(--font-manrope), var(--font-devanagari), system-ui, sans-serif;
   --font-devanagari: var(--font-devanagari), serif;
   --font-cursive: var(--font-cursive), cursive;
   
@@ -82,12 +82,34 @@
   }
   
   h1, h2, h3, h4, .font-editorial {
-    font-family: var(--font-cormorant), Georgia, serif;
+    font-family: var(--font-cormorant), var(--font-devanagari), Georgia, serif;
     letter-spacing: -0.015em;
+    line-height: 1.35;
+    padding-top: 0.12em;
+    padding-bottom: 0.06em;
   }
   
-  .lang-hi {
+  /* Global Hindi Typography & Clipping Prevention */
+  html.lang-hi,
+  .lang-hi,
+  :lang(hi) {
+    font-family: var(--font-devanagari), var(--font-sans), sans-serif;
+  }
+
+  html.lang-hi h1,
+  html.lang-hi h2,
+  html.lang-hi h3,
+  html.lang-hi h4,
+  html.lang-hi .font-editorial,
+  .lang-hi h1,
+  .lang-hi h2,
+  .lang-hi h3,
+  .lang-hi h4,
+  .lang-hi .font-editorial {
     font-family: var(--font-devanagari), Georgia, serif;
+    line-height: 1.38;
+    padding-top: 0.18em;
+    padding-bottom: 0.08em;
   }
 }
 

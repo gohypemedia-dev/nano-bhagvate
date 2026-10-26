@@ -73,6 +73,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [donateModal, setDonateModal] = useState<DonateModalState>({ isOpen: false });
 
+  // Synchronize document lang and lang-hi class on html element
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.lang = lang;
+      if (lang === "hi") {
+        document.documentElement.classList.add("lang-hi");
+      } else {
+        document.documentElement.classList.remove("lang-hi");
+      }
+    }
+  }, [lang]);
+
   // Load cart from localStorage on mount
   useEffect(() => {
     try {
