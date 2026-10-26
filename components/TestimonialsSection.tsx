@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import { ChevronLeft, ChevronRight, Star, Quote, CheckCircle2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { SectionReveal, TextReveal, ParagraphReveal } from "@/components/animation";
 
 interface Testimonial {
@@ -239,36 +239,25 @@ export default function TestimonialsSection({ lang = "en" }: TestimonialsSection
                   className="flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_25%] pl-4 sm:pl-5 min-w-0"
                 >
                   {/* Testimonial Card with authentic styling */}
-                  <div className="h-full bg-white rounded-2xl border border-[#E7D8C8] p-5 sm:p-5.5 shadow-[0_4px_16px_-2px_rgba(43,32,26,0.06)] hover:border-[#E86F1D] hover:shadow-warm-md hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
-                    <div className="space-y-3">
-                      {/* Top Row: Quote Icon + Role Badge */}
-                      <div className="flex items-center justify-between">
-                        <div className="w-8 h-8 rounded-xl bg-[#E86F1D]/10 text-[#E86F1D] flex items-center justify-center">
-                          <Quote className="w-4 h-4 fill-current rotate-180" />
-                        </div>
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#2F5A43] bg-[#E8F5E9] border border-[#C8E6C9] px-2.5 py-0.5 rounded-full truncate max-w-[170px]">
-                          <CheckCircle2 className="w-3 h-3 text-[#2F5A43] shrink-0" />
-                          <span className="truncate">{lang === "hi" ? item.roleHi : item.role}</span>
-                        </span>
-                      </div>
-
+                  <div className="h-full bg-white rounded-2xl border border-[#E7D8C8] p-5 sm:p-6 shadow-[0_4px_16px_-2px_rgba(43,32,26,0.06)] hover:border-[#E86F1D] hover:shadow-warm-md hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
+                    <div className="flex flex-col h-full justify-between space-y-3.5">
                       {/* Devotee Info: Avatar + Name & Location */}
-                      <div className="flex items-center gap-3 pt-1">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#E86F1D] to-[#B8893E] text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
+                      <div className="flex items-center gap-3">
+                        <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#E86F1D] to-[#B8893E] text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-xs">
                           {item.initial}
                         </div>
                         <div className="min-w-0">
-                          <h3 className="font-editorial font-bold text-sm sm:text-[15px] text-[#2B201A] group-hover:text-[#E86F1D] transition-colors truncate">
+                          <h3 className="font-editorial font-bold text-sm sm:text-base text-[#2B201A] group-hover:text-[#E86F1D] transition-colors truncate">
                             {lang === "hi" ? item.nameHi : item.name}
                           </h3>
-                          <p className="text-[11px] text-[#7A6B60] font-medium truncate">
+                          <p className="text-[11px] sm:text-xs text-[#7A6B60] font-medium truncate">
                             {lang === "hi" ? item.locationHi : item.location}
                           </p>
                         </div>
                       </div>
 
                       {/* 5 Golden Stars */}
-                      <div className="flex items-center gap-1 pt-0.5">
+                      <div className="flex items-center gap-1">
                         {[...Array(item.rating)].map((_, i) => (
                           <Star
                             key={i}
@@ -277,8 +266,8 @@ export default function TestimonialsSection({ lang = "en" }: TestimonialsSection
                         ))}
                       </div>
 
-                      {/* Testimonial Quote */}
-                      <p className="text-xs sm:text-[12.5px] text-[#4A3E38] leading-relaxed italic line-clamp-4">
+                      {/* Testimonial Quote - Fills the card naturally without truncation */}
+                      <p className="text-xs sm:text-[13px] text-[#4A3E38] leading-relaxed italic flex-1">
                         &ldquo;{lang === "hi" ? item.quoteHi : item.quote}&rdquo;
                       </p>
                     </div>
