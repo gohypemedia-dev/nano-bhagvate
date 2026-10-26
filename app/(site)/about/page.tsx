@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Sprout, GraduationCap, Users, Sun, ArrowRight, ShieldCheck, Heart, CheckCircle2 } from "lucide-react";
+import { Sprout, GraduationCap, Users, Sun, Heart, CheckCircle2 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 export default function AboutPage() {
@@ -90,8 +90,14 @@ export default function AboutPage() {
             unoptimized
             className="object-cover object-right lg:object-center"
           />
-          {/* Smooth Warm Mist Gradient on Desktop: provides authentic luxury canvas */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#F7EDE1] via-[#F7EDE1] via-50% lg:via-56% to-transparent" />
+          {/* Ultra-smooth feathered gradient: seamlessly eases off with zero sharp cut-off line */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(to right, #F7EDE1 0%, #F7EDE1 30%, rgba(247,237,225,0.98) 42%, rgba(247,237,225,0.92) 50%, rgba(247,237,225,0.82) 56%, rgba(247,237,225,0.64) 62%, rgba(247,237,225,0.42) 68%, rgba(247,237,225,0.22) 74%, rgba(247,237,225,0.08) 80%, rgba(247,237,225,0.02) 85%, rgba(247,237,225,0) 90%)",
+            }}
+          />
         </div>
 
         {/* MOBILE HERO (100VH Full Viewport Height with Bottom Overlay) */}
@@ -155,35 +161,18 @@ export default function AboutPage() {
                 : "Namo Bhagwate Vasudevaya Trust is dedicated to spreading spiritual wisdom, serving humanity, and uplifting lives through selfless initiatives in education, health, culture, and community welfare."}
             </p>
 
-            {/* Trust Points / Micro Badges */}
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-1 text-[#2B201A]/85 font-semibold">
-              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-white/70 backdrop-blur-xs border border-[#E7D8C8] text-[11px] sm:text-xs">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#2F5A43]" />
-                {lang === "hi" ? "80G आयकर छूट व 100% पारदर्शी" : "100% Tax Benefit (80G)"}
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-white/70 backdrop-blur-xs border border-[#E7D8C8] text-[11px] sm:text-xs">
-                <Users className="w-3.5 h-3.5 text-[#E86F1D]" />
-                {lang === "hi" ? "स्थापना 2019 • पावन सेवा" : "Founded in 2019 • Vedic Dharma"}
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-white/70 backdrop-blur-xs border border-[#E7D8C8] text-[11px] sm:text-xs">
-                <Heart className="w-3.5 h-3.5 text-[#E86F1D]" />
-                {lang === "hi" ? "4 मुख्य सेवा स्तंभ" : "4 Core Seva Pillars"}
-              </span>
-            </div>
-
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2 sm:pt-4">
               <a
                 href="#about-story"
-                className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group"
+                className="inline-flex items-center justify-center px-6 sm:px-7 py-3.5 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
               >
                 <span>{lang === "hi" ? "ट्रस्ट की यात्रा जानें" : "Our Story & Journey"}</span>
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </a>
               <button
                 type="button"
                 onClick={() => openDonateModal()}
-                className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 rounded-xl bg-white/80 hover:bg-white text-[#2B201A] font-bold text-xs sm:text-sm uppercase tracking-wider border border-[#E7D8C8] shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer"
+                className="inline-flex items-center justify-center px-6 sm:px-7 py-3.5 rounded-xl bg-white/80 hover:bg-white text-[#2B201A] font-bold text-xs sm:text-sm uppercase tracking-wider border border-[#E7D8C8] shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer"
               >
                 <span>{lang === "hi" ? "पुण्य सेवा में सहयोग करें" : "Support Our Mission"}</span>
               </button>
@@ -431,10 +420,9 @@ export default function AboutPage() {
           <div className="text-center pt-2">
             <Link
               href="/initiatives"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#2B201A] hover:bg-[#3D2C24] text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors shadow-sm"
+              className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-[#2B201A] hover:bg-[#3D2C24] text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors shadow-sm"
             >
               <span>{lang === "hi" ? "सभी सेवा प्रकल्प विस्तार से देखें" : "Explore All Trust Initiatives"}</span>
-              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>

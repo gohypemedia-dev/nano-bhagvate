@@ -14,7 +14,6 @@ import {
   Scale,
   HeartHandshake,
   Heart,
-  ArrowRight,
   Sun,
   Flame,
 } from "lucide-react";
@@ -95,8 +94,8 @@ export default function FounderPage() {
             unoptimized
             className="object-cover object-right lg:object-center"
           />
-          {/* Smooth Warm Mist Gradient on Desktop: seamlessly masks baked text with warm cream canvas */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#F7EDE1] via-[#F7EDE1] via-50% lg:via-56% to-transparent" />
+          {/* Clean Gradient on Desktop: provides solid readable text background on left while leaving Sadhvi Ji 100% crisp and clear on right */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#F7EDE1] via-[#F7EDE1] via-[40%] to-transparent to-[52%] pointer-events-none" />
         </div>
 
         {/* MOBILE HERO (100VH Full Viewport Height with Bottom Overlay) */}
@@ -178,10 +177,9 @@ export default function FounderPage() {
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2 sm:pt-4">
               <a
                 href="#founder-story"
-                className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group"
+                className="inline-flex items-center justify-center px-6 sm:px-7 py-3.5 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
               >
                 <span>{lang === "hi" ? "जीवन यात्रा व दर्शन जानें" : "Read Life Journey & Philosophy"}</span>
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </a>
               <button
                 type="button"

@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   Film,
-  ArrowRight,
   Maximize2,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
@@ -168,10 +167,9 @@ export default function GallerySection() {
         <div className="text-center mt-5 sm:mt-6">
           <Link
             href="/gallery"
-            className="inline-flex items-center gap-2.5 px-8 sm:px-10 py-3 sm:py-3.5 rounded-full border-2 border-[#E86F1D] text-[#E86F1D] hover:bg-[#E86F1D] hover:text-white font-bold text-sm sm:text-base tracking-wide transition-all duration-300 shadow-warm-xs hover:shadow-warm-md hover:scale-[1.02] active:scale-[0.98] group bg-white/80 backdrop-blur-xs"
+            className="inline-flex items-center justify-center px-8 sm:px-10 py-3 sm:py-3.5 rounded-full border-2 border-[#E86F1D] text-[#E86F1D] hover:bg-[#E86F1D] hover:text-white font-bold text-sm sm:text-base tracking-wide transition-all duration-300 shadow-warm-xs hover:shadow-warm-md hover:scale-[1.02] active:scale-[0.98] bg-white/80 backdrop-blur-xs"
           >
             <span>{lang === "hi" ? "पूरी गैलरी देखें" : "View Full Gallery"}</span>
-            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
       </div>

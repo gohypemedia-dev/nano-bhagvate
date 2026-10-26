@@ -110,8 +110,8 @@ export default function InitiativesPage() {
             unoptimized
             className="object-cover object-right lg:object-center"
           />
-          {/* Smooth Warm Mist Gradient on Desktop */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#F6EDE2] via-[#F6EDE2] via-38% lg:via-46% to-transparent" />
+          {/* Clean Gradient on Desktop: leaves Sadhvi Ji & children completely crisp and clear on right */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#F6EDE2] via-[#F6EDE2] via-[34%] to-transparent to-[48%] pointer-events-none" />
         </div>
 
         {/* MOBILE HERO (100VH Full Viewport Height with Bottom Overlay) */}

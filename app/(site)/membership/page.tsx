@@ -187,8 +187,8 @@ export default function MembershipPage() {
             unoptimized
             className="object-cover object-center"
           />
-          {/* Smooth Warm Mist Gradient on Desktop */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#F6EDE2] via-[#F6EDE2] via-40% lg:via-50% to-transparent" />
+          {/* Clean Gradient on Desktop: leaves joined hands & temple completely crisp and clear on right */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#F6EDE2] via-[#F6EDE2] via-[35%] to-transparent to-[48%] pointer-events-none" />
         </div>
 
         {/* MOBILE HERO (100VH Full Viewport Height with Bottom Overlay) */}
@@ -271,10 +271,9 @@ export default function MembershipPage() {
             <div className="pt-2 sm:pt-4">
               <a
                 href="#membership-plans"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 sm:px-7 py-3.5 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-7 py-3.5 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
               >
                 <span>{lang === "hi" ? "सदस्यता योजनाएं देखें" : "Explore Membership Plans"}</span>
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </a>
             </div>
           </div>

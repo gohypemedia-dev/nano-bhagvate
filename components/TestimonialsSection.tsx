@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import { ChevronLeft, ChevronRight, Star, Quote, CheckCircle2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star, CheckCircle2 } from "lucide-react";
 
 interface Testimonial {
   name: string;
@@ -201,11 +201,8 @@ export default function TestimonialsSection({ lang = "en" }: TestimonialsSection
       aria-label="Devotee Testimonials"
     >
       <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Heading matching site typography and warm badge (Fixes PM Finding 3) */}
+        {/* Section Heading */}
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10 space-y-2">
-          <span className="inline-block px-3.5 py-1 rounded-full bg-[#E86F1D]/10 text-[#E86F1D] text-[11px] font-bold uppercase tracking-widest border border-[#E86F1D]/20">
-            {lang === "hi" ? "भक्तों के पावन अनुभव" : "Devotee Experiences"}
-          </span>
           <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
             {lang === "hi" ? "हमारे भक्त क्या कहते हैं" : "Voices of Faith & Devotion"}
           </h2>
@@ -216,74 +213,94 @@ export default function TestimonialsSection({ lang = "en" }: TestimonialsSection
           </p>
         </div>
 
-        {/* Carousel Viewport (NO overlapping buttons over cards) */}
-        <div className="relative overflow-hidden px-1 py-1" ref={emblaRef}>
-          <div className="flex -ml-4 sm:-ml-5 touch-pan-y">
-            {testimonialsData.map((item, idx) => (
-              <div
-                key={idx}
-                className="flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_25%] pl-4 sm:pl-5 min-w-0"
-              >
-                {/* Testimonial Card with authentic styling */}
-                <div className="h-full bg-white rounded-2xl border border-[#E7D8C8] p-5 sm:p-5.5 shadow-[0_4px_16px_-2px_rgba(43,32,26,0.06)] hover:border-[#E86F1D] hover:shadow-warm-md hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
-                  <div className="space-y-3">
-                    {/* Top Row: Quote Icon + Role Badge */}
-                    <div className="flex items-center justify-between">
-                      <div className="w-8 h-8 rounded-xl bg-[#E86F1D]/10 text-[#E86F1D] flex items-center justify-center">
-                        <Quote className="w-4 h-4 fill-current rotate-180" />
-                      </div>
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#2F5A43] bg-[#E8F5E9] border border-[#C8E6C9] px-2.5 py-0.5 rounded-full truncate max-w-[170px]">
-                        <CheckCircle2 className="w-3 h-3 text-[#2F5A43] shrink-0" />
-                        <span className="truncate">{lang === "hi" ? item.roleHi : item.role}</span>
-                      </span>
-                    </div>
-
-                    {/* Devotee Info: Avatar + Name & Location */}
-                    <div className="flex items-center gap-3 pt-1">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#E86F1D] to-[#B8893E] text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
-                        {item.initial}
-                      </div>
-                      <div className="min-w-0">
-                        <h3 className="font-editorial font-bold text-sm sm:text-[15px] text-[#2B201A] group-hover:text-[#E86F1D] transition-colors truncate">
-                          {lang === "hi" ? item.nameHi : item.name}
-                        </h3>
-                        <p className="text-[11px] text-[#7A6B60] font-medium truncate">
-                          {lang === "hi" ? item.locationHi : item.location}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* 5 Golden Stars */}
-                    <div className="flex items-center gap-1 pt-0.5">
-                      {[...Array(item.rating)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="w-3.5 h-3.5 fill-[#E86F1D] text-[#E86F1D]"
-                        />
-                      ))}
-                    </div>
-
-                    {/* Testimonial Quote */}
-                    <p className="text-xs sm:text-[12.5px] text-[#4A3E38] leading-relaxed italic line-clamp-4">
-                      &ldquo;{lang === "hi" ? item.quoteHi : item.quote}&rdquo;
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Carousel Bottom Controls: Prev + Indicators + Next (Cleanly below track, zero card overlap) */}
-        <div className="flex items-center justify-center gap-4 mt-7 sm:mt-9">
+        {/* Carousel Container with Side Controls for Desktop (Positioned cleanly outside cards) */}
+        <div className="relative flex items-center">
+          {/* Desktop Left Button */}
           <button
             onClick={scrollPrev}
-            className="w-10 h-10 rounded-full border border-[#E7D8C8] bg-white hover:bg-[#E86F1D] text-[#2B201A] hover:text-white flex items-center justify-center shadow-xs hover:shadow-md transition-all active:scale-95 cursor-pointer"
+            className="hidden md:flex shrink-0 mr-2.5 lg:mr-3.5 w-11 h-11 rounded-full border border-[#E7D8C8] bg-white hover:bg-[#E86F1D] text-[#2B201A] hover:text-white items-center justify-center shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer"
             aria-label="Previous testimonial"
           >
             <ChevronLeft className="w-5 h-5 stroke-[2]" />
           </button>
 
+          {/* Carousel Viewport (NO overlapping buttons over cards) */}
+          <div className="relative overflow-hidden px-1 py-2 flex-1 min-w-0" ref={emblaRef}>
+            <div className="flex -ml-4 sm:-ml-5 touch-pan-y">
+              {testimonialsData.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_25%] pl-4 sm:pl-5 min-w-0"
+                >
+                  {/* Testimonial Card with authentic styling */}
+                  <div className="h-full bg-white rounded-2xl border border-[#E7D8C8] p-5 sm:p-5.5 shadow-[0_4px_16px_-2px_rgba(43,32,26,0.06)] hover:border-[#E86F1D] hover:shadow-warm-md hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
+                    <div className="space-y-3">
+                      {/* Top Row: Role Badge */}
+                      <div className="flex items-center justify-end">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#2F5A43] bg-[#E8F5E9] border border-[#C8E6C9] px-2.5 py-0.5 rounded-full truncate max-w-[170px]">
+                          <CheckCircle2 className="w-3 h-3 text-[#2F5A43] shrink-0" />
+                          <span className="truncate">{lang === "hi" ? item.roleHi : item.role}</span>
+                        </span>
+                      </div>
+
+                      {/* Devotee Info: Avatar + Name & Location */}
+                      <div className="flex items-center gap-3 pt-1">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#E86F1D] to-[#B8893E] text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
+                          {item.initial}
+                        </div>
+                        <div className="min-w-0">
+                          <h3 className="font-editorial font-bold text-sm sm:text-[15px] text-[#2B201A] group-hover:text-[#E86F1D] transition-colors truncate">
+                            {lang === "hi" ? item.nameHi : item.name}
+                          </h3>
+                          <p className="text-[11px] text-[#7A6B60] font-medium truncate">
+                            {lang === "hi" ? item.locationHi : item.location}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* 5 Golden Stars */}
+                      <div className="flex items-center gap-1 pt-0.5">
+                        {[...Array(item.rating)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className="w-3.5 h-3.5 fill-[#E86F1D] text-[#E86F1D]"
+                          />
+                        ))}
+                      </div>
+
+                      {/* Testimonial Quote */}
+                      <p className="text-xs sm:text-[12.5px] text-[#4A3E38] leading-relaxed italic line-clamp-4">
+                        &ldquo;{lang === "hi" ? item.quoteHi : item.quote}&rdquo;
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Desktop Right Button */}
+          <button
+            onClick={scrollNext}
+            className="hidden md:flex shrink-0 ml-2.5 lg:ml-3.5 w-11 h-11 rounded-full border border-[#E7D8C8] bg-white hover:bg-[#E86F1D] text-[#2B201A] hover:text-white items-center justify-center shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer"
+            aria-label="Next testimonial"
+          >
+            <ChevronRight className="w-5 h-5 stroke-[2]" />
+          </button>
+        </div>
+
+        {/* Carousel Bottom Controls: Mobile Prev/Next + Indicators on all screens */}
+        <div className="flex items-center justify-center gap-4 mt-7 sm:mt-9">
+          {/* Mobile Prev Button */}
+          <button
+            onClick={scrollPrev}
+            className="md:hidden w-10 h-10 rounded-full border border-[#E7D8C8] bg-white hover:bg-[#E86F1D] text-[#2B201A] hover:text-white flex items-center justify-center shadow-xs hover:shadow-md transition-all active:scale-95 cursor-pointer"
+            aria-label="Previous testimonial"
+          >
+            <ChevronLeft className="w-5 h-5 stroke-[2]" />
+          </button>
+
+          {/* Slide Indicator Dots */}
           <div className="flex items-center gap-1.5 sm:gap-2">
             {scrollSnaps.map((_, idx) => (
               <button
@@ -299,9 +316,10 @@ export default function TestimonialsSection({ lang = "en" }: TestimonialsSection
             ))}
           </div>
 
+          {/* Mobile Next Button */}
           <button
             onClick={scrollNext}
-            className="w-10 h-10 rounded-full border border-[#E7D8C8] bg-white hover:bg-[#E86F1D] text-[#2B201A] hover:text-white flex items-center justify-center shadow-xs hover:shadow-md transition-all active:scale-95 cursor-pointer"
+            className="md:hidden w-10 h-10 rounded-full border border-[#E7D8C8] bg-white hover:bg-[#E86F1D] text-[#2B201A] hover:text-white flex items-center justify-center shadow-xs hover:shadow-md transition-all active:scale-95 cursor-pointer"
             aria-label="Next testimonial"
           >
             <ChevronRight className="w-5 h-5 stroke-[2]" />
