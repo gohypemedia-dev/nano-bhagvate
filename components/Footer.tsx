@@ -31,10 +31,10 @@ export default function Footer() {
               </div>
               <div className="flex flex-col justify-center">
                 <h3 className="font-editorial text-lg xl:text-xl font-bold text-[#2B201A] leading-tight">
-                  NAMO BHAGWATE
+                  {lang === "hi" ? "नमो भगवते" : "NAMO BHAGWATE"}
                 </h3>
                 <p className="text-[10.5px] xl:text-[11.5px] font-extrabold tracking-[0.14em] text-[#B8893E] uppercase">
-                  VASUDEVAYA TRUST
+                  {lang === "hi" ? "वासुदेवाय ट्रस्ट" : "VASUDEVAYA TRUST"}
                 </p>
               </div>
             </div>
@@ -57,37 +57,37 @@ export default function Footer() {
           {/* Column 1: Links */}
           <div className="space-y-3">
             <h4 className="font-editorial text-lg font-bold text-[#E86F1D] border-b border-[#E7D8C8] pb-1.5 inline-block">
-              {lang === "hi" ? "त्वरित संपर्क" : "Quick Links"}
+              {lang === "hi" ? "त्वरित लिंक" : "Quick Links"}
             </h4>
             <ul className="space-y-2.5 text-sm font-semibold">
               <li>
                 <Link href="/" className="hover:text-[#E86F1D] transition-colors">
-                  {lang === "hi" ? "मुख्य पृष्ठ (Home)" : "Home"}
+                  {lang === "hi" ? "मुख्य पृष्ठ" : "Home"}
                 </Link>
               </li>
               <li>
                 <Link href="/about" className="hover:text-[#E86F1D] transition-colors">
-                  {lang === "hi" ? "हमारे बारे में (About Us)" : "About Us"}
+                  {lang === "hi" ? "हमारे बारे में" : "About Us"}
                 </Link>
               </li>
               <li>
                 <Link href="/founder" className="hover:text-[#E86F1D] transition-colors">
-                  {lang === "hi" ? "संस्थापक का दृष्टिकोण (Founder's Vision)" : "Founder's Vision"}
+                  {lang === "hi" ? "संस्थापक दृष्टिकोण" : "Founder's Vision"}
                 </Link>
               </li>
               <li>
                 <Link href="/membership" className="hover:text-[#E86F1D] transition-colors">
-                  {lang === "hi" ? "सदस्यता (Membership)" : "Membership"}
+                  {lang === "hi" ? "सदस्यता" : "Membership"}
                 </Link>
               </li>
               <li>
                 <Link href="/gallery" className="hover:text-[#E86F1D] transition-colors">
-                  {lang === "hi" ? "हमारी झलकियाँ (Gallery)" : "Gallery & Moments"}
+                  {lang === "hi" ? "गैलरी" : "Gallery & Moments"}
                 </Link>
               </li>
               <li>
                 <Link href="/contact" className="hover:text-[#E86F1D] transition-colors">
-                  {lang === "hi" ? "संपर्क करें (Contact Us)" : "Contact Us"}
+                  {lang === "hi" ? "संपर्क करें" : "Contact Us"}
                 </Link>
               </li>
             </ul>
@@ -101,17 +101,17 @@ export default function Footer() {
             <ul className="space-y-2.5 text-sm font-semibold">
               <li>
                 <Link href="/initiatives" className="hover:text-[#E86F1D] transition-colors">
-                  {lang === "hi" ? "हमारी पहल (Our Initiatives)" : "Our Initiatives"}
+                  {lang === "hi" ? "सेवा प्रकल्प" : "Our Initiatives"}
                 </Link>
               </li>
               <li>
                 <Link href="/donate" className="hover:text-[#E86F1D] transition-colors">
-                  {lang === "hi" ? "दान एवं सेवा (Donate)" : "Donate & Seva"}
+                  {lang === "hi" ? "दान एवं सेवा" : "Donate & Seva"}
                 </Link>
               </li>
               <li>
                 <Link href="/books" className="hover:text-[#E86F1D] transition-colors">
-                  {lang === "hi" ? "साहित्य एवं पुस्तकें (Books)" : "Books & Publications"}
+                  {lang === "hi" ? "साहित्य एवं पुस्तकें" : "Books & Publications"}
                 </Link>
               </li>
               <li>
@@ -157,17 +157,31 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#2B201A]/75 font-medium text-center sm:text-left">
-          <p>© {new Date().getFullYear()} Namo Bhagwate Vasudevaya Trust. All rights reserved.</p>
+          <p>
+            {lang === "hi"
+              ? `© ${new Date().getFullYear()} नमो भगवते वासुदेवाय ट्रस्ट। सर्वाधिकार सुरक्षित।`
+              : `© ${new Date().getFullYear()} Namo Bhagwate Vasudevaya Trust. All rights reserved.`}
+          </p>
           <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2.5 sm:gap-4">
-            {POLICY_LINKS.map((p) => (
-              <React.Fragment key={p.href}>
-                <Link href={p.href} className="hover:text-[#E86F1D] transition-colors">
-                  {p.label}
-                </Link>
-                <span>•</span>
-              </React.Fragment>
-            ))}
-            <span>Reg. No: Trust/2019/NBVT</span>
+            {POLICY_LINKS.map((p) => {
+              const labelHi =
+                p.href === "/privacy-policy"
+                  ? "गोपनीयता नीति"
+                  : p.href === "/terms"
+                    ? "नियम व शर्तें"
+                    : p.href === "/refund-policy"
+                      ? "रिफंड व रद्दीकरण"
+                      : "शिपिंग नीति";
+              return (
+                <React.Fragment key={p.href}>
+                  <Link href={p.href} className="hover:text-[#E86F1D] transition-colors">
+                    {lang === "hi" ? labelHi : p.label}
+                  </Link>
+                  <span>•</span>
+                </React.Fragment>
+              );
+            })}
+            <span>{lang === "hi" ? "पंजीकरण: Trust/2019/NBVT" : "Reg. No: Trust/2019/NBVT"}</span>
             <button
               onClick={scrollToTop}
               className="ml-1 p-2.5 bg-[#FFF9F2] hover:bg-[#E86F1D] hover:text-white rounded-xl border border-[#E7D8C8] transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0 cursor-pointer"

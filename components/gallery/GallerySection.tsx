@@ -81,7 +81,7 @@ export default function GallerySection() {
             <TextReveal
               as="h2"
               className="font-editorial text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#2B201A] tracking-wider whitespace-nowrap px-2"
-              text={lang === "hi" ? "गैलरी • Gallery" : "Gallery"}
+              text={lang === "hi" ? "गैलरी" : "Gallery"}
             />
 
             {/* Right Decorative Filigree Line */}

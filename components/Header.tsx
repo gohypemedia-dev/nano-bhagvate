@@ -346,7 +346,7 @@ export default function Header() {
                 className="w-full flex items-center justify-center gap-2 py-3 bg-[#E86F1D] hover:bg-[#D25E12] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-warm-sm active:scale-95 transition-all min-h-[44px] cursor-pointer"
               >
                 <Heart className="w-4 h-4 fill-current" />
-                <span>{lang === "hi" ? "दान करें (Donate Now)" : "Donate Now"}</span>
+                <span>{lang === "hi" ? "दान करें" : "Donate Now"}</span>
               </button>
             </div>
           </div>
