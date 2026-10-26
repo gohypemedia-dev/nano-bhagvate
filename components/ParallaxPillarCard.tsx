@@ -3,12 +3,12 @@
 import React, { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Heart } from "lucide-react";
+import { Heart } from "lucide-react";
 
 interface ParallaxPillarCardProps {
   imageSrc: string;
   imageAlt: string;
-  badgeText: string;
+  badgeText?: string;
   title: string;
   description: string;
   buttonText: string;
@@ -20,7 +20,6 @@ interface ParallaxPillarCardProps {
 export default function ParallaxPillarCard({
   imageSrc,
   imageAlt,
-  badgeText,
   title,
   description,
   buttonText,
@@ -116,19 +115,6 @@ export default function ParallaxPillarCard({
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent transition-opacity duration-300 group-hover:opacity-90" />
             <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/20 pointer-events-none" />
 
-            {/* Top Badge with parallax depth */}
-            <div
-              style={{
-                transform: isHovered ? "translateZ(30px)" : "translateZ(0px)",
-                transition: "transform 0.3s ease-out",
-              }}
-              className="absolute top-3.5 right-3.5"
-            >
-              <span className="text-[10px] font-bold uppercase tracking-wider text-white bg-black/50 backdrop-blur-md border border-white/25 px-3 py-1 rounded-full shadow-md group-hover:border-[#E86F1D] group-hover:bg-[#2B201A]/80 transition-all">
-                {badgeText}
-              </span>
-            </div>
-
             {/* Title with depth */}
             <div
               style={{
@@ -160,7 +146,6 @@ export default function ParallaxPillarCard({
             >
               <Heart className="w-3.5 h-3.5 text-[#E86F1D] group-hover:text-white transition-colors" />
               <span>{buttonText}</span>
-              <ArrowRight className="w-4 h-4 text-[#E86F1D] group-hover:text-white group-hover:translate-x-1.5 transition-all duration-300" />
             </button>
           ) : (
             <Link
@@ -168,7 +153,6 @@ export default function ParallaxPillarCard({
               className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#2B201A] group-hover:bg-[#E86F1D] text-white font-bold text-xs uppercase tracking-wider shadow-sm group-hover:shadow-[0_8px_20px_-4px_rgba(232,111,29,0.4)] transition-all duration-300 group/btn"
             >
               <span>{buttonText}</span>
-              <ArrowRight className="w-4 h-4 text-[#E86F1D] group-hover:text-white group-hover:translate-x-1.5 transition-all duration-300" />
             </Link>
           )}
         </div>

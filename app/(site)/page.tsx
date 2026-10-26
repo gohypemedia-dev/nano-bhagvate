@@ -4,11 +4,9 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  BookOpen,
   Heart,
   Calendar,
   Users,
-  ArrowRight,
   ChevronLeft,
   ChevronRight,
   Quote,
@@ -140,7 +138,7 @@ export default function HomePage() {
           }
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const formatCardDate = (dateVal: string | Date) => {
@@ -182,10 +180,6 @@ export default function HomePage() {
           <div className="absolute bottom-0 inset-x-0 z-20 w-full px-6 md:px-10 lg:px-14 py-5 md:py-6 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex flex-col md:flex-row md:items-end md:justify-between gap-4 pointer-events-none">
             {/* Left: Badge + Heading + Purpose summary */}
             <div className="flex flex-col items-start gap-1.5 text-left pointer-events-auto max-w-xl">
-              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-[#E86F1D]/70 text-[#E86F1D] text-[11px] font-bold tracking-widest uppercase shadow-md">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#E86F1D] animate-pulse shrink-0" />
-                <span>{lang === "hi" ? "धर्म • सेवा • संस्कार" : "DHARMA • SEVA • SANSKAR"}</span>
-              </div>
               <h2 className="font-editorial text-xl md:text-2xl lg:text-3xl font-extrabold text-white tracking-wide leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
                 {lang === "hi" ? (
                   <>
@@ -200,7 +194,7 @@ export default function HomePage() {
               <p className="text-xs lg:text-[13px] text-white/90 font-medium leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
                 {lang === "hi"
                   ? "भगवद गीता के सार्वभौमिक सिद्धांतों पर आधारित आध्यात्मिक ज्ञान, समाज सेवा एवं जनकल्याण को समर्पित।"
-                  : "Dedicated to Vedic wisdom, spiritual education, community seva, and compassionate humanitarian welfare."}
+                  : ""}
               </p>
             </div>
 
@@ -208,10 +202,9 @@ export default function HomePage() {
             <div className="flex items-center gap-3 shrink-0 pointer-events-auto">
               <Link
                 href="/initiatives"
-                className="px-5 py-2.5 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 flex items-center gap-1.5 cursor-pointer"
+                className="px-5 py-2.5 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 flex items-center justify-center cursor-pointer"
               >
                 <span>{lang === "hi" ? "सेवा कार्य देखें" : "Explore Initiatives"}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
               </Link>
               <button
                 onClick={() => openDonateModal("General Donation")}
@@ -240,10 +233,6 @@ export default function HomePage() {
 
           {/* Mobile Overlay Action Bar */}
           <div className="absolute bottom-0 inset-x-0 z-20 w-full px-4 pt-16 pb-6 bg-gradient-to-t from-black/95 via-black/70 to-transparent flex flex-col items-center gap-2 text-center pointer-events-auto">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/60 border border-[#E86F1D]/60 text-[#E86F1D] text-[10px] font-bold tracking-widest uppercase shadow-md">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#E86F1D] animate-pulse shrink-0" />
-              <span>{lang === "hi" ? "धर्म • सेवा • संस्कार" : "DHARMA • SEVA • SANSKAR"}</span>
-            </div>
             <p className="font-editorial text-sm sm:text-base font-extrabold text-white tracking-wide leading-tight drop-shadow-md">
               {lang === "hi" ? "धर्म में निहित • सेवा के प्रति समर्पित" : "Rooted in Dharma • Dedicated to Seva"}
             </p>
@@ -308,7 +297,7 @@ export default function HomePage() {
         <div className="w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-7 items-stretch">
             {/* Card 1: Books (WebP compressed per Tech a) */}
-            <div className="relative min-h-[340px] md:h-[325px] h-auto rounded-3xl overflow-hidden shadow-[0_16px_40px_-8px_rgba(43,32,26,0.22),0_8px_20px_-4px_rgba(232,111,29,0.12)] hover:shadow-[0_24px_50px_-10px_rgba(43,32,26,0.32),0_12px_28px_-4px_rgba(232,111,29,0.2)] hover:-translate-y-1.5 transition-all duration-500 group flex flex-col justify-between p-4 sm:p-4.5 border border-[#E7D8C8] hover:border-[#E86F1D]">
+            <div className="relative min-h-[340px] md:h-[325px] h-auto rounded-3xl overflow-hidden shadow-[0_16px_40px_-8px_rgba(43,32,26,0.22),0_8px_20px_-4px_rgba(232,111,29,0.12)] hover:shadow-[0_24px_50px_-10px_rgba(43,32,26,0.32),0_12px_28px_-4px_rgba(232,111,29,0.2)] hover:-translate-y-1.5 transition-all duration-500 group flex flex-col justify-end p-4 sm:p-4.5 border border-[#E7D8C8] hover:border-[#E86F1D]">
               {/* Full Background Image */}
               <Image
                 src="/images/card-books-rect.webp"
@@ -320,17 +309,6 @@ export default function HomePage() {
               />
               {/* Soft Vignette Gradient */}
               <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/35 pointer-events-none" />
-
-              {/* Top Bar: Orange Pill Tag + Icon */}
-              <div className="relative z-10 flex items-center justify-between">
-                <span className="px-3.5 py-1.5 rounded-lg bg-[#E86F1D] text-white text-[11px] font-black tracking-wider uppercase shadow-md flex items-center gap-1.5">
-                  <BookOpen className="w-3.5 h-3.5" />
-                  <span>{lang === "hi" ? "साहित्य सेवा" : "SAHITYA SEVA"}</span>
-                </span>
-                <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/40 text-white flex items-center justify-center shadow-md group-hover:bg-[#E86F1D] transition-colors">
-                  <ArrowRight className="w-3.5 h-3.5 text-white" />
-                </div>
-              </div>
 
               {/* Translucent Text Plate */}
               <div className="relative z-10 w-full bg-[#FFF9F2]/95 group-hover:bg-[#FFF9F2]/98 backdrop-blur-md border border-white/85 rounded-2xl p-3 sm:p-3.5 md:p-2.5 md:group-hover:p-4 shadow-xl transition-all duration-500 ease-out mt-8 md:mt-0">
@@ -357,14 +335,13 @@ export default function HomePage() {
                     className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#2B201A] hover:bg-[#1E1612] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all w-full md:w-auto"
                   >
                     <span>{lang === "hi" ? "पुस्तकें देखें" : "Explore Books"}</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-[#E86F1D]" />
                   </Link>
                 </div>
               </div>
             </div>
 
             {/* Card 2: Donate for Seva (WebP compressed per Tech a) */}
-            <div className="relative min-h-[340px] md:h-[325px] h-auto rounded-3xl overflow-hidden shadow-[0_16px_40px_-8px_rgba(43,32,26,0.22),0_8px_20px_-4px_rgba(232,111,29,0.12)] hover:shadow-[0_24px_50px_-10px_rgba(43,32,26,0.32),0_12px_28px_-4px_rgba(232,111,29,0.2)] hover:-translate-y-1.5 transition-all duration-500 group flex flex-col justify-between p-4 sm:p-4.5 border border-[#E7D8C8] hover:border-[#E86F1D]">
+            <div className="relative min-h-[340px] md:h-[325px] h-auto rounded-3xl overflow-hidden shadow-[0_16px_40px_-8px_rgba(43,32,26,0.22),0_8px_20px_-4px_rgba(232,111,29,0.12)] hover:shadow-[0_24px_50px_-10px_rgba(43,32,26,0.32),0_12px_28px_-4px_rgba(232,111,29,0.2)] hover:-translate-y-1.5 transition-all duration-500 group flex flex-col justify-end p-4 sm:p-4.5 border border-[#E7D8C8] hover:border-[#E86F1D]">
               {/* Full Background Image */}
               <Image
                 src="/images/card-seva-rect.webp"
@@ -376,17 +353,6 @@ export default function HomePage() {
               />
               {/* Soft Vignette Gradient */}
               <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/35 pointer-events-none" />
-
-              {/* Top Bar: Orange Pill Tag + Icon */}
-              <div className="relative z-10 flex items-center justify-between">
-                <span className="px-3.5 py-1.5 rounded-lg bg-[#E86F1D] text-white text-[11px] font-black tracking-wider uppercase shadow-md flex items-center gap-1.5">
-                  <Heart className="w-3.5 h-3.5 fill-current" />
-                  <span>{lang === "hi" ? "पुण्य सेवा" : "PUNYA SEVA"}</span>
-                </span>
-                <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/40 text-white flex items-center justify-center shadow-md group-hover:bg-[#E86F1D] transition-colors">
-                  <Heart className="w-3.5 h-3.5 text-[#E86F1D] fill-current" />
-                </div>
-              </div>
 
               {/* Translucent Text Plate */}
               <div className="relative z-10 w-full bg-[#FFF9F2]/95 group-hover:bg-[#FFF9F2]/98 backdrop-blur-md border border-white/85 rounded-2xl p-3 sm:p-3.5 md:p-2.5 md:group-hover:p-4 shadow-xl transition-all duration-500 ease-out mt-8 md:mt-0">
@@ -421,7 +387,7 @@ export default function HomePage() {
             </div>
 
             {/* Card 3: Sacred Wisdom / Bhagavad Gita Inspiration (Fixes Tech finding e) */}
-            <div className="relative min-h-[340px] md:h-[325px] h-auto rounded-3xl overflow-hidden shadow-[0_16px_40px_-8px_rgba(43,32,26,0.22),0_8px_20px_-4px_rgba(232,111,29,0.12)] hover:shadow-[0_24px_50px_-10px_rgba(43,32,26,0.32),0_12px_28px_-4px_rgba(232,111,29,0.2)] hover:-translate-y-1.5 transition-all duration-500 group flex flex-col justify-between p-4 sm:p-4.5 border border-[#E7D8C8] hover:border-[#E86F1D]">
+            <div className="relative min-h-[340px] md:h-[325px] h-auto rounded-3xl overflow-hidden shadow-[0_16px_40px_-8px_rgba(43,32,26,0.22),0_8px_20px_-4px_rgba(232,111,29,0.12)] hover:shadow-[0_24px_50px_-10px_rgba(43,32,26,0.32),0_12px_28px_-4px_rgba(232,111,29,0.2)] hover:-translate-y-1.5 transition-all duration-500 group flex flex-col justify-end p-4 sm:p-4.5 border border-[#E7D8C8] hover:border-[#E86F1D]">
               {/* Full Background Image (WebP compressed per Tech a) */}
               <Image
                 src="/images/card-thought-rect.webp"
@@ -433,17 +399,6 @@ export default function HomePage() {
               />
               {/* Soft Vignette Gradient */}
               <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/35 pointer-events-none" />
-
-              {/* Top Bar: Orange Pill Tag + Icon */}
-              <div className="relative z-10 flex items-center justify-between">
-                <span className="px-3.5 py-1.5 rounded-lg bg-[#E86F1D] text-white text-[11px] font-black tracking-wider uppercase shadow-md flex items-center gap-1.5">
-                  <Quote className="w-3.5 h-3.5" />
-                  <span>{lang === "hi" ? "श्रीमद्भगवद्गीता" : "BHAGAVAD GITA 2.47"}</span>
-                </span>
-                <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/40 text-white flex items-center justify-center shadow-md">
-                  <Quote className="w-3.5 h-3.5 text-white" />
-                </div>
-              </div>
 
               {/* Translucent Text Plate */}
               <div className="relative z-10 w-full bg-[#FFF9F2]/95 group-hover:bg-[#FFF9F2]/98 backdrop-blur-md border border-white/85 rounded-2xl p-3 sm:p-3.5 md:p-2.5 md:group-hover:p-4 shadow-xl transition-all duration-500 ease-out mt-8 md:mt-0">
@@ -470,7 +425,6 @@ export default function HomePage() {
                     className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#2B201A] hover:bg-[#1E1612] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all w-full md:w-auto"
                   >
                     <span>{lang === "hi" ? "संस्थापक दृष्टिकोण" : "Founder's Vision"}</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-[#B8893E]" />
                   </Link>
                 </div>
               </div>
@@ -499,70 +453,69 @@ export default function HomePage() {
                   t.includes("bhagwat") || s.includes("bhagwat") || t.includes("भागवत")
                     ? "/images/event-katha-graphic.jpg"
                     : t.includes("yoga") || s.includes("yoga") || t.includes("योग")
-                    ? "/images/event-yoga-graphic.jpg"
-                    : "/images/event-gurukul-graphic.jpg";
+                      ? "/images/event-yoga-graphic.jpg"
+                      : "/images/event-gurukul-graphic.jpg";
 
-              return (
-                <div
-                  key={event.id}
-                  onClick={() => {
-                    setSelectedEvent(event);
-                    setEventModalOpen(true);
-                  }}
-                  className="rounded-3xl overflow-hidden bg-white border border-[#E7D8C8] shadow-[0_10px_30px_-8px_rgba(43,32,26,0.1)] hover:shadow-[0_20px_40px_-10px_rgba(43,32,26,0.2)] hover:-translate-y-1.5 transition-all duration-300 group flex flex-col justify-between cursor-pointer"
-                >
-                  {/* Top Illustration Area with Date Badge */}
-                  <div className="relative w-full h-[220px] sm:h-[240px] bg-white flex items-center justify-center p-3 overflow-hidden border-b border-[#F0E4D5]">
-                    {/* Orange Date Badge */}
-                    <div className="absolute top-3.5 left-3.5 z-10 px-3.5 py-1.5 rounded-lg bg-[#E86F1D] text-white text-xs font-black tracking-wider uppercase shadow-md">
-                      {formatCardDate(event.startDate)}
+                return (
+                  <div
+                    key={event.id}
+                    onClick={() => {
+                      setSelectedEvent(event);
+                      setEventModalOpen(true);
+                    }}
+                    className="rounded-3xl overflow-hidden bg-white border border-[#E7D8C8] shadow-[0_10px_30px_-8px_rgba(43,32,26,0.1)] hover:shadow-[0_20px_40px_-10px_rgba(43,32,26,0.2)] hover:-translate-y-1.5 transition-all duration-300 group flex flex-col justify-between cursor-pointer"
+                  >
+                    {/* Top Illustration Area with Date Badge */}
+                    <div className="relative w-full h-[220px] sm:h-[240px] bg-white flex items-center justify-center p-3 overflow-hidden border-b border-[#F0E4D5]">
+                      {/* Orange Date Badge */}
+                      <div className="absolute top-3.5 left-3.5 z-10 px-3.5 py-1.5 rounded-lg bg-[#E86F1D] text-white text-xs font-black tracking-wider uppercase shadow-md">
+                        {formatCardDate(event.startDate)}
+                      </div>
+
+                      {/* Centered Graphic Emblem */}
+                      <div className="relative w-full h-full">
+                        <Image
+                          src={graphicSrc}
+                          alt={event.title}
+                          fill
+                          className="object-contain p-2 group-hover:scale-105 transition-transform duration-500 ease-out"
+                        />
+                      </div>
                     </div>
 
-                    {/* Centered Graphic Emblem */}
-                    <div className="relative w-full h-full">
-                      <Image
-                        src={graphicSrc}
-                        alt={event.title}
-                        fill
-                        className="object-contain p-2 group-hover:scale-105 transition-transform duration-500 ease-out"
-                      />
+                    {/* Bottom Text Plate */}
+                    <div className="bg-[#FFF9F2] p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-3">
+                      <div className="space-y-2">
+                        <h3 className="font-sans font-black text-[#1E1612] tracking-wider text-base sm:text-lg uppercase leading-snug group-hover:text-[#E86F1D] transition-colors">
+                          {lang === "hi" && event.titleHi ? event.titleHi : event.title}
+                        </h3>
+                        <p className="text-xs sm:text-sm text-[#4A3E38] leading-relaxed line-clamp-3 font-sans">
+                          {lang === "hi" && event.summaryHi ? event.summaryHi : event.summary}
+                        </p>
+                      </div>
+
+                      {/* Location with MapPin icon and word-wrap without truncation (Fixes Image 3 finding 3) */}
+                      <div className="pt-2 flex items-center justify-between border-t border-[#E7D8C8]/60 mt-2 gap-2">
+                        <span className="text-xs font-semibold text-[#8C6B3E] flex items-center gap-1.5 min-w-0">
+                          <MapPin className="w-3.5 h-3.5 text-[#E86F1D] shrink-0" />
+                          <span className="leading-tight break-words">{event.location}</span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedEvent(event);
+                            setEventModalOpen(true);
+                          }}
+                          className="inline-flex items-center gap-1.5 text-xs font-bold text-[#E86F1D] hover:text-[#C75A10] uppercase tracking-wider group/btn cursor-pointer shrink-0"
+                        >
+                          <span>{lang === "hi" ? "विवरण देखें" : "View Details"}</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
-
-                  {/* Bottom Text Plate */}
-                  <div className="bg-[#FFF9F2] p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-3">
-                    <div className="space-y-2">
-                      <h3 className="font-sans font-black text-[#1E1612] tracking-wider text-base sm:text-lg uppercase leading-snug group-hover:text-[#E86F1D] transition-colors">
-                        {lang === "hi" && event.titleHi ? event.titleHi : event.title}
-                      </h3>
-                      <p className="text-xs sm:text-sm text-[#4A3E38] leading-relaxed line-clamp-3 font-sans">
-                        {lang === "hi" && event.summaryHi ? event.summaryHi : event.summary}
-                      </p>
-                    </div>
-
-                    {/* Location with MapPin icon and word-wrap without truncation (Fixes Image 3 finding 3) */}
-                    <div className="pt-2 flex items-center justify-between border-t border-[#E7D8C8]/60 mt-2 gap-2">
-                      <span className="text-xs font-semibold text-[#8C6B3E] flex items-center gap-1.5 min-w-0">
-                        <MapPin className="w-3.5 h-3.5 text-[#E86F1D] shrink-0" />
-                        <span className="leading-tight break-words">{event.location}</span>
-                      </span>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedEvent(event);
-                          setEventModalOpen(true);
-                        }}
-                        className="inline-flex items-center gap-1.5 text-xs font-bold text-[#E86F1D] hover:text-[#C75A10] uppercase tracking-wider group/btn cursor-pointer shrink-0"
-                      >
-                        <span>{lang === "hi" ? "विवरण देखें" : "View Details"}</span>
-                        <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
         </div>
       </section>
@@ -681,9 +634,6 @@ export default function HomePage() {
       <section className="pt-7 sm:pt-9 pb-12 sm:pb-16 bg-[#FFF9F2] border-t border-[#E7D8C8]/60">
         <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10 space-y-2">
-            <span className="inline-block px-3.5 py-1 rounded-full bg-[#E86F1D]/10 text-[#E86F1D] text-[11px] font-bold uppercase tracking-widest border border-[#E86F1D]/20">
-              {lang === "hi" ? "कार्य के स्तम्भ" : "Pillars of Action"}
-            </span>
             <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
               {lang === "hi" ? "हमारे आधारभूत संकल्प" : "Our Foundational Commitments"}
             </h2>
@@ -699,7 +649,6 @@ export default function HomePage() {
             <ParallaxPillarCard
               imageSrc="/images/vedic-gurukul-hd.jpg"
               imageAlt="Our Mission"
-              badgeText={lang === "hi" ? "हमारा संकल्प" : "SANKALPA"}
               title={lang === "hi" ? "हमारा ध्येय" : "Our Mission"}
               description={
                 lang === "hi"
@@ -714,7 +663,6 @@ export default function HomePage() {
             <ParallaxPillarCard
               imageSrc="/images/founder.jpg"
               imageAlt="Our Vision"
-              badgeText={lang === "hi" ? "दिव्य दृष्टि" : "VISION"}
               title={lang === "hi" ? "हमारा दृष्टिकोण" : "Our Vision"}
               description={
                 lang === "hi"
@@ -729,7 +677,6 @@ export default function HomePage() {
             <ParallaxPillarCard
               imageSrc="/images/card-charity-seva.jpg"
               imageAlt="Join Us"
-              badgeText={lang === "hi" ? "सेवा परिवार" : "COMMUNITY"}
               title={lang === "hi" ? "हमसे जुड़ें" : "Join Us"}
               description={
                 lang === "hi"
@@ -744,7 +691,6 @@ export default function HomePage() {
             <ParallaxPillarCard
               imageSrc="/images/card-seva-rect.webp"
               imageAlt="Support Us"
-              badgeText={lang === "hi" ? "पुण्य सेवा" : "PUNYA SEVA"}
               title={lang === "hi" ? "सहयोग करें" : "Support Us"}
               description={
                 lang === "hi"
