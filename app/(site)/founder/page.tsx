@@ -317,7 +317,7 @@ export default function FounderPage() {
             {lang === "hi" ? "कर्मण्येवाधिकारस्ते • निष्काम सेवा" : "KARMA YOGA & NISHKAMA SEVA"}
           </div>
 
-          <p className="font-editorial text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium leading-relaxed drop-shadow-md text-[#FFFDF9]">
+          <p className="font-editorial text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-relaxed tracking-tight drop-shadow-md text-[#FFFDF9]">
             {lang === "hi" ? (
               <>
                 साध्वी जी जन-जन को श्रीमद्भगवद्गीता के शाश्वत सिद्धांतों—<strong>कर्मयोग</strong> (निष्काम कर्म), <strong>सेवा</strong> (बिना किसी अपेक्षा के समर्पण), भक्ति, सत्य, करुणा, विनम्रता और सार्वभौमिक प्रेम को जीवन में उतारने की प्रेरणा देती हैं। उनका विश्वास है कि जब प्रत्येक कर्म श्रद्धा और पवित्रता के साथ प्रभु को अर्पित किया जाता है, तो जीवन में स्वाभाविक रूप से शांति, संतुलन, संतोष और चिरस्थायी आनंद खिल उठता है।

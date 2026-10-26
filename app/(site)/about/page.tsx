@@ -197,12 +197,7 @@ export default function AboutPage() {
         <div className="page-container max-w-5xl lg:max-w-6xl space-y-12 sm:space-y-16">
           {/* ABOUT US BLOCK */}
           <div className="space-y-4 sm:space-y-5 text-center sm:text-left">
-            <div className="flex items-center justify-center sm:justify-start gap-2.5">
-              <span className="h-0.5 w-6 bg-[#E86F1D]" />
-              <h2 className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-[#E86F1D]">
-                {lang === "hi" ? "ट्रस्ट परिचय" : "ABOUT US"}
-              </h2>
-            </div>
+
 
             <p className="font-editorial text-2xl sm:text-3xl md:text-4xl font-bold text-[#1F1712] leading-tight">
               {lang === "hi"
@@ -238,12 +233,7 @@ export default function AboutPage() {
 
           {/* OUR MISSION BLOCK */}
           <div className="space-y-4 sm:space-y-5 text-center sm:text-left">
-            <div className="flex items-center justify-center sm:justify-start gap-2.5">
-              <span className="h-0.5 w-6 bg-[#E86F1D]" />
-              <h2 className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-[#E86F1D]">
-                {lang === "hi" ? "हमारा संकल्प एवं उद्देश्य" : "OUR MISSION"}
-              </h2>
-            </div>
+
 
             <p className="font-editorial text-2xl sm:text-3xl md:text-4xl font-bold text-[#1F1712] leading-tight">
               {lang === "hi"
@@ -306,15 +296,23 @@ export default function AboutPage() {
         </div>
 
         {/* Floating Quote Card */}
-        <div className="relative z-10 page-container max-w-3xl text-center px-6">
+        <div className="relative z-10 page-container max-w-5xl text-center px-4 sm:px-6">
           <div className="inline-block px-3 py-1 rounded-full bg-white/80 border border-[#B8893E]/40 text-[#8C5E1A] text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em] mb-4 shadow-xs">
             {lang === "hi" ? "हमारा मूल भाव" : "FOUNDATION ETHOS"}
           </div>
 
-          <blockquote className="font-editorial text-xl sm:text-2xl md:text-3xl lg:text-4xl text-[#2B201A] font-bold leading-relaxed tracking-tight drop-shadow-xs">
-            {lang === "hi"
-              ? "“हम हृदय से शिक्षकों, विचारकों और कर्मठ समाजसेवियों का एक परिवार हैं — जो गाँव-गाँव, विद्यालय-विद्यालय और परिवार-परिवार जाकर सेवा कार्य कर रहे हैं।”"
-              : "“We are, at heart, a foundation of teachers, practitioners and community builders working village by village, school by school, and family by family.”"}
+          <blockquote className="font-editorial text-xl sm:text-2xl md:text-3xl lg:text-[32px] text-[#2B201A] font-bold leading-relaxed tracking-tight drop-shadow-xs max-w-5xl mx-auto">
+            {lang === "hi" ? (
+              <>
+                “हम हृदय से शिक्षकों, विचारकों और कर्मठ समाजसेवियों का एक परिवार हैं —<br className="hidden md:inline" />
+                जो गाँव-गाँव, विद्यालय-विद्यालय और परिवार-परिवार जाकर सेवा कार्य कर रहे हैं।”
+              </>
+            ) : (
+              <>
+                “We are, at heart, a foundation of teachers, practitioners and community builders<br className="hidden md:inline" />
+                working village by village, school by school, and family by family.”
+              </>
+            )}
           </blockquote>
 
           <div className="mt-6 flex items-center justify-center gap-2">
@@ -329,15 +327,23 @@ export default function AboutPage() {
 
       {/* 4. MISSION STATEMENT (CLEAN & DIGNIFIED MINIMALIST PRESENTATION) */}
       <section className="py-14 sm:py-20 bg-[#FFFDF9] border-b border-[#E7D8C8]">
-        <div className="page-container max-w-3xl text-center space-y-4">
-          <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.25em] text-[#E86F1D]">
+        <div className="page-container max-w-5xl text-center space-y-4">
+          <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.25em] text-[#1F1712]">
             {lang === "hi" ? "मिशन संकल्प" : "MISSION STATEMENT"}
           </p>
 
-          <h3 className="font-editorial text-2xl sm:text-3xl md:text-4xl text-[#1F1712] font-semibold leading-relaxed px-4">
-            {lang === "hi"
-              ? "“मन को संस्कारित व सशक्त बनाना, समाज का समग्र उत्थान करना और प्रत्येक कर्म को श्रीमद्भगवद्गीता के शाश्वत ज्ञान से सिंचित करना।”"
-              : "“To nurture the mind, uplift the community, and root every action in the timeless wisdom of the Bhagavad Gita.”"}
+          <h3 className="font-editorial text-xl sm:text-2xl md:text-3xl lg:text-[32px] text-[#E86F1D] font-bold leading-relaxed px-4 max-w-5xl mx-auto">
+            {lang === "hi" ? (
+              <>
+                “मन को संस्कारित व सशक्त बनाना, समाज का उत्थान करना<br className="hidden md:inline" />
+                और प्रत्येक कर्म को श्रीमद्भगवद्गीता के शाश्वत ज्ञान से सिंचित करना।”
+              </>
+            ) : (
+              <>
+                “To nurture the mind, uplift the community, and root every action<br className="hidden md:inline" />
+                in the timeless wisdom of the Bhagavad Gita.”
+              </>
+            )}
           </h3>
 
           <div className="pt-2">

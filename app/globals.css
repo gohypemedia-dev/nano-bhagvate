@@ -17,6 +17,7 @@
   --font-serif: var(--font-cormorant), Georgia, serif;
   --font-sans: var(--font-manrope), system-ui, sans-serif;
   --font-devanagari: var(--font-devanagari), serif;
+  --font-cursive: var(--font-cursive), cursive;
   
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);

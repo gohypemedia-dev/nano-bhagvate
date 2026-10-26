@@ -198,7 +198,7 @@ export default function ContactPage() {
                         type="tel"
                         inputMode="numeric"
                         maxLength={10}
-                        placeholder="9876543210"
+                        placeholder="+91"
                         value={formData.phone}
                         onChange={(e) => {
                           const sanitized = e.target.value.replace(/\D/g, "").slice(0, 10);
