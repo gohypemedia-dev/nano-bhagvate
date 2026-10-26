@@ -119,8 +119,14 @@ export default function InitiativesPage() {
             unoptimized
             className="object-cover object-right lg:object-center"
           />
-          {/* Clean Gradient on Desktop: leaves Sadhvi Ji & children completely crisp and clear on right */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#F6EDE2] via-[#F6EDE2] via-[34%] to-transparent to-[48%] pointer-events-none" />
+          {/* Clean feathered mask: completely masks baked-in text & dark background on left while seamlessly revealing community & Sadhvi Ji on right */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(to right, #F6EDE2 0%, #F6EDE2 45%, rgba(246,237,226,0.98) 49%, rgba(246,237,226,0.85) 54%, rgba(246,237,226,0.45) 60%, rgba(246,237,226,0.12) 65%, rgba(246,237,226,0) 70%)",
+            }}
+          />
         </ParallaxImage>
 
         {/* MOBILE HERO (100VH Full Viewport Height with Bottom Overlay) */}
@@ -184,21 +190,7 @@ export default function InitiativesPage() {
                 : "Discover meaningful initiatives that empower individuals, nurture communities, and create lasting social impact. Guided by the timeless wisdom of the Bhagavad Gita, every initiative reflects our commitment to compassion, service, and holistic development."}
             </ParagraphReveal>
 
-            {/* Trust Points / Micro Badges */}
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-1 text-[#2B201A]/85 font-semibold">
-              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-white/70 backdrop-blur-xs border border-[#E7D8C8] text-[11px] sm:text-xs">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#2F5A43]" />
-                {lang === "hi" ? "80G आयकर छूट उपलब्ध" : "100% Tax Benefit (80G)"}
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-white/70 backdrop-blur-xs border border-[#E7D8C8] text-[11px] sm:text-xs">
-                <Users className="w-3.5 h-3.5 text-[#E86F1D]" />
-                {lang === "hi" ? "शिक्षा, स्वास्थ्य व महिला उत्थान" : "Education, Health & Women Empowerment"}
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-white/70 backdrop-blur-xs border border-[#E7D8C8] text-[11px] sm:text-xs">
-                <Heart className="w-3.5 h-3.5 text-[#E86F1D]" />
-                {lang === "hi" ? "गौ सेवा व ग्रामीण सहायता" : "Gau Seva & Rural Welfare"}
-              </span>
-            </div>
+
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2 sm:pt-4">

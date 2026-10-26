@@ -3,20 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  GraduationCap,
-  Users,
-  Sprout,
-  HeartPulse,
-  Trees,
-  Shield,
-  Medal,
-  Scale,
-  HeartHandshake,
-  Heart,
-  Sun,
-  Flame,
-} from "lucide-react";
+import { Heart } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import {
   TextReveal,
@@ -35,57 +22,46 @@ export default function FounderPage() {
     {
       title: "Spiritual Education and Value-Based Learning",
       titleHi: "आध्यात्मिक शिक्षा एवं मूल्य-आधारित शिक्षण",
-      icon: GraduationCap,
     },
     {
       title: "Women’s Empowerment",
       titleHi: "महिला सशक्तिकरण एवं स्वावलंबन",
-      icon: Users,
     },
     {
       title: "Youth Development",
       titleHi: "युवा विकास एवं मार्गदर्शन",
-      icon: Flame,
     },
     {
       title: "Farmer Welfare",
       titleHi: "किसान कल्याण एवं संवर्धन",
-      icon: Sprout,
     },
     {
       title: "Health Awareness and Community Well-being",
       titleHi: "स्वास्थ्य जागरूकता एवं जन कल्याण",
-      icon: HeartPulse,
     },
     {
       title: "Yoga and Meditation",
       titleHi: "योग साधना एवं दैनिक ध्यान",
-      icon: Sun,
     },
     {
       title: "Environmental Conservation",
       titleHi: "पर्यावरण संरक्षण एवं प्रकृति संवर्धन",
-      icon: Trees,
     },
     {
       title: "Police Welfare",
       titleHi: "पुलिस परिवार कल्याण एवं सुरक्षा सहयोग",
-      icon: Shield,
     },
     {
       title: "Respect and Support for Armed Forces Personnel",
       titleHi: "सशस्त्र बल के जवानों व परिवारों का सम्मान व सहयोग",
-      icon: Medal,
     },
     {
       title: "Legal Awareness",
       titleHi: "विधिक जागरूकता एवं सामाजिक सहायता",
-      icon: Scale,
     },
     {
       title: "Humanitarian Service for the Underprivileged",
       titleHi: "वंचित एवं निर्बल वर्ग के लिए मानवीय सेवा",
-      icon: HeartHandshake,
     },
   ];
 
@@ -94,18 +70,28 @@ export default function FounderPage() {
       {/* 1. HERO SECTION (PANORAMIC ON DESKTOP, 100VH ON MOBILE & LAPTOP) */}
       <section className="relative overflow-hidden bg-[#1F150E] md:bg-[#F7EDE1] border-b border-[#E7D8C8] min-h-[calc(100vh-68px)] sm:min-h-[calc(100vh-74px)] min-[1000px]:min-h-[calc(100vh-76px)] xl:min-h-[calc(100vh-82px)] md:flex md:items-center">
         {/* Desktop Panoramic Background Banner (hidden on mobile) */}
-        <ParallaxImage offset={45} className="hidden md:block absolute inset-0 z-0">
-          <Image
-            src="/images/founder-hero-banner.png"
-            alt="Pujya Sadhvi Vijeshanand Saraswati Ji - Founder"
-            fill
-            priority
-            unoptimized
-            className="object-cover object-right lg:object-center"
-          />
-          {/* Clean Gradient on Desktop: provides solid readable text background on left while leaving Sadhvi Ji 100% crisp and clear on right */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#F7EDE1] via-[#F7EDE1] via-[40%] to-transparent to-[52%] pointer-events-none" />
-        </ParallaxImage>
+        <div className="hidden md:block absolute inset-0 z-0 overflow-hidden">
+          <ParallaxSection range={[0, 30]} className="w-full h-full">
+            <div className="relative w-full h-[108%] -mt-4 sm:-mt-5 md:-mt-6">
+              <Image
+                src="/images/founder-hero-banner.png"
+                alt="Pujya Sadhvi Vijeshanand Saraswati Ji - Founder"
+                fill
+                priority
+                unoptimized
+                className="object-cover object-[80%_top] lg:object-[82%_top]"
+              />
+            </div>
+            {/* Clean feathered mask: completely masks baked-in text & dark pillar on left while seamlessly revealing temple & Sadhvi Ji on right */}
+            <div
+              className="absolute -top-10 -bottom-10 inset-x-0 pointer-events-none"
+              style={{
+                background:
+                  "linear-gradient(to right, #F7EDE1 0%, #F7EDE1 47%, rgba(247,237,225,0.98) 51%, rgba(247,237,225,0.85) 56%, rgba(247,237,225,0.45) 62%, rgba(247,237,225,0.12) 67%, rgba(247,237,225,0) 72%)",
+              }}
+            />
+          </ParallaxSection>
+        </div>
 
         {/* MOBILE HERO (100VH Full Viewport Height with Bottom Overlay) */}
         <div className="md:hidden relative z-1 w-full h-[calc(100vh-68px)] min-h-[540px] flex items-center justify-center overflow-hidden">
@@ -168,21 +154,7 @@ export default function FounderPage() {
                 : "Dedicated to spreading the timeless wisdom of the Bhagavad Gita through selfless service and spiritual leadership. She inspires people to embrace Dharma, compassion, and selfless action while serving humanity."}
             </ParagraphReveal>
 
-            {/* Trust Points / Micro Badges */}
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-1 text-[#2B201A]/85 font-semibold">
-              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-white/70 backdrop-blur-xs border border-[#E7D8C8] text-[11px] sm:text-xs">
-                <Sun className="w-3.5 h-3.5 text-[#E86F1D]" />
-                {lang === "hi" ? "गीता ज्ञान एवं साधना" : "Bhagavad Gita Wisdom"}
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-white/70 backdrop-blur-xs border border-[#E7D8C8] text-[11px] sm:text-xs">
-                <HeartHandshake className="w-3.5 h-3.5 text-[#2F5A43]" />
-                {lang === "hi" ? "मानव सेवा ही माधव सेवा" : "Selfless Seva to Humanity"}
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-white/70 backdrop-blur-xs border border-[#E7D8C8] text-[11px] sm:text-xs">
-                <Heart className="w-3.5 h-3.5 text-[#E86F1D]" />
-                {lang === "hi" ? "स्थापना २०१९" : "Established in 2019"}
-              </span>
-            </div>
+
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2 sm:pt-4">
@@ -361,25 +333,22 @@ export default function FounderPage() {
             <div className="w-16 h-1 bg-[#E86F1D] mx-auto rounded-full" />
           </div>
 
-          {/* 11 Commitment Cards Grid with Signature Saffron Circle Badges */}
-          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {commitmentAreas.map((area, idx) => {
-              const IconComp = area.icon;
-              return (
-                <StaggerItem key={idx}>
-                  <div className="bg-white p-5 rounded-2xl border border-[#E7D8C8] shadow-xs hover:shadow-md hover:border-[#E86F1D] transition-all duration-300 flex items-center gap-4 group">
-                    {/* Signature Orange Circle Emblem */}
-                    <div className="w-12 h-12 rounded-full bg-[#E86F1D] flex items-center justify-center shrink-0 shadow-sm text-white group-hover:scale-105 transition-transform">
-                      <IconComp className="w-6 h-6 stroke-[2]" />
-                    </div>
-
-                    <span className="text-sm sm:text-base font-semibold text-[#1F1712] leading-snug">
+          {/* 11 Commitment Cards Grid (Pure Text with Animated Interactive Effects) */}
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            {commitmentAreas.map((area, idx) => (
+              <StaggerItem key={idx}>
+                <div className="relative overflow-hidden bg-white hover:bg-gradient-to-br hover:from-white hover:to-[#FFF8F0] px-6 py-5 rounded-2xl border border-[#E7D8C8] hover:border-[#E86F1D] shadow-xs hover:shadow-[0_12px_28px_-6px_rgba(232,111,29,0.16)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-center min-h-[96px] group cursor-pointer before:absolute before:inset-0 before:-translate-x-full hover:before:translate-x-full before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent before:transition-transform before:duration-700">
+                  {/* Animated Text Content */}
+                  <div className="relative z-10 w-full">
+                    <span className="font-sans text-lg sm:text-[20px] font-bold text-[#1F1712] group-hover:text-[#E86F1D] group-hover:translate-x-1.5 transition-all duration-300 leading-snug inline-block tracking-tight">
                       {lang === "hi" ? area.titleHi : area.title}
                     </span>
+                    {/* Animated Saffron Sweep Underline */}
+                    <span className="block h-[2.5px] w-0 group-hover:w-20 bg-gradient-to-r from-[#E86F1D] to-[#F59E0B] rounded-full transition-all duration-400 mt-1.5" />
                   </div>
-                </StaggerItem>
-              );
-            })}
+                </div>
+              </StaggerItem>
+            ))}
           </StaggerContainer>
 
           {/* Concluding Founder Bio Paragraphs from Live Site */}

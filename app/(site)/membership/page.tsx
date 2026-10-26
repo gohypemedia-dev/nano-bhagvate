@@ -262,21 +262,7 @@ export default function MembershipPage() {
                 : "Come, be a part of a family that believes in service, culture, and the empowerment of society. Together, we can create a future where education, health, cow protection, environmental conservation, and spiritual awareness bring holistic well-being and enlightened prosperity for all."}
             </ParagraphReveal>
 
-            {/* Trust Points / Micro Badges */}
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-1 text-[#2B201A]/85 font-semibold">
-              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-white/70 backdrop-blur-xs border border-[#E7D8C8] text-[11px] sm:text-xs">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#2F5A43]" />
-                {lang === "hi" ? "80G आयकर छूट" : "100% Tax Benefit (80G)"}
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-white/70 backdrop-blur-xs border border-[#E7D8C8] text-[11px] sm:text-xs">
-                <Users className="w-3.5 h-3.5 text-[#E86F1D]" />
-                {lang === "hi" ? "25,000+ सक्रिय सदस्य" : "25,000+ Devotee Members"}
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-white/70 backdrop-blur-xs border border-[#E7D8C8] text-[11px] sm:text-xs">
-                <Heart className="w-3.5 h-3.5 text-[#E86F1D]" />
-                {lang === "hi" ? "प्रत्यक्ष जनसेवा व गुरुकुल" : "Gurukul & Gau Seva"}
-              </span>
-            </div>
+
 
             {/* CTA Button */}
             <div className="pt-2 sm:pt-4">
@@ -708,11 +694,15 @@ export default function MembershipPage() {
                     type="tel"
                     inputMode="numeric"
                     required
-                    maxLength={10}
-                    placeholder="9876543210"
+                    maxLength={14}
+                    placeholder="+91"
                     value={formData.phone}
                     onChange={(e) => {
-                      const sanitized = e.target.value.replace(/\D/g, "").slice(0, 10);
+                      let val = e.target.value.replace(/\D/g, "");
+                      if (val.length > 10 && val.startsWith("91")) {
+                        val = val.slice(2);
+                      }
+                      const sanitized = val.slice(0, 10);
                       setFormData({ ...formData, phone: sanitized });
                       if (errors.phone && validateMobile(sanitized, true) === null) {
                         setErrors((prev) => ({ ...prev, phone: undefined }));

@@ -100,12 +100,12 @@ export default function AboutPage() {
             unoptimized
             className="object-cover object-right lg:object-center"
           />
-          {/* Ultra-smooth feathered gradient: seamlessly eases off with zero sharp cut-off line */}
+          {/* Clean feathered mask: completely masks baked-in text on the left while seamlessly revealing Lord Krishna on the right */}
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
               background:
-                "linear-gradient(to right, #F7EDE1 0%, #F7EDE1 30%, rgba(247,237,225,0.98) 42%, rgba(247,237,225,0.92) 50%, rgba(247,237,225,0.82) 56%, rgba(247,237,225,0.64) 62%, rgba(247,237,225,0.42) 68%, rgba(247,237,225,0.22) 74%, rgba(247,237,225,0.08) 80%, rgba(247,237,225,0.02) 85%, rgba(247,237,225,0) 90%)",
+                "linear-gradient(to right, #F7EDE1 0%, #F7EDE1 52%, rgba(247,237,225,0.98) 55%, rgba(247,237,225,0.85) 59%, rgba(247,237,225,0.45) 64%, rgba(247,237,225,0.12) 68%, rgba(247,237,225,0) 72%)",
             }}
           />
         </ParallaxImage>
