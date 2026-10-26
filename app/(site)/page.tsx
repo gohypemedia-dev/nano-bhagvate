@@ -190,20 +190,17 @@ export default function HomePage() {
           <div className="absolute bottom-0 inset-x-0 z-20 w-full px-6 md:px-10 lg:px-14 py-5 md:py-6 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex flex-col md:flex-row md:items-end md:justify-between gap-4 pointer-events-none">
             {/* Left: Badge + Heading + Purpose summary */}
             <div className="flex flex-col items-start gap-1.5 text-left pointer-events-auto max-w-xl">
-              <TextReveal
-                as="h2"
-                className="font-editorial text-xl md:text-2xl lg:text-3xl font-extrabold text-white tracking-wide leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
-                text={
-                  lang === "hi"
-                    ? "धर्म में निहित • सेवा के प्रति समर्पित"
-                    : "Rooted in Dharma • Dedicated to Seva"
-                }
-              />
-              {lang === "hi" && (
-                <ParagraphReveal className="text-xs lg:text-[13px] text-white/90 font-medium leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
-                  <p>भगवद गीता के सार्वभौमिक सिद्धांतों पर आधारित आध्यात्मिक ज्ञान, समाज सेवा एवं जनकल्याण को समर्पित।</p>
-                </ParagraphReveal>
-              )}
+              <h2 className="font-editorial text-xl md:text-2xl lg:text-3xl font-extrabold text-white tracking-wide leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+                {lang === "hi" ? (
+                  <>
+                    धर्म में निहित • <span className="text-[#E86F1D]">सेवा के प्रति समर्पित</span>
+                  </>
+                ) : (
+                  <>
+                    Rooted in Dharma • <span className="text-[#E86F1D]">Dedicated to Seva</span>
+                  </>
+                )}
+              </h2>
             </div>
 
             {/* Right: CTA Buttons */}
@@ -243,11 +240,17 @@ export default function HomePage() {
 
           {/* Mobile Overlay Action Bar */}
           <div className="absolute bottom-0 inset-x-0 z-20 w-full px-4 pt-16 pb-6 bg-gradient-to-t from-black/95 via-black/70 to-transparent flex flex-col items-center gap-2 text-center pointer-events-auto">
-            <TextReveal
-              as="p"
-              className="font-editorial text-sm sm:text-base font-extrabold text-white tracking-wide leading-tight drop-shadow-md"
-              text={lang === "hi" ? "धर्म में निहित • सेवा के प्रति समर्पित" : "Rooted in Dharma • Dedicated to Seva"}
-            />
+            <p className="font-editorial text-sm sm:text-base font-extrabold text-white tracking-wide leading-tight drop-shadow-md">
+              {lang === "hi" ? (
+                <>
+                  धर्म में निहित • <span className="text-[#E86F1D]">सेवा के प्रति समर्पित</span>
+                </>
+              ) : (
+                <>
+                  Rooted in Dharma • <span className="text-[#E86F1D]">Dedicated to Seva</span>
+                </>
+              )}
+            </p>
             <div className="flex items-center justify-center gap-2.5 w-full max-w-xs pt-1">
               <Link
                 href="/initiatives"
