@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import { ChevronLeft, ChevronRight, Star, CheckCircle2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star, Quote, CheckCircle2 } from "lucide-react";
+import { SectionReveal, TextReveal, ParagraphReveal } from "@/components/animation";
 
 interface Testimonial {
   name: string;
@@ -194,23 +195,31 @@ export default function TestimonialsSection({ lang = "en" }: TestimonialsSection
   }, [startAutoplay]);
 
   return (
-    <section
+    <SectionReveal
       className="py-12 sm:py-16 bg-[#FFF9F2] border-t border-[#E7D8C8]/60 relative select-none"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      aria-label="Devotee Testimonials"
     >
-      <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Heading */}
+      <div
+        className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        {/* Section Heading matching site typography and warm badge (Fixes PM Finding 3) */}
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10 space-y-2">
-          <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
-            {lang === "hi" ? "हमारे भक्त क्या कहते हैं" : "Voices of Faith & Devotion"}
-          </h2>
-          <p className="text-sm text-[#7A6B60] max-w-lg mx-auto">
-            {lang === "hi"
-              ? "कथा, गुरुकुल एवं सेवा प्रकल्पों से जुड़े श्रद्धालुओं के आत्मीय विचार एवं अनुभव।"
-              : "Heartfelt reflections and personal experiences shared by devotees and seva contributors."}
-          </p>
+          <span className="inline-block px-3.5 py-1 rounded-full bg-[#E86F1D]/10 text-[#E86F1D] text-[11px] font-bold uppercase tracking-widest border border-[#E86F1D]/20">
+            {lang === "hi" ? "भक्तों के पावन अनुभव" : "Devotee Experiences"}
+          </span>
+          <TextReveal
+            as="h2"
+            className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]"
+            text={lang === "hi" ? "हमारे भक्त क्या कहते हैं" : "Voices of Faith & Devotion"}
+          />
+          <ParagraphReveal className="text-sm text-[#7A6B60] max-w-lg mx-auto">
+            <p>
+              {lang === "hi"
+                ? "कथा, गुरुकुल एवं सेवा प्रकल्पों से जुड़े श्रद्धालुओं के आत्मीय विचार एवं अनुभव।"
+                : "Heartfelt reflections and personal experiences shared by devotees and seva contributors."}
+            </p>
+          </ParagraphReveal>
         </div>
 
         {/* Carousel Container with Side Controls for Desktop (Positioned cleanly outside cards) */}
@@ -235,8 +244,11 @@ export default function TestimonialsSection({ lang = "en" }: TestimonialsSection
                   {/* Testimonial Card with authentic styling */}
                   <div className="h-full bg-white rounded-2xl border border-[#E7D8C8] p-5 sm:p-5.5 shadow-[0_4px_16px_-2px_rgba(43,32,26,0.06)] hover:border-[#E86F1D] hover:shadow-warm-md hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
                     <div className="space-y-3">
-                      {/* Top Row: Role Badge */}
-                      <div className="flex items-center justify-end">
+                      {/* Top Row: Quote Icon + Role Badge */}
+                      <div className="flex items-center justify-between">
+                        <div className="w-8 h-8 rounded-xl bg-[#E86F1D]/10 text-[#E86F1D] flex items-center justify-center">
+                          <Quote className="w-4 h-4 fill-current rotate-180" />
+                        </div>
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#2F5A43] bg-[#E8F5E9] border border-[#C8E6C9] px-2.5 py-0.5 rounded-full truncate max-w-[170px]">
                           <CheckCircle2 className="w-3 h-3 text-[#2F5A43] shrink-0" />
                           <span className="truncate">{lang === "hi" ? item.roleHi : item.role}</span>
@@ -326,6 +338,8 @@ export default function TestimonialsSection({ lang = "en" }: TestimonialsSection
           </button>
         </div>
       </div>
-    </section>
+    </SectionReveal>
   );
 }
+
+

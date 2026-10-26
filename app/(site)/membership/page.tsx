@@ -7,6 +7,15 @@ import { useApp } from "@/context/AppContext";
 import MemberCarousel from "@/components/MemberCarousel";
 import { MEMBERSHIP_PLANS, findPlan, formatINR } from "@/lib/donation-config";
 import {
+  TextReveal,
+  ParagraphReveal,
+  SectionReveal,
+  StaggerContainer,
+  StaggerItem,
+  ParallaxSection,
+  ParallaxImage,
+} from "@/components/animation";
+import {
   sanitizeEmail,
   sanitizeMobile,
   sanitizeName,
@@ -178,7 +187,7 @@ export default function MembershipPage() {
       {/* HERO SECTION - RECREATED FROM REFERENCE (PANORAMIC ON DESKTOP, 100VH ON MOBILE & LAPTOP) */}
       <section className="relative overflow-hidden bg-[#1F150E] md:bg-[#F6EDE2] border-b border-[#E7D8C8] min-h-[calc(100vh-68px)] sm:min-h-[calc(100vh-74px)] min-[1000px]:min-h-[calc(100vh-76px)] xl:min-h-[calc(100vh-82px)] md:flex md:items-center">
         {/* Desktop Panoramic Background Banner (hidden on mobile) */}
-        <div className="hidden md:block absolute inset-0 z-0">
+        <ParallaxImage offset={45} className="hidden md:block absolute inset-0 z-0">
           <Image
             src="/images/membership-hero-banner.png"
             alt="Together for a Better Tomorrow"
@@ -189,24 +198,26 @@ export default function MembershipPage() {
           />
           {/* Clean Gradient on Desktop: leaves joined hands & temple completely crisp and clear on right */}
           <div className="absolute inset-0 bg-gradient-to-r from-[#F6EDE2] via-[#F6EDE2] via-[35%] to-transparent to-[48%] pointer-events-none" />
-        </div>
+        </ParallaxImage>
 
         {/* MOBILE HERO (100VH Full Viewport Height with Bottom Overlay) */}
         <div className="md:hidden relative z-1 w-full h-[calc(100vh-68px)] min-h-[540px] flex items-center justify-center overflow-hidden">
-          <Image
-            src="/images/membership-mobile-hero.png"
-            alt="Together for a Better Tomorrow - Namo Bhagwate Vasudevaya"
-            fill
-            priority
-            unoptimized
-            className="w-full h-full object-cover object-top block select-none pointer-events-none"
-          />
+          <ParallaxImage offset={30} className="absolute inset-0 w-full h-full">
+            <Image
+              src="/images/membership-mobile-hero.png"
+              alt="Together for a Better Tomorrow - Namo Bhagwate Vasudevaya"
+              fill
+              priority
+              unoptimized
+              className="w-full h-full object-cover object-top block select-none pointer-events-none"
+            />
+          </ParallaxImage>
 
           {/* Mobile Overlay Action Bar (Clean gradient at bottom of mobile banner) */}
           <div className="absolute bottom-0 inset-x-0 z-20 w-full px-4 pt-16 pb-6 bg-gradient-to-t from-black/95 via-black/70 to-transparent flex flex-col items-center gap-2 text-center pointer-events-auto">
-            <h2 className="font-editorial text-sm sm:text-base font-extrabold text-white tracking-wide leading-tight drop-shadow-md">
+            <TextReveal as="h2" className="font-editorial text-sm sm:text-base font-extrabold text-white tracking-wide leading-tight drop-shadow-md">
               {lang === "hi" ? "एक बेहतर कल के लिए साथ" : "Together for a Better Tomorrow"}
-            </h2>
+            </TextReveal>
             <div className="flex items-center justify-center gap-2.5 w-full max-w-xs pt-1">
               <a
                 href="#membership-plans"
@@ -232,7 +243,7 @@ export default function MembershipPage() {
         <div className="hidden md:block relative z-10 page-container py-8 sm:py-12 md:py-24 w-full">
           <div className="max-w-xl lg:max-w-2xl xl:max-w-3xl space-y-4 sm:space-y-5">
             {/* Main Title */}
-            <h1 className="font-editorial text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#2B201A] leading-[1.18] tracking-tight">
+            <TextReveal as="h1" className="font-editorial text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#2B201A] leading-[1.18] tracking-tight">
               {lang === "hi" ? (
                 <>
                   एक बेहतर कल के लिए <span className="text-[#E86F1D]">साथ</span>
@@ -242,14 +253,14 @@ export default function MembershipPage() {
                   Together for a <span className="text-[#E86F1D]">Better Tomorrow</span>
                 </>
               )}
-            </h1>
+            </TextReveal>
 
             {/* Description matching exact reference text */}
-            <p className="text-sm sm:text-base md:text-[15px] text-[#4A3B32] leading-relaxed font-sans font-medium">
+            <ParagraphReveal className="text-sm sm:text-base md:text-[15px] text-[#4A3B32] leading-relaxed font-sans font-medium">
               {lang === "hi"
                 ? "आइए, एक ऐसे परिवार का हिस्सा बनें जो सेवा, संस्कृति और समाज के सशक्तिकरण में विश्वास रखता है। साथ मिलकर हम एक ऐसे भविष्य का निर्माण कर सकते हैं जहाँ शिक्षा, स्वास्थ्य, गौ सेवा, पर्यावरण संरक्षण और आध्यात्मिक चेतना से सभी का समग्र कल्याण और उत्थान हो सके।"
                 : "Come, be a part of a family that believes in service, culture, and the empowerment of society. Together, we can create a future where education, health, cow protection, environmental conservation, and spiritual awareness bring holistic well-being and enlightened prosperity for all."}
-            </p>
+            </ParagraphReveal>
 
             {/* Trust Points / Micro Badges */}
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-1 text-[#2B201A]/85 font-semibold">
@@ -281,74 +292,75 @@ export default function MembershipPage() {
       </section>
 
       {/* MEMBERSHIP TIERS (4 PRICING CARDS - RESPONSIVE 4-col -> 2-col -> 1-col) */}
-      <section className="section-py" id="membership-plans">
+      <SectionReveal className="section-py" id="membership-plans">
         <div className="page-container">
           <div className="text-center max-w-2xl mx-auto section-header space-y-2">
             <p className="text-xs font-bold uppercase tracking-widest text-[#B8893E]">
               {lang === "hi" ? "सदस्यता श्रेणी चुनें" : "CHOOSE YOUR MEMBERSHIP TIER"}
             </p>
-            <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
+            <TextReveal as="h2" className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
               {lang === "hi" ? "हमारे सेवा परिवार से जुड़ें" : "Join Our Seva Circle"}
-            </h2>
+            </TextReveal>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
             {tiers.map((tier) => (
-              <div
-                key={tier.name}
-                className={`rounded-[18px] p-6 flex flex-col justify-between transition-all duration-300 ${tier.cardStyle}`}
-              >
-                {tier.badgeText && (
-                  <div className={`absolute -top-3.5 left-1/2 -translate-x-1/2 px-3.5 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full z-10 whitespace-nowrap ${tier.badgeStyle}`}>
-                    {lang === "hi" && tier.badgeTextHi ? tier.badgeTextHi : tier.badgeText}
-                  </div>
-                )}
+              <StaggerItem key={tier.name} className="h-full">
+                <div
+                  className={`rounded-[18px] p-6 flex flex-col justify-between transition-all duration-300 h-full ${tier.cardStyle}`}
+                >
+                  {tier.badgeText && (
+                    <div className={`absolute -top-3.5 left-1/2 -translate-x-1/2 px-3.5 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full z-10 whitespace-nowrap ${tier.badgeStyle}`}>
+                      {lang === "hi" && tier.badgeTextHi ? tier.badgeTextHi : tier.badgeText}
+                    </div>
+                  )}
 
-                <div className="card-body space-y-4">
-                  <div>
-                    <h3 className="font-editorial text-2xl font-bold text-[#2B201A]">
-                      {lang === "hi" ? tier.nameHi : tier.name}
-                    </h3>
-                    <p className="text-xs text-[#2B201A]/75 mt-1 leading-relaxed">
-                      {lang === "hi" && tier.descHi ? tier.descHi : tier.desc}
-                    </p>
+                  <div className="card-body space-y-4">
+                    <div>
+                      <h3 className="font-editorial text-2xl font-bold text-[#2B201A]">
+                        {lang === "hi" ? tier.nameHi : tier.name}
+                      </h3>
+                      <p className="text-xs text-[#2B201A]/75 mt-1 leading-relaxed">
+                        {lang === "hi" && tier.descHi ? tier.descHi : tier.desc}
+                      </p>
+                    </div>
+
+                    <div className="py-3 border-y border-[#2B201A]/10">
+                      <span className={`font-sans text-3xl font-bold tracking-tight ${tier.priceColor}`}>
+                        ₹{tier.price.toLocaleString("en-IN")}
+                      </span>
+                      <span className="text-xs text-[#2B201A]/60 ml-1.5 font-semibold">
+                        INR / {lang === "hi" && tier.periodHi ? tier.periodHi : tier.period}
+                      </span>
+                    </div>
+
+                    <ul className="space-y-2.5 text-xs text-[#2B201A]/85 font-sans pt-1">
+                      {(lang === "hi" && tier.featuresHi ? tier.featuresHi : tier.features).map((feat, idx) => (
+                        <li key={idx} className="flex items-start gap-2">
+                          <Check className={`w-4 h-4 shrink-0 mt-0.5 ${tier.checkColor}`} />
+                          <span>{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
 
-                  <div className="py-3 border-y border-[#2B201A]/10">
-                    <span className={`font-sans text-3xl font-bold tracking-tight ${tier.priceColor}`}>
-                      ₹{tier.price.toLocaleString("en-IN")}
-                    </span>
-                    <span className="text-xs text-[#2B201A]/60 ml-1.5 font-semibold">
-                      INR / {lang === "hi" && tier.periodHi ? tier.periodHi : tier.period}
-                    </span>
+                  <div className="card-action">
+                    <button
+                      onClick={() => openDonateModal(lang === "hi" ? tier.nameHi : tier.name, tier.price, true)}
+                      className={tier.buttonStyle}
+                    >
+                      {lang === "hi" ? `सदस्यता लें — ₹${tier.price.toLocaleString("en-IN")}` : `Join Now — ₹${tier.price.toLocaleString("en-IN")}`}
+                    </button>
                   </div>
-
-                  <ul className="space-y-2.5 text-xs text-[#2B201A]/85 font-sans pt-1">
-                    {(lang === "hi" && tier.featuresHi ? tier.featuresHi : tier.features).map((feat, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <Check className={`w-4 h-4 shrink-0 mt-0.5 ${tier.checkColor}`} />
-                        <span>{feat}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
-
-                <div className="card-action">
-                  <button
-                    onClick={() => openDonateModal(lang === "hi" ? tier.nameHi : tier.name, tier.price, true)}
-                    className={tier.buttonStyle}
-                  >
-                    {lang === "hi" ? `सदस्यता लें — ₹${tier.price.toLocaleString("en-IN")}` : `Join Now — ₹${tier.price.toLocaleString("en-IN")}`}
-                  </button>
-                </div>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
-      </section>
+      </SectionReveal>
 
       {/* WHY BECOME A MEMBER (HUMAN-CRAFTED AUTHENTIC DEVOTIONAL DESIGN) */}
-      <section className="section-py bg-gradient-to-b from-[#FAF3EA] via-[#F7EDE0] to-[#FAF3EA] border-t border-[#E7D8C8] relative">
+      <SectionReveal className="section-py bg-gradient-to-b from-[#FAF3EA] via-[#F7EDE0] to-[#FAF3EA] border-t border-[#E7D8C8] relative">
         {/* Subtle decorative background glow */}
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_50%_0%,rgba(212,163,89,0.08),transparent_60%)]" />
 
@@ -359,13 +371,13 @@ export default function MembershipPage() {
               <span className="w-1.5 h-1.5 rounded-full bg-[#E86F1D]" />
               {lang === "hi" ? "आध्यात्मिक संकल्प एवं सेवा" : "SACRED CALLING & SERVICE"}
             </div>
-            <h2 className="font-editorial text-3xl sm:text-4xl lg:text-[40px] font-bold text-[#2B201A] tracking-tight">
+            <TextReveal as="h2" className="font-editorial text-3xl sm:text-4xl lg:text-[40px] font-bold text-[#2B201A] tracking-tight">
               {lang === "hi" ? "ट्रस्ट की सदस्यता क्यों ग्रहण करें?" : "Why Join Our Seva Parivar?"}
-            </h2>
+            </TextReveal>
           </div>
 
           {/* 4 3D FLIP CARDS (MOBILE OPTIMIZED: TAP ON MOBILE / HOVER ON DESKTOP, BALANCED BACK FACE) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 items-stretch">
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 items-stretch">
             {[
               {
                 num: "01",
@@ -450,80 +462,81 @@ export default function MembershipPage() {
             ].map((card, idx) => {
               const isFlipped = activeFlipCard === idx;
               return (
-                <div
-                  key={idx}
-                  onClick={() => setActiveFlipCard(isFlipped ? null : idx)}
-                  className="perspective-1000 w-full max-w-[340px] sm:max-w-none mx-auto h-[310px] sm:h-[325px] group cursor-pointer select-none"
-                >
-                  <div className={`relative w-full h-full flip-card-inner group-hover-flip ${isFlipped ? "is-flipped" : ""}`}>
-                    {/* FRONT FACE - IMAGE & TITLE */}
-                    <div className="absolute inset-0 w-full h-full backface-hidden rounded-2xl overflow-hidden border border-[#E7D8C8] shadow-warm-xs group-hover:shadow-warm-md flex flex-col justify-end p-4 sm:p-5">
-                      <Image
-                        src={card.image}
-                        alt={card.title}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#1F1610]/95 via-[#1F1610]/35 to-transparent z-10" />
+                <StaggerItem key={idx}>
+                  <div
+                    onClick={() => setActiveFlipCard(isFlipped ? null : idx)}
+                    className="perspective-1000 w-full max-w-[340px] sm:max-w-none mx-auto h-[310px] sm:h-[325px] group cursor-pointer select-none"
+                  >
+                    <div className={`relative w-full h-full flip-card-inner group-hover-flip ${isFlipped ? "is-flipped" : ""}`}>
+                      {/* FRONT FACE - IMAGE & TITLE */}
+                      <div className="absolute inset-0 w-full h-full backface-hidden rounded-2xl overflow-hidden border border-[#E7D8C8] shadow-warm-xs group-hover:shadow-warm-md flex flex-col justify-end p-4 sm:p-5">
+                        <Image
+                          src={card.image}
+                          alt={card.title}
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                          className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#1F1610]/95 via-[#1F1610]/35 to-transparent z-10" />
 
-                      {/* Bottom Info on Front */}
-                      <div className="relative z-20 text-white">
-                        <h3 className="font-editorial text-xl sm:text-2xl font-bold leading-snug drop-shadow-sm">
+                        {/* Bottom Info on Front */}
+                        <div className="relative z-20 text-white">
+                          <h3 className="font-editorial text-xl sm:text-2xl font-bold leading-snug drop-shadow-sm">
+                            {card.title}
+                          </h3>
+                          <div className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-bold text-[#E8A246] uppercase tracking-wider">
+                            <span>{lang === "hi" ? "टैप करें" : "Tap / Hover to explore"}</span>
+                            <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* BACK FACE - TIGHT BALANCED DESIGN (NO MIDDLE GAP) */}
+                      <div className={`absolute inset-0 w-full h-full backface-hidden rotate-y-180 rounded-2xl p-4 sm:p-5 bg-gradient-to-b from-[#FFFDF9] via-[#FFF8EE] to-[#FAF2E6] border-2 ${card.borderColor} shadow-warm-lg flex flex-col justify-start overflow-hidden`}>
+                        <div className={`absolute top-0 left-0 right-0 h-1.5 ${card.topLine}`} />
+
+                        {/* Top Header */}
+                        <div className="flex items-center justify-between mb-2">
+                          <span className={`text-[10px] sm:text-[11px] font-bold uppercase tracking-widest ${card.badgeColor}`}>
+                            {card.num} • {card.category}
+                          </span>
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${card.iconBg}`}>
+                            <card.icon className="w-4 h-4" />
+                          </div>
+                        </div>
+
+                        {/* Title & Description */}
+                        <h3 className="font-editorial text-lg sm:text-xl font-bold text-[#2B201A] leading-snug">
                           {card.title}
                         </h3>
-                        <div className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-bold text-[#E8A246] uppercase tracking-wider">
-                          <span>{lang === "hi" ? "टैप करें" : "Tap / Hover to explore"}</span>
-                          <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                        <p className="text-xs text-[#2B201A]/80 mt-1.5 leading-relaxed">
+                          {card.desc}
+                        </p>
+
+                        {/* Bullet Points immediately under description (zero middle gap) */}
+                        <div className="mt-3 pt-2.5 border-t border-[#E7D8C8] space-y-1.5 sm:space-y-2">
+                          {card.points.map((pt, pIdx) => (
+                            <div key={pIdx} className="flex items-center gap-2 text-xs text-[#2B201A]/85">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-[#2F5A43] shrink-0" />
+                              <span className="leading-tight">{pt}</span>
+                            </div>
+                          ))}
                         </div>
-                      </div>
-                    </div>
 
-                    {/* BACK FACE - TIGHT BALANCED DESIGN (NO MIDDLE GAP) */}
-                    <div className={`absolute inset-0 w-full h-full backface-hidden rotate-y-180 rounded-2xl p-4 sm:p-5 bg-gradient-to-b from-[#FFFDF9] via-[#FFF8EE] to-[#FAF2E6] border-2 ${card.borderColor} shadow-warm-lg flex flex-col justify-start overflow-hidden`}>
-                      <div className={`absolute top-0 left-0 right-0 h-1.5 ${card.topLine}`} />
-
-                      {/* Top Header */}
-                      <div className="flex items-center justify-between mb-2">
-                        <span className={`text-[10px] sm:text-[11px] font-bold uppercase tracking-widest ${card.badgeColor}`}>
-                          {card.num} • {card.category}
-                        </span>
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${card.iconBg}`}>
-                          <card.icon className="w-4 h-4" />
+                        {/* Footer Touch Hint */}
+                        <div className="mt-auto pt-1 flex items-center justify-end text-[10px] font-bold text-[#B8893E] uppercase tracking-wider">
+                          <span className="inline-flex items-center gap-1 opacity-80">
+                            <span>{lang === "hi" ? "वापस जाएँ" : "Tap to flip back"}</span>
+                            <ArrowRight className="w-3 h-3 rotate-180" />
+                          </span>
                         </div>
-                      </div>
-
-                      {/* Title & Description */}
-                      <h3 className="font-editorial text-lg sm:text-xl font-bold text-[#2B201A] leading-snug">
-                        {card.title}
-                      </h3>
-                      <p className="text-xs text-[#2B201A]/80 mt-1.5 leading-relaxed">
-                        {card.desc}
-                      </p>
-
-                      {/* Bullet Points immediately under description (zero middle gap) */}
-                      <div className="mt-3 pt-2.5 border-t border-[#E7D8C8] space-y-1.5 sm:space-y-2">
-                        {card.points.map((pt, pIdx) => (
-                          <div key={pIdx} className="flex items-center gap-2 text-xs text-[#2B201A]/85">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-[#2F5A43] shrink-0" />
-                            <span className="leading-tight">{pt}</span>
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Footer Touch Hint */}
-                      <div className="mt-auto pt-1 flex items-center justify-end text-[10px] font-bold text-[#B8893E] uppercase tracking-wider">
-                        <span className="inline-flex items-center gap-1 opacity-80">
-                          <span>{lang === "hi" ? "वापस जाएँ" : "Tap to flip back"}</span>
-                          <ArrowRight className="w-3 h-3 rotate-180" />
-                        </span>
                       </div>
                     </div>
                   </div>
-                </div>
+                </StaggerItem>
               );
             })}
-          </div>
+          </StaggerContainer>
 
           {/* Bottom Trust & Devotional Seal Banner */}
           <div className="mt-10 sm:mt-12 rounded-2xl bg-[#FFF9F2] border border-[#E7D8C8] p-5 sm:p-6 shadow-warm-xs">
@@ -561,18 +574,18 @@ export default function MembershipPage() {
             </div>
           </div>
         </div>
-      </section>
+      </SectionReveal>
 
       {/* DEVOTEE COMMUNITY / OUR ACTIVE MEMBERS TICKER (END TO END AUTO SCROLL) */}
-      <section className="py-12 sm:py-16 overflow-hidden">
+      <SectionReveal className="py-12 sm:py-16 overflow-hidden">
         <div className="page-container mb-6 sm:mb-8">
           <div className="text-center max-w-2xl mx-auto section-header space-y-2">
             <p className="text-xs font-bold uppercase tracking-widest text-[#B8893E]">
               {lang === "hi" ? "भक्त समुदाय" : "DEVOTEE COMMUNITY"}
             </p>
-            <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
+            <TextReveal as="h2" className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
               {lang === "hi" ? "हमारे सक्रिय सदस्य" : "Our Active Members"}
-            </h2>
+            </TextReveal>
           </div>
         </div>
 
@@ -580,7 +593,7 @@ export default function MembershipPage() {
         <div className="w-full">
           <MemberCarousel />
         </div>
-      </section>
+      </SectionReveal>
 
       {/* MEMBERSHIP REGISTRATION FORM */}
       <section className="section-py bg-[#FBF2E7]/60 border-t border-[#E7D8C8]">

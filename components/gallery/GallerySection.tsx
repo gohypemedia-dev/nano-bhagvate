@@ -11,6 +11,12 @@ import { useApp } from "@/context/AppContext";
 import { galleryData, GalleryItem } from "@/data/gallery";
 import GalleryModal from "./GalleryModal";
 import GalleryVideoCard from "./GalleryVideoCard";
+import {
+  SectionReveal,
+  TextReveal,
+  StaggerContainer,
+  StaggerItem,
+} from "@/components/animation";
 
 export default function GallerySection() {
   const { lang } = useApp();
@@ -54,16 +60,12 @@ export default function GallerySection() {
   };
 
   return (
-    <section
+    <SectionReveal
       id="gallery"
       className="pt-10 sm:pt-14 pb-6 sm:pb-8 bg-[#FFF9F2] border-t border-[#E7D8C8] scroll-mt-20 relative overflow-hidden"
-      aria-labelledby="gallery-heading"
     >
       {/* End-to-end full width container */}
       <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8">
-        {/* ==================================================================== */}
-        {/* ORNAMENTAL HEADER WITH ARROWS: < ─────── GALLERY ─────── >          */}
-        {/* ==================================================================== */}
         {/* ==================================================================== */}
         {/* ORNAMENTAL HEADER: ─────── ❖ GALLERY ❖ ─────── (No false arrowheads) */}
         {/* ==================================================================== */}
@@ -75,13 +77,12 @@ export default function GallerySection() {
               <span className="text-[#E86F1D] text-xs select-none">❖</span>
             </div>
 
-            {/* Centered Gallery Heading */}
-            <h2
-              id="gallery-heading"
+            {/* Centered Gallery Heading with TextReveal */}
+            <TextReveal
+              as="h2"
               className="font-editorial text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#2B201A] tracking-wider whitespace-nowrap px-2"
-            >
-              {lang === "hi" ? "गैलरी • Gallery" : "Gallery"}
-            </h2>
+              text={lang === "hi" ? "गैलरी • Gallery" : "Gallery"}
+            />
 
             {/* Right Decorative Filigree Line */}
             <div className="flex-1 flex items-center justify-start gap-1.5">
@@ -94,7 +95,7 @@ export default function GallerySection() {
         {/* ==================================================================== */}
         {/* EXACTLY 4 DIRECT MEDIA TILES IN 1 ROW (END-TO-END WIDE GRID)         */}
         {/* ==================================================================== */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-4 items-stretch">
+        <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-4 items-stretch">
           {featuredItems.map((item) => {
             const title = lang === "hi" && item.titleHi ? item.titleHi : item.title;
             const event = lang === "hi" && item.eventHi ? item.eventHi : item.event;
@@ -102,64 +103,67 @@ export default function GallerySection() {
 
             if (isVideo) {
               return (
-                <GalleryVideoCard
-                  key={item.id}
-                  item={item}
-                  title={title}
-                  event={event}
-                  lang={lang}
-                  onOpen={(e) => handleOpenPhoto(item, e)}
-                />
+                <StaggerItem key={item.id} className="h-full">
+                  <GalleryVideoCard
+                    item={item}
+                    title={title}
+                    event={event}
+                    lang={lang}
+                    onOpen={(e) => handleOpenPhoto(item, e)}
+                  />
+                </StaggerItem>
               );
             }
 
             return (
-              <div
-                key={item.id}
-                className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-[#181310] border border-[#E7D8C8]/70 shadow-warm-xs hover:shadow-warm-md hover:border-[#E86F1D] transition-all duration-300 group"
-              >
-                {/* DIRECT PHOTO TILE (CLICK TO VIEW FULLSCREEN IN LIGHTBOX) */}
-                <button
-                  type="button"
-                  onClick={(e) => handleOpenPhoto(item, e)}
-                  aria-label={`${lang === "hi" ? "तस्वीर देखें" : "View photo"}: ${title}`}
-                  className="relative w-full h-full block cursor-pointer group/photo focus-visible:ring-2 focus-visible:ring-[#E86F1D] focus-visible:outline-none"
+              <StaggerItem key={item.id} className="h-full">
+                <div
+                  className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-[#181310] border border-[#E7D8C8]/70 shadow-warm-xs hover:shadow-warm-md hover:border-[#E86F1D] transition-all duration-300 group h-full"
                 >
-                  <Image
-                    src={item.thumbnail}
-                    alt={item.alt}
-                    fill
-                    loading="eager"
-                    unoptimized={item.thumbnail.startsWith("http")}
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    className="object-cover transition-transform duration-500 ease-out group-hover/photo:scale-105"
-                    style={{ objectPosition: item.focalPoint || "center" }}
-                  />
+                  {/* DIRECT PHOTO TILE (CLICK TO VIEW FULLSCREEN IN LIGHTBOX) */}
+                  <button
+                    type="button"
+                    onClick={(e) => handleOpenPhoto(item, e)}
+                    aria-label={`${lang === "hi" ? "तस्वीर देखें" : "View photo"}: ${title}`}
+                    className="relative w-full h-full block cursor-pointer group/photo focus-visible:ring-2 focus-visible:ring-[#E86F1D] focus-visible:outline-none"
+                  >
+                    <Image
+                      src={item.thumbnail}
+                      alt={item.alt}
+                      fill
+                      loading="eager"
+                      unoptimized={item.thumbnail.startsWith("http")}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      className="object-cover transition-transform duration-500 ease-out group-hover/photo:scale-105"
+                      style={{ objectPosition: item.focalPoint || "center" }}
+                    />
 
-                  {/* Dark Gradient Overlay for high-contrast legible captions on all viewports */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none transition-opacity duration-300" />
+                    {/* Dark Gradient Overlay for high-contrast legible captions on all viewports */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none transition-opacity duration-300" />
 
-                  {/* Expand Badge on Hover */}
-                  <div className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/60 backdrop-blur-md text-white opacity-0 group-hover/photo:opacity-100 transition-opacity duration-200 shadow-md">
-                    <Maximize2 className="w-3.5 h-3.5" />
-                  </div>
+                    {/* Expand Badge on Hover */}
+                    <div className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/60 backdrop-blur-md text-white opacity-0 group-hover/photo:opacity-100 transition-opacity duration-200 shadow-md">
+                      <Maximize2 className="w-3.5 h-3.5" />
+                    </div>
 
-                  {/* Title Caption - ALWAYS VISIBLE (Fixes PM finding 2 where captions didn't appear) */}
-                  <div className="absolute bottom-0 inset-x-0 p-3.5 z-10 text-left text-white pointer-events-none space-y-1">
-                    {event && (
-                      <p className="text-[10px] font-bold text-[#E86F1D] uppercase tracking-wider">
-                        {event}
-                      </p>
-                    )}
-                    <h4 className="font-editorial text-xs sm:text-sm font-bold text-white line-clamp-2 drop-shadow-sm leading-snug">
-                      {title}
-                    </h4>
-                  </div>
-                </button>
-              </div>
+                    {/* Title Caption - ALWAYS VISIBLE (Fixes PM finding 2 where captions didn't appear) */}
+                    <div className="absolute bottom-0 inset-x-0 p-3.5 z-10 text-left text-white pointer-events-none space-y-1">
+                      {event && (
+                        <p className="text-[10px] font-bold text-[#E86F1D] uppercase tracking-wider">
+                          {event}
+                        </p>
+                      )}
+                      <h4 className="font-editorial text-xs sm:text-sm font-bold text-white line-clamp-2 drop-shadow-sm leading-snug">
+                        {title}
+                      </h4>
+                    </div>
+                  </button>
+                </div>
+              </StaggerItem>
             );
           })}
-        </div>
+        </StaggerContainer>
+
 
         {/* ==================================================================== */}
         {/* VIEW FULL GALLERY BUTTON: [ View Full Gallery → ]                     */}
@@ -186,6 +190,7 @@ export default function GallerySection() {
         lang={lang}
         lastFocusedElement={lastTriggerRef.current}
       />
-    </section>
+    </SectionReveal>
   );
 }
+

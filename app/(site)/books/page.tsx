@@ -4,6 +4,14 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { ShoppingBag, Plus, Minus, CheckCircle2, ShieldCheck, Truck, Star } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+import {
+  TextReveal,
+  ParagraphReveal,
+  SectionReveal,
+  StaggerContainer,
+  StaggerItem,
+  ParallaxImage,
+} from "@/components/animation";
 
 export default function BooksPage() {
   const { lang, addToCart, setIsCartOpen } = useApp();
@@ -101,9 +109,9 @@ export default function BooksPage() {
                   <Star className="w-4 h-4 fill-current text-[#B8893E]" />
                   <span>{lang === "hi" ? "कृषि ज्ञान श्रृंखला" : "AGRICULTURAL KNOWLEDGE SERIES"}</span>
                 </div>
-                <h1 className="font-editorial text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2B201A] leading-tight">
+                <TextReveal as="h1" className="font-editorial text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2B201A] leading-tight">
                   {lang === "hi" ? product.titleHi : product.title}
-                </h1>
+                </TextReveal>
                 <p className="text-sm text-[#2B201A]/70 font-medium">
                   {lang === "hi"
                     ? "नमो भगवते वासुदेवाय ट्रस्ट द्वारा प्रकाशित • भाषा: हिंदी (देवनागरी)"
@@ -122,11 +130,11 @@ export default function BooksPage() {
                 </span>
               </div>
 
-              <p className="text-sm sm:text-base text-[#2B201A]/85 leading-relaxed font-sans">
+              <ParagraphReveal className="text-sm sm:text-base text-[#2B201A]/85 leading-relaxed font-sans">
                 {lang === "hi"
                   ? "उत्तर भारत के गन्ना किसानों के लिए एक व्यावहारिक मार्गदर्शिका, जो उच्च पैदावार, लागत में बचत और टिकाऊ खेती को बढ़ावा देने के लिए वैज्ञानिक मृदा तैयारी व तकनीकी मार्गदर्शन को एक सरल रूप में प्रस्तुत करती है।"
                   : "A practical handbook for sugarcane farmers in North India, combining field-oriented guidance, scientific soil preparation insights, and accessible information to support higher yield, reduce avoidable input costs, and promote sustainable agriculture."}
-              </p>
+              </ParagraphReveal>
 
               {/* Quantity Selector */}
               <div className="space-y-2">
@@ -193,18 +201,18 @@ export default function BooksPage() {
       {/* PRODUCT HIGHLIGHTS GRID */}
       <section className="section-py">
         <div className="page-container">
-          <div className="text-center max-w-2xl mx-auto section-header space-y-2">
+          <SectionReveal className="text-center max-w-2xl mx-auto section-header space-y-2">
             <p className="text-xs font-bold uppercase tracking-widest text-[#E86F1D]">
               {lang === "hi" ? "यह पुस्तक क्यों पढ़ें?" : "WHY READ THIS GUIDE?"}
             </p>
-            <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
+            <TextReveal as="h2" className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
               {lang === "hi" ? "पुस्तक की मुख्य विशेषताएँ" : "Product Highlights & Value"}
-            </h2>
-          </div>
+            </TextReveal>
+          </SectionReveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
             {highlights.map((h, idx) => (
-              <div key={idx} className="card-warm space-y-3">
+              <StaggerItem key={idx} className="card-warm space-y-3">
                 <div className="flex items-center gap-3">
                   <CheckCircle2 className="w-6 h-6 text-[#2F5A43] shrink-0" />
                   <h3 className="font-editorial text-2xl font-bold text-[#2B201A]">
@@ -214,9 +222,9 @@ export default function BooksPage() {
                 <p className="text-sm text-[#2B201A]/85 leading-relaxed font-sans pl-9">
                   {lang === "hi" && h.descHi ? h.descHi : h.desc}
                 </p>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
       </section>
     </div>
