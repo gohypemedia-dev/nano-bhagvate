@@ -203,11 +203,8 @@ export default function TestimonialsSection({ lang = "en" }: TestimonialsSection
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Section Heading matching site typography and warm badge (Fixes PM Finding 3) */}
+        {/* Section Heading */}
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10 space-y-2">
-          <span className="inline-block px-3.5 py-1 rounded-full bg-[#E86F1D]/10 text-[#E86F1D] text-[11px] font-bold uppercase tracking-widest border border-[#E86F1D]/20">
-            {lang === "hi" ? "भक्तों के पावन अनुभव" : "Devotee Experiences"}
-          </span>
           <TextReveal
             as="h2"
             className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]"
