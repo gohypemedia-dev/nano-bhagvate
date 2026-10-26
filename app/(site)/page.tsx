@@ -459,15 +459,11 @@ export default function HomePage() {
       <SectionReveal id="events" className="pt-6 sm:pt-8 pb-14 sm:pb-20 bg-[#FBF2E7]/60 border-y border-[#E7D8C8]">
         <div className="w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-8">
-            <TextReveal
-              as="h2"
-              className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]"
-              text={
-                lang === "hi"
-                  ? "आगामी कार्यक्रम एवं आध्यात्मिक सत्संग"
-                  : "Upcoming Events & Spiritual Discourses"
-              }
-            />
+            <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
+              {lang === "hi"
+                ? "आगामी कार्यक्रम एवं आध्यात्मिक सत्संग"
+                : "Upcoming Events & Spiritual Discourses"}
+            </h2>
           </div>
 
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">

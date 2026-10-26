@@ -85,6 +85,7 @@ export default function TextReveal({
   return (
     <Component className={className}>
       <motion.span
+        key={content}
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
