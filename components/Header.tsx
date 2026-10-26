@@ -7,10 +7,12 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ShoppingBag, Globe, Menu, X, Heart, User } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+import { useSmoothScroll } from "@/components/animation/SmoothScrollProvider";
 
 export default function Header() {
   const pathname = usePathname();
   const { lang, setLang, cartCount, setIsCartOpen, openDonateModal, user, isLoadingUser, openAuthModal } = useApp();
+  const { lenis } = useSmoothScroll();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -19,14 +21,30 @@ export default function Header() {
     setMounted(true);
   }, []);
 
-
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+      setScrolled(scrollY > 20);
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    let unsubscribeLenis: (() => void) | undefined;
+    if (lenis) {
+      const lenisHandler = (e: any) => {
+        const scrollY = e.scroll ?? window.scrollY ?? 0;
+        setScrolled(scrollY > 20);
+      };
+      lenis.on("scroll", lenisHandler);
+      unsubscribeLenis = () => {
+        lenis.off("scroll", lenisHandler);
+      };
+    }
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (unsubscribeLenis) unsubscribeLenis();
+    };
+  }, [lenis]);
 
   // Navigation Links including dedicated Gallery page
   const navLinks = [
@@ -41,13 +59,14 @@ export default function Header() {
   ];
 
   return (
-    <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-[#FFF9F2]/95 backdrop-blur-md shadow-warm-sm border-b border-[#E7D8C8]"
-          : "bg-[#FFF9F2] border-b border-[#E7D8C8]/60"
-      }`}
-    >
+    <>
+      <header
+        className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
+          scrolled
+            ? "bg-[#FFF9F2]/95 backdrop-blur-md shadow-warm-sm border-b border-[#E7D8C8]"
+            : "bg-[#FFF9F2] border-b border-[#E7D8C8]/60"
+        }`}
+      >
       {/* DESKTOP 3-ZONE GRID LAYOUT (visible >= 1024px / lg) */}
       <div className="max-w-[1560px] w-full mx-auto px-3 sm:px-5 lg:px-6 xl:px-8 2xl:px-10 box-border">
         {/* DESKTOP HEADER (visible >= 1000px) */}
@@ -354,6 +373,12 @@ export default function Header() {
         document.body
       )}
 
-    </header>
+      </header>
+      {/* Invisible spacer so fixed header does not collapse the flow of following content */}
+      <div
+        className="h-[68px] sm:h-[74px] min-[1000px]:h-[76px] xl:h-[82px] w-full shrink-0 pointer-events-none"
+        aria-hidden="true"
+      />
+    </>
   );
 }
