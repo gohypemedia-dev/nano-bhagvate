@@ -14,6 +14,7 @@ import {
   ParallaxSection,
   ParallaxImage,
 } from "@/components/animation";
+import HeadingDivider from "@/components/HeadingDivider";
 
 export default function FounderPage() {
   const { lang, openDonateModal } = useApp();
@@ -177,13 +178,13 @@ export default function FounderPage() {
       </section>
 
       {/* 2. AUTHENTIC FOUNDER NARRATIVE: "NAMO BHAGWATE VASUDEVAYA TRUST" */}
-      <SectionReveal className="py-14 sm:py-20 bg-[#FBF6EE]" id="founder-story">
+      <SectionReveal className="py-16 sm:py-20 lg:py-24 bg-[#FBF6EE]" id="founder-story">
         <div className="page-container max-w-5xl lg:max-w-6xl space-y-8">
           <div className="text-center space-y-2">
-            <TextReveal as="h2" className="font-editorial text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-wider text-[#1F1712]">
+            <TextReveal as="h2" className="font-editorial text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-wider text-[#E86F1D]">
               {lang === "hi" ? "नमो भगवते वासुदेवाय ट्रस्ट" : "NAMO BHAGWATE VASUDEVAYA TRUST"}
             </TextReveal>
-            <div className="w-16 h-1 bg-[#E86F1D] mx-auto rounded-full" />
+            <HeadingDivider className="my-1.5" />
           </div>
 
           <ParagraphReveal className="bg-white rounded-3xl border border-[#E7D8C8] p-6 sm:p-10 md:p-12 shadow-sm space-y-6 text-sm sm:text-base md:text-lg text-[#3E3129] leading-relaxed font-normal">
@@ -323,14 +324,14 @@ export default function FounderPage() {
       </section>
 
       {/* 5. OUR COMMITMENT TO SOCIETY (11 SEVA AREAS EXACTLY MATCHING ORIGINAL SITE) */}
-      <SectionReveal className="py-16 sm:py-24 bg-[#FBF6EE]">
+      <SectionReveal className="py-16 sm:py-20 lg:py-24 bg-[#FBF6EE]">
         <div className="page-container space-y-12">
           {/* Section Heading */}
           <div className="text-center space-y-2.5 max-w-2xl mx-auto">
-            <TextReveal as="h2" className="font-editorial text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-wider text-[#1F1712]">
+            <TextReveal as="h2" className="font-editorial text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-wider text-[#E86F1D]">
               {lang === "hi" ? "समाज के प्रति हमारा संकल्प" : "OUR COMMITMENT TO SOCIETY"}
             </TextReveal>
-            <div className="w-16 h-1 bg-[#E86F1D] mx-auto rounded-full" />
+            <HeadingDivider className="my-1.5" />
           </div>
 
           {/* 11 Commitment Cards Grid (Pure Text with Animated Interactive Effects) */}

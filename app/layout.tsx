@@ -1,33 +1,12 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Manrope, Noto_Serif_Devanagari, Alex_Brush } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/context/AppContext";
 
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-  variable: "--font-cormorant",
-  display: "swap",
-});
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-manrope",
-  display: "swap",
-});
-
-const devanagari = Noto_Serif_Devanagari({
-  subsets: ["devanagari", "latin"],
-  weight: ["400", "600", "700"],
-  variable: "--font-devanagari",
-  display: "swap",
-});
-
-const cursive = Alex_Brush({
-  subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-cursive",
+const poppins = Poppins({
+  subsets: ["latin", "devanagari"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-poppins",
   display: "swap",
 });
 
@@ -74,9 +53,9 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${cormorant.variable} ${manrope.variable} ${devanagari.variable} ${cursive.variable} h-full antialiased`}
+      className={`${poppins.variable} font-sans h-full antialiased`}
     >
-      <body suppressHydrationWarning className="min-h-full flex flex-col bg-[#FFF9F2] text-[#2B201A] font-sans">
+      <body suppressHydrationWarning className="min-h-full flex flex-col bg-[#FFF9F2] text-[#2B201A]">
         <AppProvider>{children}</AppProvider>
       </body>
     </html>

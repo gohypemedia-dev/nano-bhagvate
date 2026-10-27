@@ -10,6 +10,7 @@ import {
   StaggerContainer,
   StaggerItem,
 } from "@/components/animation";
+import HeadingDivider from "@/components/HeadingDivider";
 
 export default function DonatePage() {
   const { lang, openDonateModal } = useApp();
@@ -68,7 +69,7 @@ export default function DonatePage() {
       <section className="relative py-14 md:py-20 bg-[#FBF2E7] border-b border-[#E7D8C8]">
         <div className="page-container text-center space-y-4 max-w-4xl">
           <p className="text-xs font-bold uppercase tracking-widest text-[#E86F1D]">SEVA & CHARITY</p>
-          <TextReveal as="h1" className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2B201A]">
+          <TextReveal as="h1" className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-[#E86F1D]">
             Be the Reason Someone Smiles
           </TextReveal>
           <ParagraphReveal className="text-base sm:text-lg text-[#2B201A]/85 leading-relaxed font-sans max-w-2xl mx-auto">
@@ -82,9 +83,10 @@ export default function DonatePage() {
         <div className="page-container">
           <SectionReveal className="text-center max-w-2xl mx-auto section-header space-y-2">
             <p className="text-xs font-bold uppercase tracking-widest text-[#B8893E]">CHOOSE A CAUSE</p>
-            <TextReveal as="h2" className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
+            <TextReveal as="h2" className="font-editorial text-3xl sm:text-4xl font-bold text-[#E86F1D]">
               Direct Your Seva Contribution
             </TextReveal>
+            <HeadingDivider className="mt-2" />
           </SectionReveal>
 
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
@@ -129,7 +131,8 @@ export default function DonatePage() {
               <span>OFFICIAL UPI QR CODE</span>
             </div>
 
-            <h2 className="font-editorial text-3xl font-bold text-[#2B201A]">Scan & Support</h2>
+            <h2 className="font-editorial text-3xl font-bold text-[#E86F1D]">Scan & Support</h2>
+            <HeadingDivider className="my-1.5" />
             <p className="text-sm text-[#2B201A]/85 max-w-lg mx-auto">
               Choose your amount and we will create a UPI QR code for exactly that amount. Pay with any UPI app (BHIM, Google Pay, PhonePe, Paytm), then share the UTR so we can verify your donation and email your confirmation.
             </p>

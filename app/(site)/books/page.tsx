@@ -12,6 +12,7 @@ import {
   StaggerItem,
   ParallaxImage,
 } from "@/components/animation";
+import HeadingDivider from "@/components/HeadingDivider";
 
 export default function BooksPage() {
   const { lang, addToCart, setIsCartOpen } = useApp();
@@ -109,9 +110,10 @@ export default function BooksPage() {
                   <Star className="w-4 h-4 fill-current text-[#B8893E]" />
                   <span>{lang === "hi" ? "कृषि ज्ञान श्रृंखला" : "AGRICULTURAL KNOWLEDGE SERIES"}</span>
                 </div>
-                <TextReveal as="h1" className="font-editorial text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2B201A] leading-tight">
+                <TextReveal as="h1" className="font-editorial text-3xl sm:text-4xl lg:text-5xl font-bold text-[#E86F1D] leading-tight">
                   {lang === "hi" ? product.titleHi : product.title}
                 </TextReveal>
+                <HeadingDivider align="left" className="!py-0.5" />
                 <p className="text-sm text-[#2B201A]/70 font-medium">
                   {lang === "hi"
                     ? "नमो भगवते वासुदेवाय ट्रस्ट द्वारा प्रकाशित • भाषा: हिंदी (देवनागरी)"
@@ -205,9 +207,10 @@ export default function BooksPage() {
             <p className="text-xs font-bold uppercase tracking-widest text-[#E86F1D]">
               {lang === "hi" ? "यह पुस्तक क्यों पढ़ें?" : "WHY READ THIS GUIDE?"}
             </p>
-            <TextReveal as="h2" className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
+            <TextReveal as="h2" className="font-editorial text-3xl sm:text-4xl font-bold text-[#E86F1D]">
               {lang === "hi" ? "पुस्तक की मुख्य विशेषताएँ" : "Product Highlights & Value"}
             </TextReveal>
+            <HeadingDivider className="my-1.5" />
           </SectionReveal>
 
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">

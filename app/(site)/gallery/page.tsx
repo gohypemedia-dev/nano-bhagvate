@@ -6,7 +6,7 @@ import GalleryPageClient from "./GalleryPageClient";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "हमारी झलकियाँ | Photos & Videos Gallery - Namo Bhagwate Vasudevaya Trust",
+  title: "Our Gallery | Namo Bhagwate Vasudevaya Trust",
   description:
     "हमारे आयोजनों, सेवा कार्यों और यादगार पलों की खूबसूरत झलकियाँ। Browse photos and videos of spiritual gatherings, farmer workshops, Gurukul education, and humanitarian seva initiatives.",
   openGraph: {

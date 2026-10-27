@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Calendar, Clock, MapPin, Phone, Heart, ArrowLeft, ExternalLink } from "lucide-react";
 import { prisma } from "@/lib/server/prisma";
+import HeadingDivider from "@/components/HeadingDivider";
 
 export const dynamic = "force-dynamic";
 
@@ -70,9 +71,10 @@ export default async function EventDetailPage({
             <div className="inline-block px-3.5 py-1.5 bg-[#E86F1D] text-white text-xs font-bold rounded-lg uppercase tracking-wider">
               {formatDate(event.startDate, event.endDate)}
             </div>
-            <h1 className="font-editorial text-3xl sm:text-5xl font-bold text-[#2B201A] leading-tight">
+            <h1 className="font-editorial text-3xl sm:text-5xl font-bold text-[#E86F1D] leading-tight">
               {event.title}
             </h1>
+            <HeadingDivider align="left" className="!py-0" />
             {event.titleHi && (
               <p className="font-editorial text-xl sm:text-2xl font-bold text-[#B8893E]">
                 {event.titleHi}

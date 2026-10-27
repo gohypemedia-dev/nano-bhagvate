@@ -21,6 +21,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+import HeadingDivider from "@/components/HeadingDivider";
 
 function LoginFormContent() {
   const router = useRouter();
@@ -218,11 +219,12 @@ function LoginFormContent() {
             <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#B8893E]">
               {hi ? "भक्त सेवा पोर्टल" : "DEVOTEE SECURE ACCESS"}
             </span>
-            <h2 className="font-editorial text-2xl sm:text-3xl font-bold text-[#2B201A] tracking-tight">
+            <h2 className="font-editorial text-2xl sm:text-3xl font-bold text-[#E86F1D] tracking-tight">
               {tab === "login"
                 ? hi ? "भक्त लॉगिन (Sign In)" : "Devotee Sign In"
                 : hi ? "नया खाता बनाएं (Register)" : "Create Devotee Account"}
             </h2>
+            <HeadingDivider align="left" className="!py-0.5" />
             <p className="text-xs text-[#2B201A]/70">
               {tab === "login"
                 ? hi ? "अपनी पुस्तकों के ऑर्डर एवं पते देखने हेतु लॉगिन करें" : "Sign in to manage your orders & delivery details"

@@ -1,37 +1,175 @@
 "use client";
 
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  Film,
-  Maximize2,
-} from "lucide-react";
+import useEmblaCarousel from "embla-carousel-react";
+import { Play } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { galleryData, GalleryItem } from "@/data/gallery";
 import GalleryModal from "./GalleryModal";
-import GalleryVideoCard from "./GalleryVideoCard";
-import {
-  SectionReveal,
-  TextReveal,
-  StaggerContainer,
-  StaggerItem,
-} from "@/components/animation";
+import HeadingDivider from "@/components/HeadingDivider";
+import { TextReveal } from "@/components/animation";
 
-export default function GallerySection() {
+function GalleryCarouselTile({
+  item,
+  title,
+  onOpen,
+  lang,
+}: {
+  item: GalleryItem;
+  title: string;
+  onOpen: (e: React.MouseEvent<HTMLElement>) => void;
+  lang: string;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const isVideo = item.type === "video";
+
+  const handleMouseEnter = () => {
+    if (isVideo && videoRef.current) {
+      videoRef.current.muted = true;
+      videoRef.current.currentTime = 0;
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => setIsPlaying(true))
+          .catch(() => {
+            // Autoplay aborted or blocked
+          });
+      }
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (isVideo && videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      aria-label={`${lang === "hi" ? "तस्वीर देखें" : "View photo"}: ${title}`}
+      className="group relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-[#E7D8C8]/40 border border-[#E7D8C8] shadow-[0_4px_16px_-4px_rgba(43,32,26,0.1)] hover:shadow-[0_12px_28px_-6px_rgba(232,111,29,0.25)] hover:border-[#E86F1D] transition-all duration-300 block cursor-pointer focus-visible:ring-2 focus-visible:ring-[#E86F1D] focus-visible:outline-none"
+    >
+      {isVideo ? (
+        <>
+          <video
+            ref={videoRef}
+            src={item.src}
+            poster={item.thumbnail}
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-106"
+          />
+          {/* Ambient overlay */}
+          <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-300 pointer-events-none" />
+
+          {/* Centered Play Button (fades out when video plays on hover) */}
+          <div
+            className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-all duration-300 ${
+              isPlaying ? "opacity-0 scale-75" : "opacity-100 scale-100"
+            }`}
+          >
+            <div className="w-12 h-12 rounded-full bg-[#E86F1D]/90 text-white flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-[#E86F1D] transition-transform duration-300">
+              <Play className="w-5 h-5 fill-current ml-0.5" />
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <Image
+            src={item.thumbnail}
+            alt={item.alt || title}
+            fill
+            loading="lazy"
+            unoptimized={item.thumbnail.startsWith("http")}
+            sizes="(max-width: 640px) 90vw, (max-width: 1024px) 50vw, 25vw"
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-106"
+            style={{ objectPosition: item.focalPoint || "center" }}
+          />
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors duration-300 pointer-events-none" />
+        </>
+      )}
+    </button>
+  );
+}
+
+export default function GallerySection({ initialItems }: { initialItems?: GalleryItem[] }) {
   const { lang } = useApp();
+  const [items, setItems] = useState<GalleryItem[]>(
+    initialItems && initialItems.length > 0 ? initialItems : galleryData
+  );
   const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const lastTriggerRef = useRef<HTMLElement | null>(null);
 
-  // Exactly 4 featured items for the homepage row
-  const featuredItems = useMemo(() => {
-    return [...galleryData]
-      .sort((a, b) => a.displayOrder - b.displayOrder)
-      .slice(0, 4);
+  // Fetch live Cloudflare R2 gallery items from database
+  useEffect(() => {
+    fetch("/api/gallery")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setItems(data);
+        }
+      })
+      .catch((err) => console.warn("Could not fetch live gallery items:", err));
   }, []);
 
-  // Open photo in full lightbox
+  // Curate 10 top-quality landscape photos and videos for the carousel
+  const carouselItems = useMemo(() => {
+    return [...items]
+      .sort((a, b) => a.displayOrder - b.displayOrder)
+      .slice(0, 10);
+  }, [items]);
+
+  // Embla Carousel Setup (4 cards per view on desktop, matching reference design)
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    align: "start",
+    slidesToScroll: 1,
+  });
+
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const scrollTo = useCallback(
+    (index: number) => {
+      if (emblaApi) emblaApi.scrollTo(index);
+    },
+    [emblaApi]
+  );
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onSelect);
+  }, [emblaApi, onSelect]);
+
+  // Autoplay slider every 3 SECONDS (3000ms) when not hovered
+  useEffect(() => {
+    if (!emblaApi || isHovered) return;
+    const interval = setInterval(() => {
+      emblaApi.scrollNext();
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [emblaApi, isHovered]);
+
+  // Open photo/video in full lightbox
   const handleOpenPhoto = (item: GalleryItem, e: React.MouseEvent<HTMLElement>) => {
     lastTriggerRef.current = e.currentTarget;
     setSelectedItem(item);
@@ -44,145 +182,108 @@ export default function GallerySection() {
   };
 
   const currentIndex = selectedItem
-    ? featuredItems.findIndex((i) => i.id === selectedItem.id)
+    ? carouselItems.findIndex((i) => i.id === selectedItem.id)
     : -1;
 
   const handlePrevItem = () => {
-    if (featuredItems.length === 0) return;
-    const prevIdx = (currentIndex - 1 + featuredItems.length) % featuredItems.length;
-    setSelectedItem(featuredItems[prevIdx]);
+    if (carouselItems.length === 0) return;
+    const prevIdx = (currentIndex - 1 + carouselItems.length) % carouselItems.length;
+    setSelectedItem(carouselItems[prevIdx]);
   };
 
   const handleNextItem = () => {
-    if (featuredItems.length === 0) return;
-    const nextIdx = (currentIndex + 1) % featuredItems.length;
-    setSelectedItem(featuredItems[nextIdx]);
+    if (carouselItems.length === 0) return;
+    const nextIdx = (currentIndex + 1) % carouselItems.length;
+    setSelectedItem(carouselItems[nextIdx]);
   };
 
   return (
-    <SectionReveal
+    <section
       id="gallery"
-      className="pt-10 sm:pt-14 pb-6 sm:pb-8 bg-[#FFF9F2] border-t border-[#E7D8C8] scroll-mt-20 relative overflow-hidden"
+      className="py-20 sm:py-24 lg:py-32 bg-[#FFF9F2] border-t border-[#E7D8C8] scroll-mt-20 relative overflow-hidden"
     >
-      {/* End-to-end full width container */}
-      <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8">
+      <div
+        className="w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         {/* ==================================================================== */}
-        {/* ORNAMENTAL HEADER: ─────── ❖ GALLERY ❖ ─────── (No false arrowheads) */}
+        {/* SECTION HEADER: Gallery with line-dot-line divider                    */}
         {/* ==================================================================== */}
-        <div className="flex flex-col items-center justify-center mb-6 sm:mb-8 text-center">
-          <div className="w-full flex items-center justify-center gap-3 sm:gap-6 max-w-4xl mx-auto">
-            {/* Left Decorative Filigree Line */}
-            <div className="flex-1 flex items-center justify-end gap-1.5">
-              <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-[#E86F1D]/50 to-[#E86F1D]" />
-              <span className="text-[#E86F1D] text-xs select-none">❖</span>
-            </div>
+        <div className="flex flex-col items-center justify-center mb-10 sm:mb-12 text-center">
+          <TextReveal
+            as="h2"
+            className="font-editorial text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#E86F1D] tracking-wider whitespace-nowrap px-2"
+            text={lang === "hi" ? "गैलरी" : "Gallery"}
+          />
+          <HeadingDivider className="mt-2.5" />
+        </div>
 
-            {/* Centered Gallery Heading with TextReveal */}
-            <TextReveal
-              as="h2"
-              className="font-editorial text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#2B201A] tracking-wider whitespace-nowrap px-2"
-              text={lang === "hi" ? "गैलरी" : "Gallery"}
-            />
+        {/* ==================================================================== */}
+        {/* 4 LANDSCAPE PHOTOS PER VIEW CAROUSEL (Matching avsharyana.com)        */}
+        {/* ==================================================================== */}
+        <div className="relative overflow-hidden" ref={emblaRef}>
+          <div className="flex -ml-3 sm:-ml-4 md:-ml-5 touch-pan-y">
+            {carouselItems.map((item) => {
+              const title = lang === "hi" && item.titleHi ? item.titleHi : item.title;
 
-            {/* Right Decorative Filigree Line */}
-            <div className="flex-1 flex items-center justify-start gap-1.5">
-              <span className="text-[#E86F1D] text-xs select-none">❖</span>
-              <div className="h-[2px] w-full bg-gradient-to-r from-[#E86F1D] via-[#E86F1D]/50 to-transparent" />
-            </div>
+              return (
+                <div
+                  key={item.id}
+                  className="flex-[0_0_88%] sm:flex-[0_0_50%] lg:flex-[0_0_25%] pl-3 sm:pl-4 md:pl-5 min-w-0"
+                >
+                  <GalleryCarouselTile
+                    item={item}
+                    title={title}
+                    lang={lang}
+                    onOpen={(e) => handleOpenPhoto(item, e)}
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
 
         {/* ==================================================================== */}
-        {/* EXACTLY 4 DIRECT MEDIA TILES IN 1 ROW (END-TO-END WIDE GRID)         */}
+        {/* CAROUSEL PAGINATION DOTS: ○ ○ ○ ○ ○ ○ ● ○ ○ (Matching Picture 2)      */}
         {/* ==================================================================== */}
-        <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-4 items-stretch">
-          {featuredItems.map((item) => {
-            const title = lang === "hi" && item.titleHi ? item.titleHi : item.title;
-            const event = lang === "hi" && item.eventHi ? item.eventHi : item.event;
-            const isVideo = item.type === "video";
-
-            if (isVideo) {
-              return (
-                <StaggerItem key={item.id} className="h-full">
-                  <GalleryVideoCard
-                    item={item}
-                    title={title}
-                    event={event}
-                    lang={lang}
-                    onOpen={(e) => handleOpenPhoto(item, e)}
-                  />
-                </StaggerItem>
-              );
-            }
-
+        <div className="flex items-center justify-center gap-2 mt-8 sm:mt-9">
+          {carouselItems.map((_, index) => {
+            const isActive = index === selectedIndex;
             return (
-              <StaggerItem key={item.id} className="h-full">
-                <div
-                  className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-[#181310] border border-[#E7D8C8]/70 shadow-warm-xs hover:shadow-warm-md hover:border-[#E86F1D] transition-all duration-300 group h-full"
-                >
-                  {/* DIRECT PHOTO TILE (CLICK TO VIEW FULLSCREEN IN LIGHTBOX) */}
-                  <button
-                    type="button"
-                    onClick={(e) => handleOpenPhoto(item, e)}
-                    aria-label={`${lang === "hi" ? "तस्वीर देखें" : "View photo"}: ${title}`}
-                    className="relative w-full h-full block cursor-pointer group/photo focus-visible:ring-2 focus-visible:ring-[#E86F1D] focus-visible:outline-none"
-                  >
-                    <Image
-                      src={item.thumbnail}
-                      alt={item.alt}
-                      fill
-                      loading="eager"
-                      unoptimized={item.thumbnail.startsWith("http")}
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                      className="object-cover transition-transform duration-500 ease-out group-hover/photo:scale-105"
-                      style={{ objectPosition: item.focalPoint || "center" }}
-                    />
-
-                    {/* Dark Gradient Overlay for high-contrast legible captions on all viewports */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none transition-opacity duration-300" />
-
-                    {/* Expand Badge on Hover */}
-                    <div className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/60 backdrop-blur-md text-white opacity-0 group-hover/photo:opacity-100 transition-opacity duration-200 shadow-md">
-                      <Maximize2 className="w-3.5 h-3.5" />
-                    </div>
-
-                    {/* Title Caption - ALWAYS VISIBLE (Fixes PM finding 2 where captions didn't appear) */}
-                    <div className="absolute bottom-0 inset-x-0 p-3.5 z-10 text-left text-white pointer-events-none space-y-1">
-                      {event && (
-                        <p className="text-[10px] font-bold text-[#E86F1D] uppercase tracking-wider">
-                          {event}
-                        </p>
-                      )}
-                      <h4 className="font-editorial text-xs sm:text-sm font-bold text-white line-clamp-2 drop-shadow-sm leading-snug">
-                        {title}
-                      </h4>
-                    </div>
-                  </button>
-                </div>
-              </StaggerItem>
+              <button
+                key={index}
+                type="button"
+                onClick={() => scrollTo(index)}
+                aria-label={`Go to slide ${index + 1}`}
+                className={`transition-all duration-300 rounded-full cursor-pointer ${
+                  isActive
+                    ? "w-2.5 h-2.5 sm:w-3 sm:h-3 bg-[#1E1612] scale-110 shadow-xs"
+                    : "w-2 h-2 sm:w-2.5 sm:h-2.5 bg-transparent border-[1.5px] border-[#8C6B3E]/50 hover:border-[#EA580C] hover:scale-110"
+                }`}
+              />
             );
           })}
-        </StaggerContainer>
-
+        </div>
 
         {/* ==================================================================== */}
-        {/* VIEW FULL GALLERY BUTTON: [ View Full Gallery → ]                     */}
+        {/* VIEW ALL BUTTON: [ View All ] (Matching Picture 2)                   */}
         {/* ==================================================================== */}
-        <div className="text-center mt-5 sm:mt-6">
+        <div className="text-center mt-7 sm:mt-8">
           <Link
             href="/gallery"
-            className="inline-flex items-center justify-center px-8 sm:px-10 py-3 sm:py-3.5 rounded-full border-2 border-[#E86F1D] text-[#E86F1D] hover:bg-[#E86F1D] hover:text-white font-bold text-sm sm:text-base tracking-wide transition-all duration-300 shadow-warm-xs hover:shadow-warm-md hover:scale-[1.02] active:scale-[0.98] bg-white/80 backdrop-blur-xs"
+            className="inline-flex items-center justify-center px-7 py-2.5 rounded-lg bg-[#EA580C] hover:bg-[#D45A0E] text-white font-bold text-sm tracking-wide shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer"
           >
-            <span>{lang === "hi" ? "पूरी गैलरी देखें" : "View Full Gallery"}</span>
+            <span>{lang === "hi" ? "सभी देखें" : "View All"}</span>
           </Link>
         </div>
       </div>
 
-      {/* LIGHTBOX MODAL FOR EXPANDED PHOTOS */}
+      {/* LIGHTBOX MODAL FOR FULLSCREEN PHOTO/VIDEO VIEWING */}
       <GalleryModal
         isOpen={isModalOpen}
         item={selectedItem}
-        items={featuredItems}
+        items={carouselItems}
         currentIndex={currentIndex}
         onClose={handleCloseModal}
         onPrev={handlePrevItem}
@@ -190,7 +291,6 @@ export default function GallerySection() {
         lang={lang}
         lastFocusedElement={lastTriggerRef.current}
       />
-    </SectionReveal>
+    </section>
   );
 }
-

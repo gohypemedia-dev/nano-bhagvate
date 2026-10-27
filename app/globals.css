@@ -14,10 +14,14 @@
   --color-green: var(--green);
   --color-border: var(--border);
   
-  --font-serif: var(--font-cormorant), var(--font-devanagari), Georgia, serif;
-  --font-sans: var(--font-manrope), var(--font-devanagari), system-ui, sans-serif;
-  --font-devanagari: var(--font-devanagari), serif;
-  --font-cursive: var(--font-cursive), cursive;
+  --font-serif: var(--font-poppins), sans-serif;
+  --font-sans: var(--font-poppins), sans-serif;
+  --font-devanagari: var(--font-poppins), sans-serif;
+  --font-editorial: var(--font-poppins), sans-serif;
+  --font-poppins: var(--font-poppins), sans-serif;
+  --font-cormorant: var(--font-poppins), sans-serif;
+  --font-manrope: var(--font-poppins), sans-serif;
+  --font-cursive: var(--font-poppins), sans-serif;
   
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
@@ -75,41 +79,41 @@
     overflow-x: hidden;
     background-color: var(--background);
     color: var(--foreground);
-    font-family: var(--font-manrope), system-ui, -apple-system, sans-serif;
+    font-family: var(--font-poppins), system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
   
-  h1, h2, h3, h4, .font-editorial {
-    font-family: var(--font-cormorant), var(--font-devanagari), Georgia, serif;
-    letter-spacing: -0.015em;
+  h1, h2, h3, h4, h5, h6, .font-editorial {
+    font-family: var(--font-poppins), system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.01em;
     line-height: 1.35;
-    padding-top: 0.12em;
-    padding-bottom: 0.06em;
   }
   
-  /* Global Hindi Typography & Clipping Prevention */
+  /* Global Hindi Typography & Uniform Poppins Styling */
   html.lang-hi,
   .lang-hi,
   :lang(hi) {
-    font-family: var(--font-devanagari), var(--font-sans), sans-serif;
+    font-family: var(--font-poppins), sans-serif;
   }
 
   html.lang-hi h1,
   html.lang-hi h2,
   html.lang-hi h3,
   html.lang-hi h4,
+  html.lang-hi h5,
+  html.lang-hi h6,
   html.lang-hi .font-editorial,
   .lang-hi h1,
   .lang-hi h2,
   .lang-hi h3,
   .lang-hi h4,
+  .lang-hi h5,
+  .lang-hi h6,
   .lang-hi .font-editorial {
-    font-family: var(--font-devanagari), Georgia, serif;
-    line-height: 1.38;
-    padding-top: 0.18em;
-    padding-bottom: 0.08em;
+    font-family: var(--font-poppins), sans-serif;
+    line-height: 1.35;
   }
 }
 
@@ -226,28 +230,28 @@ html.lenis body {
   }
 }
 
-/* Section Vertical Padding Scale */
+/* Section Vertical Padding Scale - Standardized to reference site avsharyana.com */
 .section-py {
-  padding-block: 56px; /* Mobile: 56px */
+  padding-block: 64px; /* Mobile: 64px / py-16 */
 }
 @media (min-width: 768px) {
   .section-py {
-    padding-block: 72px; /* Tablet: 72px */
+    padding-block: 80px; /* Tablet: 80px / py-20 */
   }
 }
 @media (min-width: 1024px) {
   .section-py {
-    padding-block: 96px; /* Desktop: 96px */
+    padding-block: 96px; /* Desktop: 96px / py-24 */
   }
 }
 
 /* Section Header Spacing */
 .section-header {
-  margin-bottom: 32px;
+  margin-bottom: 28px;
 }
 @media (min-width: 768px) {
   .section-header {
-    margin-bottom: 44px;
+    margin-bottom: 36px;
   }
 }
 
@@ -457,7 +461,7 @@ img, video {
 
 .founder-name {
   color: #ffffff;
-  font-family: Georgia, serif;
+  font-family: var(--font-poppins), sans-serif;
   font-size: 22px;
   line-height: 1.1;
   font-weight: 600;

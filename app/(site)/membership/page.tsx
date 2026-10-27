@@ -15,6 +15,7 @@ import {
   ParallaxSection,
   ParallaxImage,
 } from "@/components/animation";
+import HeadingDivider from "@/components/HeadingDivider";
 import {
   sanitizeEmail,
   sanitizeMobile,
@@ -284,9 +285,10 @@ export default function MembershipPage() {
             <p className="text-xs font-bold uppercase tracking-widest text-[#B8893E]">
               {lang === "hi" ? "सदस्यता श्रेणी चुनें" : "CHOOSE YOUR MEMBERSHIP TIER"}
             </p>
-            <TextReveal as="h2" className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
+            <TextReveal as="h2" className="font-editorial text-3xl sm:text-4xl font-bold text-[#E86F1D]">
               {lang === "hi" ? "हमारे सेवा परिवार से जुड़ें" : "Join Our Seva Circle"}
             </TextReveal>
+            <HeadingDivider className="mt-2" />
           </div>
 
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
@@ -357,7 +359,7 @@ export default function MembershipPage() {
               <span className="w-1.5 h-1.5 rounded-full bg-[#E86F1D]" />
               {lang === "hi" ? "आध्यात्मिक संकल्प एवं सेवा" : "SACRED CALLING & SERVICE"}
             </div>
-            <TextReveal as="h2" className="font-editorial text-3xl sm:text-4xl lg:text-[40px] font-bold text-[#2B201A] tracking-tight">
+            <TextReveal as="h2" className="font-editorial text-3xl sm:text-4xl lg:text-[40px] font-bold text-[#E86F1D] tracking-tight">
               {lang === "hi" ? "ट्रस्ट की सदस्यता क्यों ग्रहण करें?" : "Why Join Our Seva Parivar?"}
             </TextReveal>
           </div>
@@ -393,7 +395,7 @@ export default function MembershipPage() {
                 borderColor: "border-[#2F5A43]",
                 topLine: "bg-gradient-to-r from-[#2F5A43] to-[#4D8C69]",
                 icon: HandHeart,
-                image: "/images/card-charity-seva.jpg",
+                image: "/images/card-seva-real.webp",
                 title: lang === "hi" ? "प्रत्यक्ष जनसेवा व अन्नक्षेत्र" : "Hands-On Ground Seva",
                 desc: lang === "hi"
                   ? "दैनिक अन्नक्षेत्र भंडारा, निःशुल्क गौशाला सेवा और जरूरतमंद बच्चों की शिक्षा में प्रत्यक्ष भागीदारी निभाएं।"
@@ -563,13 +565,13 @@ export default function MembershipPage() {
       </SectionReveal>
 
       {/* DEVOTEE COMMUNITY / OUR ACTIVE MEMBERS TICKER (END TO END AUTO SCROLL) */}
-      <SectionReveal className="py-12 sm:py-16 overflow-hidden">
+      <SectionReveal className="py-16 sm:py-20 lg:py-24 overflow-hidden">
         <div className="page-container mb-6 sm:mb-8">
           <div className="text-center max-w-2xl mx-auto section-header space-y-2">
             <p className="text-xs font-bold uppercase tracking-widest text-[#B8893E]">
               {lang === "hi" ? "भक्त समुदाय" : "DEVOTEE COMMUNITY"}
             </p>
-            <TextReveal as="h2" className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
+            <TextReveal as="h2" className="font-editorial text-3xl sm:text-4xl font-bold text-[#E86F1D]">
               {lang === "hi" ? "हमारे सक्रिय सदस्य" : "Our Active Members"}
             </TextReveal>
           </div>
@@ -589,9 +591,10 @@ export default function MembershipPage() {
               <p className="text-xs font-bold uppercase tracking-widest text-[#E86F1D]">
                 {lang === "hi" ? "पंजीकरण" : "REGISTRATION"}
               </p>
-              <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]">
+              <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#E86F1D]">
                 {lang === "hi" ? "सदस्यता पंजीकरण" : "Membership Registration"}
               </h2>
+              <HeadingDivider className="my-1.5" />
               <p className="text-sm text-[#2B201A]/75">
                 {lang === "hi"
                   ? "अपनी सदस्यता योजना चुनें और सदस्यता पूर्ण करने के लिए अपना विवरण साझा करें।"

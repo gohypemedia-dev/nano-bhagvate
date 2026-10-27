@@ -16,6 +16,7 @@ import {
   ParagraphReveal,
   SectionReveal,
 } from "@/components/animation";
+import HeadingDivider from "@/components/HeadingDivider";
 
 function validateMessage(msg: string): string | null {
   const cleaned = msg.trim();
@@ -96,7 +97,7 @@ export default function ContactPage() {
           <p className="text-xs font-bold uppercase tracking-widest text-[#E86F1D]">
             {lang === "hi" ? "संपर्क करें" : "REACH OUT TO US"}
           </p>
-          <TextReveal as="h1" className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2B201A]">
+          <TextReveal as="h1" className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-[#E86F1D]">
             {lang === "hi" ? "हमसे जुड़े रहें" : "Let’s Stay Connected"}
           </TextReveal>
           <ParagraphReveal className="text-base sm:text-lg text-[#2B201A]/85 leading-relaxed font-sans max-w-2xl mx-auto">
@@ -113,9 +114,10 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
             {/* Left Contact Form */}
             <SectionReveal as="div" yOffset={30} className="lg:col-span-7 card-warm p-8 sm:p-10 space-y-6">
-              <h2 className="font-editorial text-3xl font-bold text-[#2B201A]">
+              <h2 className="font-editorial text-3xl font-bold text-[#E86F1D]">
                 {lang === "hi" ? "हमें संदेश भेजें" : "Send Us a Message"}
               </h2>
+              <HeadingDivider align="left" className="!py-0" />
 
               {formSubmitted ? (
                 <div className="p-8 bg-[#FFF9F2] rounded-2xl text-center space-y-4 border border-[#2F5A43]">
@@ -272,9 +274,10 @@ export default function ContactPage() {
             {/* Right Contact Info Details & Map Card */}
             <SectionReveal as="div" yOffset={30} delay={0.2} className="lg:col-span-5 space-y-6">
               <div className="card-warm space-y-6">
-                <h2 className="font-editorial text-2xl font-bold text-[#2B201A]">
+                <h2 className="font-editorial text-2xl font-bold text-[#E86F1D]">
                   {lang === "hi" ? "ट्रस्ट संपर्क विवरण" : "Trust Contact Details"}
                 </h2>
+                <HeadingDivider align="left" className="!py-0" />
 
                 <ul className="space-y-4 text-sm">
                   <li className="flex items-start gap-4">

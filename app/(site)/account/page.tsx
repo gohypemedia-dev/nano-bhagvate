@@ -26,6 +26,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+import HeadingDivider from "@/components/HeadingDivider";
 
 interface OrderItem {
   id: string;
@@ -187,9 +188,10 @@ export default function AccountPage() {
             <User className="w-8 h-8" />
           </div>
           <div className="space-y-2">
-            <h1 className="font-editorial text-3xl font-bold text-[#2B201A]">
+            <h1 className="font-editorial text-3xl font-bold text-[#E86F1D]">
               {hi ? "भक्त खाता एवं आर्डर विवरण" : "Devotee Account & Orders"}
             </h1>
+            <HeadingDivider className="my-1.5" />
             <p className="text-sm text-[#2B201A]/70 leading-relaxed">
               {hi
                 ? "अपनी खरीदी गई पुस्तकों के ऑर्डर और विवरण देखने के लिए कृपया अपने खाते में लॉग इन करें।"

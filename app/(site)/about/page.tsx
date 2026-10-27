@@ -14,6 +14,7 @@ import {
   ParallaxSection,
   ParallaxImage,
 } from "@/components/animation";
+import HeadingDivider from "@/components/HeadingDivider";
 
 
 export default function AboutPage() {
@@ -194,15 +195,16 @@ export default function AboutPage() {
       </section>
 
       {/* 2. AUTHENTIC NARRATIVE: "ABOUT US" & "OUR MISSION" */}
-      <SectionReveal className="py-12 sm:py-16 md:py-20 bg-[#FBF6EE]" id="about-story">
+      <SectionReveal className="py-16 sm:py-20 lg:py-24 bg-[#FBF6EE]" id="about-story">
         <div className="page-container max-w-5xl lg:max-w-6xl space-y-12 sm:space-y-16">
           {/* ABOUT US BLOCK */}
           <div className="space-y-4 sm:space-y-5 text-center sm:text-left">
-            <TextReveal as="h2" className="font-editorial text-2xl sm:text-3xl md:text-4xl font-bold text-[#1F1712] leading-tight">
+            <TextReveal as="h2" className="font-editorial text-2xl sm:text-3xl md:text-4xl font-bold text-[#E86F1D] leading-tight">
               {lang === "hi"
                 ? "प्राचीन सनातन ज्ञान और आधुनिक प्रगति का पावन समन्वय"
                 : "Ancient Wisdom & Modern Progress Working Hand in Hand"}
             </TextReveal>
+            <HeadingDivider align="left" className="!py-0.5 max-sm:justify-center" />
 
             <ParagraphReveal className="text-sm sm:text-base md:text-lg text-[#3E3129] leading-relaxed space-y-4 pt-1 font-normal">
               <p>
@@ -232,11 +234,12 @@ export default function AboutPage() {
 
           {/* OUR MISSION BLOCK */}
           <div className="space-y-4 sm:space-y-5 text-center sm:text-left">
-            <TextReveal as="h2" className="font-editorial text-2xl sm:text-3xl md:text-4xl font-bold text-[#1F1712] leading-tight">
+            <TextReveal as="h2" className="font-editorial text-2xl sm:text-3xl md:text-4xl font-bold text-[#E86F1D] leading-tight">
               {lang === "hi"
                 ? "आंतरिक सामर्थ्य और व्यावहारिक अवसरों का संगम"
                 : "Real Empowerment When Inner Strength Meets Real Opportunity"}
             </TextReveal>
+            <HeadingDivider align="left" className="!py-0.5 max-sm:justify-center" />
 
             <ParagraphReveal className="text-sm sm:text-base md:text-lg text-[#3E3129] leading-relaxed space-y-4 pt-1 font-normal">
               <p>
@@ -352,13 +355,14 @@ export default function AboutPage() {
       </SectionReveal>
 
       {/* 5. WE ARE COMMITTED TO (4 PILLAR MODULES FAITHFULLY MATCHING ORIGINAL SITE) */}
-      <SectionReveal className="py-16 sm:py-24 bg-[#FBF6EE]">
+      <SectionReveal className="py-16 sm:py-20 lg:py-24 bg-[#FBF6EE]">
         <div className="page-container space-y-12">
           {/* Section Heading */}
           <div className="text-center space-y-2.5 max-w-2xl mx-auto">
-            <TextReveal as="h2" className="font-editorial text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-wider text-[#1F1712]">
+            <TextReveal as="h2" className="font-editorial text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-wider text-[#E86F1D]">
               {lang === "hi" ? "हम समर्पित हैं" : "WE ARE COMMITTED TO"}
             </TextReveal>
+            <HeadingDivider className="my-1.5" />
             <p className="text-sm sm:text-base text-[#3E3129]/80 font-medium">
               {lang === "hi"
                 ? "हमारी संपूर्ण सेवा यात्रा चार मूलभूत स्तंभों पर आधारित है"

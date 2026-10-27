@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 import { LEGAL, POLICY_LINKS } from "@/lib/legal";
+import HeadingDivider from "@/components/HeadingDivider";
 
 // Shared layout for the policy pages: hero, numbered sections, contact box and links to the other policies.
 export default function LegalPage({
@@ -22,7 +23,8 @@ export default function LegalPage({
             <ShieldCheck className="w-4 h-4 text-[#2F5A43]" />
             <span>Policies</span>
           </div>
-          <h1 className="font-editorial text-4xl sm:text-5xl font-bold text-[#2B201A]">{title}</h1>
+          <h1 className="font-editorial text-4xl sm:text-5xl font-bold text-[#E86F1D]">{title}</h1>
+          <HeadingDivider className="my-1.5" />
           <p className="text-xs text-[#2B201A]/60 font-semibold">
             Last updated: {LEGAL.lastUpdated} • {LEGAL.trustName}
           </p>

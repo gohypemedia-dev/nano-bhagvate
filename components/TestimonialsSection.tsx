@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { SectionReveal, TextReveal, ParagraphReveal } from "@/components/animation";
+import HeadingDivider from "@/components/HeadingDivider";
 
 interface Testimonial {
   name: string;
@@ -196,10 +197,10 @@ export default function TestimonialsSection({ lang = "en" }: TestimonialsSection
 
   return (
     <SectionReveal
-      className="py-12 sm:py-16 bg-[#FFF9F2] border-t border-[#E7D8C8]/60 relative select-none"
+      className="py-16 sm:py-20 lg:py-24 bg-[#FFF9F2] border-t border-[#E7D8C8]/60 relative select-none"
     >
       <div
-        className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8"
+        className="w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -207,16 +208,10 @@ export default function TestimonialsSection({ lang = "en" }: TestimonialsSection
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10 space-y-2">
           <TextReveal
             as="h2"
-            className="font-editorial text-3xl sm:text-4xl font-bold text-[#2B201A]"
+            className="font-editorial text-3xl sm:text-4xl font-bold text-[#E86F1D] tracking-tight"
             text={lang === "hi" ? "हमारे भक्त क्या कहते हैं" : "Voices of Faith & Devotion"}
           />
-          <ParagraphReveal className="text-sm text-[#7A6B60] max-w-lg mx-auto">
-            <p>
-              {lang === "hi"
-                ? "कथा, गुरुकुल एवं सेवा प्रकल्पों से जुड़े श्रद्धालुओं के आत्मीय विचार एवं अनुभव।"
-                : "Heartfelt reflections and personal experiences shared by devotees and seva contributors."}
-            </p>
-          </ParagraphReveal>
+          <HeadingDivider className="mt-2" />
         </div>
 
         {/* Carousel Container with Side Controls for Desktop (Positioned cleanly outside cards) */}

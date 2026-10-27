@@ -14,6 +14,7 @@ import {
   ParallaxSection,
   ParallaxImage,
 } from "@/components/animation";
+import HeadingDivider from "@/components/HeadingDivider";
 
 export default function InitiativesPage() {
   const { lang, openDonateModal } = useApp();
@@ -28,16 +29,14 @@ export default function InitiativesPage() {
       image: "/images/initiative-health.jpg",
       icon: HeartPulse,
       bullets: [
-        "Free medical camps in rural and underserved regions",
-        "Yoga and Ayurvedic wellness programs for holistic health",
-        "Mental health awareness and stress management initiatives",
-        "Free distribution of essential medicines and health kits",
+        "Free Medical Camps",
+        "Yoga & Ayurvedic Health Programs",
+        "Mental Health Awareness",
       ],
       bulletsHi: [
-        "ग्रामीण व वंचित क्षेत्रों में निःशुल्क चिकित्सा शिविर",
+        "निःशुल्क चिकित्सा एवं स्वास्थ्य परीक्षण शिविर",
         "समग्र स्वास्थ्य हेतु योग एवं आयुर्वेदिक आरोग्य कार्यक्रम",
-        "मानसिक स्वास्थ्य जागरूकता एवं तनाव प्रबंधन कार्यशालाएँ",
-        "आवश्यक औषधियों व स्वास्थ्य किटों का निःशुल्क वितरण",
+        "मानसिक स्वास्थ्य जागरूकता एवं तनाव प्रबंधन",
       ],
     },
     {
@@ -49,16 +48,14 @@ export default function InitiativesPage() {
       image: "/images/initiative-education.jpg",
       icon: GraduationCap,
       bullets: [
-        "Gurukul establishment and traditional Vedic education management",
-        "Free education and study material for underprivileged children",
-        "Seamless integration of Vedic wisdom with modern science & IT",
-        "Moral values (Sanskar) and character building workshops",
+        "Gurukul Establishment & Management",
+        "Free Education for Underprivileged Children",
+        "Integration of Vedic and Modern Education",
       ],
       bulletsHi: [
         "गुरुकुल स्थापना एवं पारंपरिक वैदिक शिक्षा प्रबंधन",
         "वंचित वर्ग के बच्चों को निःशुल्क शिक्षा व पाठ्य सामग्री",
         "वैदिक ज्ञान के साथ आधुनिक विज्ञान व कंप्यूटर शिक्षा का समन्वय",
-        "संस्कार निर्माण, सदाचार व व्यक्तित्व विकास कार्यशालाएँ",
       ],
     },
     {
@@ -70,16 +67,14 @@ export default function InitiativesPage() {
       image: "/images/initiative-women.jpg",
       icon: Users,
       bullets: [
-        "Skill-development workshops in tailoring, handicrafts & IT",
-        "Self-reliance and small-scale entrepreneurship support",
-        "Social, legal, and financial literacy guidance for women",
-        "Self-defense and confidence building camps",
+        "Skill Development Programs for Women",
+        "Self-Reliance & Entrepreneurship Support",
+        "Social & Legal Assistance",
       ],
       bulletsHi: [
-        "सिलाई, हस्तशिल्प व डिजिटल कौशल संवर्धन कार्यशालाएँ",
-        "महिला स्वावलंबन एवं लघु स्वरोजगार हेतु प्रत्यक्ष सहयोग",
-        "महिलाओं के लिए सामाजिक, विधिक व वित्तीय साक्षरता मार्गदर्शन",
-        "आत्मरक्षा, आत्मबल एवं नेतृत्व क्षमता विकास शिविर",
+        "महिलाओं के लिए कौशल विकास एवं स्वावलंबन कार्यक्रम",
+        "आत्मनिर्भरता एवं लघु स्वरोजगार हेतु प्रत्यक्ष सहयोग",
+        "सामाजिक एवं विधिक साक्षरता मार्गदर्शन",
       ],
     },
     {
@@ -91,16 +86,14 @@ export default function InitiativesPage() {
       image: "/images/initiative-farmers.jpg",
       icon: HeartHandshake,
       bullets: [
-        "Regular food (Annadan) and warm clothing distribution drives",
-        "Comprehensive support for orphans, widows, and vulnerable groups",
-        "Care and medical support for elderly and underprivileged citizens",
-        "Disaster relief and emergency humanitarian assistance",
+        "Food & Clothing Distribution",
+        "Support for Orphans & the Needy",
+        "Support for the Elderly & Underprivileged",
       ],
       bulletsHi: [
-        "नियमित अन्नदान (भंडारा) एवं गर्म वस्त्र वितरण अभियान",
-        "अनाथ बच्चों, विधवाओं व निर्बल वर्गों के लिए सर्वांगीण सहायता",
-        "वरिष्ठ नागरिकों व असहाय जनों की नियमित सेवा व चिकित्सा सहयोग",
-        "आपदा राहत एवं आपातकालीन मानवीय सहायता सेवाएं",
+        "नियमित अन्नदान (भंडारा) एवं वस्त्र वितरण अभियान",
+        "अनाथ बच्चों एवं जरूरतमंदों के लिए सर्वांगीण सहयोग",
+        "वरिष्ठ नागरिकों व असहाय जनों की नियमित सेवा व देखभाल",
       ],
     },
   ];
@@ -236,9 +229,10 @@ export default function InitiativesPage() {
                   <div className="p-6 sm:p-8 flex flex-col flex-1 justify-between space-y-6">
                     <div className="space-y-4">
                       {/* Initiative Title */}
-                      <h2 className="font-editorial text-2xl sm:text-3xl font-bold text-[#2B201A]">
+                      <h2 className="font-editorial text-2xl sm:text-3xl font-bold text-[#E86F1D]">
                         {lang === "hi" ? item.titleHi : item.title}
                       </h2>
+                      <HeadingDivider align="left" className="!py-0" />
 
                       {/* 4. Description */}
                       <p className="text-sm sm:text-base text-[#2B201A]/85 font-sans leading-relaxed">

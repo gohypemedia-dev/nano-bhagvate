@@ -10,9 +10,7 @@ export default function MemberCarousel() {
 
   return (
     <div className="relative w-full overflow-hidden select-none py-3">
-      {/* Subtle edge fade gradient masks for smooth entrance/exit */}
-      <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 sm:w-16 z-10 bg-gradient-to-r from-[#FAF3EA] to-transparent" />
-      <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 sm:w-16 z-10 bg-gradient-to-l from-[#FAF3EA] to-transparent" />
+
 
       {/* Continuous Auto-Scrolling Row (End-to-End) */}
       <div className="flex animate-marquee gap-4 sm:gap-6 hover:[animation-play-state:paused] py-2">
