@@ -161,7 +161,7 @@ export default function FounderPage() {
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2 sm:pt-4">
               <a
                 href="#founder-story"
-                className="inline-flex items-center justify-center px-6 sm:px-7 py-3.5 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
+                className="inline-flex items-center justify-center px-6 sm:px-7 py-3.5 rounded-xl bg-[#E86F1D] hover:bg-[#D25E12] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
               >
                 <span>{lang === "hi" ? "जीवन यात्रा व दर्शन जानें" : "Read Life Journey & Philosophy"}</span>
               </a>
@@ -239,92 +239,43 @@ export default function FounderPage() {
         </div>
       </SectionReveal>
 
-      {/* 3. HER PHILOSOPHY BANNER (SACRED SCRIPTURE & JAPA MALA BACKGROUND) */}
-      <section className="relative overflow-hidden py-20 sm:py-28 md:py-36 border-y border-[#E7D8C8] flex items-center justify-center">
-        {/* Sacred Still-Life Artwork */}
-        <ParallaxImage offset={45} className="absolute inset-0 z-0">
+      {/* 3. HER PHILOSOPHY BANNER (INSPIRED BY REFERENCE PIC 3: LIGHT CREAM AESTHETIC WITH OPEN BOOK) */}
+      <section className="relative overflow-hidden py-16 sm:py-24 md:py-28 border-y border-[#E7D8C8] flex items-center mb-10 sm:mb-16 md:mb-20">
+        {/* Soft Sacred Still-Life Artwork (Book & Mala on right, clean space on left) */}
+        <ParallaxImage offset={35} className="absolute inset-0 z-0">
           <Image
             src="/images/founder-philosophy-bg.jpg"
             alt="Sacred Bhagavad Gita Scripture and Rudraksha Japa Mala"
             fill
             unoptimized
-            className="object-cover object-center"
+            className="object-cover object-right sm:object-center"
           />
-          {/* Subtle warm overlay for readability */}
-          <div className="absolute inset-0 bg-[#2B201A]/70 backdrop-blur-[0.5px]" />
+          {/* Subtle mobile-only soft cream fade for perfect text contrast on small screens */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#FAF6EE]/95 via-[#FAF6EE]/80 to-transparent sm:hidden" />
         </ParallaxImage>
 
-        {/* Content */}
-        <div className="relative z-10 page-container max-w-3xl text-center px-6 text-white space-y-4">
-          <div className="inline-block px-3 py-1 rounded-full bg-white/15 border border-white/20 text-[#FFA052] text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em] shadow-xs">
-            {lang === "hi" ? "साध्वी जी का जीवन दर्शन" : "HER PHILOSOPHY"}
-          </div>
-
-          <p className="text-xs sm:text-sm font-medium tracking-wide text-white/80">
-            {lang === "hi" ? "उनका जीवन दर्शन इन पावन शब्दों में प्रतिबिंबित होता है:" : "Her philosophy is beautifully reflected in these words:"}
-          </p>
-
-          <ParagraphReveal yOffset={25}>
-            <blockquote className="font-editorial text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-relaxed tracking-tight text-white drop-shadow-md">
+        {/* Content (Clean, left-aligned, matching reference pic 3) */}
+        <div className="relative z-10 page-container px-6 sm:px-10 lg:px-12 w-full">
+          <div className="max-w-xl lg:max-w-2xl space-y-3.5 text-left">
+            <p className="font-sans text-xs sm:text-sm font-semibold tracking-wider text-[#5A4638] uppercase">
               {lang === "hi"
-                ? "“चिंता में मत जियो — धर्मसम्मत कर्म में जियो। प्रत्येक विचार, प्रत्येक शब्द और प्रत्येक कर्म ईश्वर की दृष्टि में है। जब हमारे कर्म निष्काम और पवित्र होते हैं, तो हमारा भविष्य स्वतः ही उज्ज्वल हो जाता है।”"
-                : "“Do not live in worry — live through righteous action. Every thought, every word, and every deed is witnessed by the Divine. When our actions are pure, our future naturally becomes bright.”"}
-            </blockquote>
-          </ParagraphReveal>
-
-          <div className="pt-2">
-            <span className="text-xs sm:text-sm font-semibold tracking-wider text-[#FFA052] uppercase">
-              — {lang === "hi" ? "पूज्य साध्वी विजेशानंद सरस्वती जी" : "Pujya Sadhvi Vijeshanand Saraswati Ji"}
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. BHAGAVAD GITA & KARMA YOGA IN PRACTICE (SACRED RIVER GHAT SEVA BANNER) */}
-      <section className="relative overflow-hidden py-20 sm:py-28 md:py-36 border-b border-[#E7D8C8] flex items-center justify-center">
-        {/* Sacred River Ghat Background */}
-        <ParallaxImage offset={45} className="absolute inset-0 z-0">
-          <Image
-            src="/images/founder-karma-bg.jpg"
-            alt="Sacred River Ghat at Sunrise - Nishkama Karma Yoga"
-            fill
-            unoptimized
-            className="object-cover object-center"
-          />
-          {/* Warm Dark Scrim for Perfect Typography Legibility */}
-          <div className="absolute inset-0 bg-[#1A120B]/75 backdrop-blur-[0.5px]" />
-        </ParallaxImage>
-
-        {/* Content */}
-        <div className="relative z-10 page-container max-w-4xl text-center px-6 text-white space-y-6">
-          <div className="inline-block px-3 py-1 rounded-full bg-[#E86F1D]/30 border border-[#E86F1D]/50 text-[#FFA052] text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em]">
-            {lang === "hi" ? "कर्मण्येवाधिकारस्ते • निष्काम सेवा" : "KARMA YOGA & NISHKAMA SEVA"}
-          </div>
-
-          <ParagraphReveal yOffset={25}>
-            <p className="font-editorial text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-relaxed tracking-tight drop-shadow-md text-[#FFFDF9]">
-              {lang === "hi" ? (
-                <>
-                  साध्वी जी जन-जन को श्रीमद्भगवद्गीता के शाश्वत सिद्धांतों—<strong>कर्मयोग</strong> (निष्काम कर्म), <strong>सेवा</strong> (बिना किसी अपेक्षा के समर्पण), भक्ति, सत्य, करुणा, विनम्रता और सार्वभौमिक प्रेम को जीवन में उतारने की प्रेरणा देती हैं। उनका विश्वास है कि जब प्रत्येक कर्म श्रद्धा और पवित्रता के साथ प्रभु को अर्पित किया जाता है, तो जीवन में स्वाभाविक रूप से शांति, संतुलन, संतोष और चिरस्थायी आनंद खिल उठता है।
-                </>
-              ) : (
-                <>
-                  Sadhvi Ji encourages people to embrace the timeless principles of the Bhagavad Gita—<strong>Karma Yoga</strong> (selfless action), <strong>Nishkama Seva</strong> (service without expectation), devotion, truth, compassion, humility, and universal love. She believes that when every action is offered to God with sincerity and faith, life naturally blossoms into peace, balance, fulfillment, and lasting happiness.
-                </>
-              )}
+                ? "उनका जीवन दर्शन इन पावन शब्दों में प्रतिबिंबित होता है:"
+                : "Her philosophy is beautifully reflected in these words:"}
             </p>
-          </ParagraphReveal>
 
-          <p className="text-sm sm:text-base text-white/85 max-w-2xl mx-auto font-sans leading-relaxed">
-            {lang === "hi"
-              ? "उनके दूरदर्शी नेतृत्व में नमो भगवते वासुदेवाय ट्रस्ट सार्थक सामाजिक और आध्यात्मिक परिवर्तन का एक पावन मंच बन चुका है, जिसके सेवा कार्य समाज के विभिन्न महत्वपूर्ण क्षेत्रों में सक्रिय हैं:"
-              : "Under her visionary leadership, the Trust has become a platform for meaningful social and spiritual transformation. Its initiatives span a wide range of areas, including:"}
-          </p>
+            <ParagraphReveal yOffset={20}>
+              <blockquote className="font-editorial text-lg sm:text-xl md:text-2xl lg:text-[26px] font-semibold leading-relaxed text-[#1F1712]">
+                {lang === "hi"
+                  ? "“चिंता में मत जियो — धर्मसम्मत कर्म में जियो। प्रत्येक विचार, प्रत्येक शब्द और प्रत्येक कर्म ईश्वर की दृष्टि में है। जब हमारे कर्म निष्काम और पवित्र होते हैं, तो हमारा भविष्य स्वतः ही उज्ज्वल हो जाता है।”"
+                  : "“Do not live in worry — live through righteous action. Every thought, every word, and every deed is witnessed by the Divine. When our actions are pure, our future naturally becomes bright.”"}
+              </blockquote>
+            </ParagraphReveal>
+          </div>
         </div>
       </section>
 
-      {/* 5. OUR COMMITMENT TO SOCIETY (11 SEVA AREAS EXACTLY MATCHING ORIGINAL SITE) */}
-      <SectionReveal className="py-16 sm:py-20 lg:py-24 bg-[#FBF6EE]">
+      {/* 4. OUR COMMITMENT TO SOCIETY (11 SEVA AREAS EXACTLY MATCHING ORIGINAL SITE) */}
+      <SectionReveal className="py-16 sm:py-20 lg:py-24 bg-[#FBF6EE] border-b border-[#E7D8C8]">
         <div className="page-container space-y-12">
           {/* Section Heading */}
           <div className="text-center space-y-2.5 max-w-2xl mx-auto">
@@ -381,6 +332,58 @@ export default function FounderPage() {
         </div>
       </SectionReveal>
 
+      {/* 5. BHAGAVAD GITA & KARMA YOGA IN PRACTICE (BACKGROUND IMAGE WITH ENHANCED HIGH-VISIBILITY CARD) */}
+      <section className="relative overflow-hidden py-16 sm:py-24 md:py-28 border-y border-[#E7D8C8] flex items-center justify-center">
+        {/* Background Image: Gurukul / Bhagavad Gita Temple Courtyard with subtle dark/warm overlay */}
+        <ParallaxImage offset={30} className="absolute inset-0 z-0">
+          <Image
+            src="/images/founder-karma-bg.jpg"
+            alt="Bhagavad Gita Wisdom and Vedic Courtyard"
+            fill
+            unoptimized
+            priority
+            className="object-cover object-center"
+          />
+          {/* Multi-layered soft contrast overlay for optimal background depth & card pop */}
+          <div className="absolute inset-0 bg-black/20 backdrop-brightness-95" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/25" />
+        </ParallaxImage>
+
+        {/* Enhanced High-Visibility Card Container */}
+        <div className="relative z-10 page-container max-w-4xl px-4 sm:px-6 w-full">
+          <div className="bg-white/75 sm:bg-[#FFFDF9]/70 backdrop-blur-md rounded-2xl sm:rounded-3xl border border-white/80 sm:border-[#E86F1D]/35 shadow-[0_20px_50px_rgba(0,0,0,0.22)] p-6 sm:p-10 md:p-12 text-center space-y-6">
+            <ParagraphReveal yOffset={15}>
+              <p className="font-sans text-sm sm:text-base md:text-[17px] text-[#1F1712] font-medium leading-relaxed">
+                {lang === "hi" ? (
+                  <>
+                    साध्वी जी जन-जन को श्रीमद्भगवद्गीता के शाश्वत सिद्धांतों—<span className="text-[#E86F1D] font-bold">कर्मयोग</span> (निष्काम कर्म), <span className="text-[#E86F1D] font-bold">निष्काम सेवा</span> (बिना किसी अपेक्षा के समर्पण), भक्ति, सत्य, करुणा, विनम्रता और सार्वभौमिक प्रेम को जीवन में उतारने की प्रेरणा देती हैं। उनका विश्वास है कि जब प्रत्येक कर्म श्रद्धा और पवित्रता के साथ प्रभु को अर्पित किया जाता है, तो जीवन में स्वाभाविक रूप से शांति, संतुलन, संतोष और चिरस्थायी आनंद खिल उठता है।
+                  </>
+                ) : (
+                  <>
+                    Sadhvi Ji encourages people to embrace the timeless principles of the Bhagavad Gita—<span className="text-[#E86F1D] font-bold">Karma Yoga</span> (selfless action), <span className="text-[#E86F1D] font-bold">Nishkama Seva</span> (service without expectation), devotion, truth, compassion, humility, and universal love. She believes that when every action is offered to God with sincerity and faith, life naturally blossoms into peace, balance, fulfillment, and lasting happiness.
+                  </>
+                )}
+              </p>
+            </ParagraphReveal>
+
+            {/* Sacred Om Divider */}
+            <div className="flex items-center justify-center gap-4 my-2 select-none" aria-hidden="true">
+              <span className="h-px w-20 sm:w-32 bg-[#E86F1D]/40" />
+              <span className="font-editorial text-2xl sm:text-3xl text-[#E86F1D] font-bold leading-none">ॐ</span>
+              <span className="h-px w-20 sm:w-32 bg-[#E86F1D]/40" />
+            </div>
+
+            <ParagraphReveal yOffset={15}>
+              <p className="font-sans text-xs sm:text-sm md:text-[15px] text-[#3D2C24] font-medium leading-relaxed max-w-3xl mx-auto">
+                {lang === "hi"
+                  ? "उनके दूरदर्शी नेतृत्व में नमो भगवते वासुदेवाय ट्रस्ट समाज के सभी वर्गों में सार्थक सामाजिक और आध्यात्मिक परिवर्तन का एक पावन मंच बना हुआ है, जो समाज के उत्थान के लिए समर्पित है।"
+                  : "Under her visionary leadership, the Trust has become a platform for meaningful social and spiritual transformation, dedicating itself to selfless seva and community welfare across society."}
+              </p>
+            </ParagraphReveal>
+          </div>
+        </div>
+      </section>
+
       {/* 6. HER LIFE MESSAGE */}
       <SectionReveal className="py-16 sm:py-24 bg-[#FAF3EA] border-t border-[#E7D8C8]">
         <div className="page-container max-w-4xl text-center space-y-6">
@@ -399,7 +402,7 @@ export default function FounderPage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
             <button
               onClick={() => openDonateModal("Founder's Vision Seva")}
-              className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-[#E86F1D] hover:bg-[#D25E12] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <Heart className="w-4 h-4 fill-current" />
               <span>{lang === "hi" ? "साध्वी जी के संकल्प में सहयोग करें" : "Support Her Vision"}</span>

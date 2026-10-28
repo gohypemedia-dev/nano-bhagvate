@@ -168,7 +168,7 @@ export default function Preloader({
                 ease: [0.76, 0, 0.24, 1],
               },
             }}
-            className="absolute inset-0 bg-[#D45A0E] z-[-1] pointer-events-none"
+            className="absolute inset-0 bg-[#E86F1D] z-[-1] pointer-events-none"
           />
         </motion.div>
       )}

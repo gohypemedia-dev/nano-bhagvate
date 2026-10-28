@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Shield, Heart, Users, BookOpen, Check, ShieldCheck, ArrowRight, HandHeart, Award, CheckCircle2, Scroll } from "lucide-react";
+import { Shield, Heart, Users, BookOpen, Check, ShieldCheck, ArrowRight, HandHeart, Award, CheckCircle2, Scroll, Copy, CheckCheck, QrCode } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import MemberCarousel from "@/components/MemberCarousel";
 import { MEMBERSHIP_PLANS, findPlan, formatINR } from "@/lib/donation-config";
@@ -28,12 +28,31 @@ import {
 export default function MembershipPage() {
   const { lang, openDonateModal } = useApp();
   const [planId, setPlanId] = useState<string>(MEMBERSHIP_PLANS[0].id);
-  const [activeFlipCard, setActiveFlipCard] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     fullName: "",
+    guardianName: "",
+    gender: "",
+    caste: "",
+    gotra: "",
     email: "",
     phone: "",
+    dob: "",
+    state: "Haryana",
+    district: "",
+    address: "",
+    wardNumber: "",
+    pincode: "",
+    occupation: "",
+    occupationDetails: "",
+    photoName: "",
   });
+  const [copiedUpi, setCopiedUpi] = useState(false);
+
+  const handleCopyUpi = () => {
+    navigator.clipboard.writeText("yespay.smessi49188@yesbankltd");
+    setCopiedUpi(true);
+    setTimeout(() => setCopiedUpi(false), 2000);
+  };
 
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -151,12 +170,10 @@ export default function MembershipPage() {
     }
   };
 
-  // Registration goes through the same UPI payment flow as the "Join Now" buttons, so the
-  // membership is recorded, approved by the Trust and confirmed by email with a certificate.
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const nameErr = validateName(formData.fullName);
-    const emailErr = validateEmail(formData.email);
+    const emailErr = formData.email ? validateEmail(formData.email) : null;
     const phoneErr = validateMobile(formData.phone, true);
 
     if (nameErr || emailErr || phoneErr) {
@@ -172,15 +189,18 @@ export default function MembershipPage() {
     }
 
     const plan = MEMBERSHIP_PLANS.find((p) => p.id === planId) ?? MEMBERSHIP_PLANS[0];
+
+    // Scroll to the QR payment card smoothly
+    const qrSection = document.getElementById("payment-qr");
+    if (qrSection) {
+      qrSection.scrollIntoView({ behavior: "smooth" });
+    }
+
     openDonateModal(plan.name, plan.price, true, {
       name: sanitizeName(formData.fullName),
-      email: sanitizeEmail(formData.email),
+      email: formData.email ? sanitizeEmail(formData.email) : undefined,
       mobile: sanitizeMobile(formData.phone),
     });
-    // The payment popup now holds the details, so clear the form for the next registration.
-    setFormData({ fullName: "", email: "", phone: "" });
-    setErrors({});
-    setTouched({});
   };
 
   return (
@@ -269,7 +289,7 @@ export default function MembershipPage() {
             <div className="pt-2 sm:pt-4">
               <a
                 href="#membership-plans"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-7 py-3.5 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-7 py-3.5 rounded-xl bg-[#E86F1D] hover:bg-[#D25E12] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
               >
                 <span>{lang === "hi" ? "सदस्यता योजनाएं देखें" : "Explore Membership Plans"}</span>
               </a>
@@ -354,28 +374,23 @@ export default function MembershipPage() {
 
         <div className="page-container relative z-10">
           {/* Section Header */}
-          <div className="text-center max-w-2xl mx-auto section-header space-y-2 mb-10 sm:mb-12">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E86F1D]/10 border border-[#E86F1D]/20 text-[#D45A0E] text-[11px] font-bold uppercase tracking-widest">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#E86F1D]" />
-              {lang === "hi" ? "आध्यात्मिक संकल्प एवं सेवा" : "SACRED CALLING & SERVICE"}
-            </div>
-            <TextReveal as="h2" className="font-editorial text-3xl sm:text-4xl lg:text-[40px] font-bold text-[#E86F1D] tracking-tight">
-              {lang === "hi" ? "ट्रस्ट की सदस्यता क्यों ग्रहण करें?" : "Why Join Our Seva Parivar?"}
-            </TextReveal>
+          <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-12">
+            <h2 className="font-editorial text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
+              <span className="text-[#1F1712]">
+                {lang === "hi" ? "ट्रस्ट की सदस्यता " : "Why Join Our "}
+              </span>
+              <span className="text-[#E86F1D]">
+                {lang === "hi" ? "क्यों ग्रहण करें?" : "Seva Parivar?"}
+              </span>
+            </h2>
           </div>
 
-          {/* 4 3D FLIP CARDS (MOBILE OPTIMIZED: TAP ON MOBILE / HOVER ON DESKTOP, BALANCED BACK FACE) */}
-          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 items-stretch">
+          {/* 4 ACTION & PURPOSE CARDS (CLEAN HORIZONTAL SPLIT MATCHING INITIATIVES STYLE) */}
+          <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-7 items-stretch">
             {[
               {
-                num: "01",
                 category: lang === "hi" ? "ज्ञान" : "GNANA",
-                badgeColor: "text-[#B8893E]",
-                iconBg: "bg-[#E86F1D]/15 text-[#E86F1D]",
-                borderColor: "border-[#D4A359]",
-                topLine: "bg-gradient-to-r from-[#D48820] to-[#E86F1D]",
-                icon: BookOpen,
-                image: "/images/card-spiritual-thought.jpg",
+                image: "/images/gurukul-real.webp",
                 title: lang === "hi" ? "आध्यात्मिक ज्ञान एवं सत्संग" : "Spiritual Enlightenment",
                 desc: lang === "hi"
                   ? "पूज्य संतों के सान्निध्य में नियमित श्रीमद्भगवद्गीता स्वाध्याय, वैदिक अनुष्ठान और ऑनलाइन सत्संग से जुड़ें।"
@@ -384,17 +399,11 @@ export default function MembershipPage() {
                   lang === "hi" ? "मासिक विशेष ऑनलाइन सत्संग" : "Monthly Live Satsangs",
                   lang === "hi" ? "दैनिक वैदिक विचार एवं प्रेरणा" : "Daily Spiritual Guidance",
                   lang === "hi" ? "वार्षिक मंदिर पूजा संकल्प" : "Personal Puja Sankalp",
-                  lang === "hi" ? "वैदिक साहित्य व प्रेरणा" : "Vedic Spiritual Wisdom",
                 ],
+                btnText: lang === "hi" ? "सत्संग से जुड़ें" : "EXPLORE SATSANG",
               },
               {
-                num: "02",
                 category: lang === "hi" ? "सेवा" : "SEVA",
-                badgeColor: "text-[#2F5A43]",
-                iconBg: "bg-[#2F5A43]/15 text-[#2F5A43]",
-                borderColor: "border-[#2F5A43]",
-                topLine: "bg-gradient-to-r from-[#2F5A43] to-[#4D8C69]",
-                icon: HandHeart,
                 image: "/images/card-seva-real.webp",
                 title: lang === "hi" ? "प्रत्यक्ष जनसेवा व अन्नक्षेत्र" : "Hands-On Ground Seva",
                 desc: lang === "hi"
@@ -404,18 +413,12 @@ export default function MembershipPage() {
                   lang === "hi" ? "दैनिक अन्नक्षेत्र भंडारा सेवा" : "Daily Bhandara Seva",
                   lang === "hi" ? "देसी गोवंश संरक्षण व चारा" : "Desi Cow & Gaushala Care",
                   lang === "hi" ? "निःशुल्क स्वास्थ्य व राहत शिविर" : "Free Health & Relief Camps",
-                  lang === "hi" ? "प्रत्यक्ष सेवा सहभागिता" : "Direct Volunteer Seva",
                 ],
+                btnText: lang === "hi" ? "सेवा से जुड़ें" : "JOIN SEVA",
               },
               {
-                num: "03",
                 category: lang === "hi" ? "संग" : "SANGHA",
-                badgeColor: "text-[#B8893E]",
-                iconBg: "bg-[#B8893E]/15 text-[#B8893E]",
-                borderColor: "border-[#B8893E]",
-                topLine: "bg-gradient-to-r from-[#B8893E] to-[#D4A359]",
-                icon: Users,
-                image: "/images/membership-hero-unity.jpg",
+                image: "/images/card-join-real.webp",
                 title: lang === "hi" ? "25,000+ पावन भक्त संग" : "Devotee Sangha & Yatras",
                 desc: lang === "hi"
                   ? "देश भर के समर्पित सनातन भक्तों के विशाल परिवार का हिस्सा बनें और विशेष तीर्थ यात्राओं में साथ चलें।"
@@ -424,18 +427,12 @@ export default function MembershipPage() {
                   lang === "hi" ? "देशव्यापी भक्त नेटवर्क" : "Pan-India Member Network",
                   lang === "hi" ? "वार्षिक तीर्थ यात्रा में प्राथमिकता" : "Priority Teerth Yatra Access",
                   lang === "hi" ? "ट्रस्ट धर्मशालाओं में सत्कार" : "Trust Dharamshala Hospitality",
-                  lang === "hi" ? "वार्षिक भक्त परिवार सम्मेलन" : "Annual Devotee Sammelan",
                 ],
+                btnText: lang === "hi" ? "परिवार से जुड़ें" : "JOIN SANGHA",
               },
               {
-                num: "04",
                 category: lang === "hi" ? "ट्रस्ट" : "TRUST",
-                badgeColor: "text-[#D45A0E]",
-                iconBg: "bg-[#E86F1D]/15 text-[#E86F1D]",
-                borderColor: "border-[#D48820]",
-                topLine: "bg-gradient-to-r from-[#D48820] to-[#E86F1D]",
-                icon: ShieldCheck,
-                image: "/images/card-vedic-books.jpg",
+                image: "/images/founder.jpg",
                 title: lang === "hi" ? "पारदर्शिता, प्रमाणपत्र व 80G" : "Purity, Certificate & 80G",
                 desc: lang === "hi"
                   ? "प्रत्येक दान का 100% सदुपयोग। आधिकारिक सदस्यता प्रमाणपत्र, मंदिर का पावन प्रसाद और 80G रसीद प्राप्त करें।"
@@ -444,123 +441,61 @@ export default function MembershipPage() {
                   lang === "hi" ? "100% आयकर छूट (धारा 80G)" : "100% Tax Exemption (80G)",
                   lang === "hi" ? "आधिकारिक सदस्यता प्रमाणपत्र" : "Official Member Certificate",
                   lang === "hi" ? "मंदिर का पावन प्रसाद" : "Blessed Temple Prasad Delivery",
-                  lang === "hi" ? "पारदर्शी वार्षिक सेवा रिपोर्ट" : "Verified Annual Audit Report",
                 ],
+                btnText: lang === "hi" ? "सदस्यता लें" : "BECOME A MEMBER",
               },
-            ].map((card, idx) => {
-              const isFlipped = activeFlipCard === idx;
-              return (
-                <StaggerItem key={idx}>
-                  <div
-                    onClick={() => setActiveFlipCard(isFlipped ? null : idx)}
-                    className="perspective-1000 w-full max-w-[340px] sm:max-w-none mx-auto h-[310px] sm:h-[325px] group cursor-pointer select-none"
-                  >
-                    <div className={`relative w-full h-full flip-card-inner group-hover-flip ${isFlipped ? "is-flipped" : ""}`}>
-                      {/* FRONT FACE - IMAGE & TITLE */}
-                      <div className="absolute inset-0 w-full h-full backface-hidden rounded-2xl overflow-hidden border border-[#E7D8C8] shadow-warm-xs group-hover:shadow-warm-md flex flex-col justify-end p-4 sm:p-5">
-                        <Image
-                          src={card.image}
-                          alt={card.title}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                          className="object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#1F1610]/95 via-[#1F1610]/35 to-transparent z-10" />
+            ].map((card, idx) => (
+              <StaggerItem key={idx} className="h-full">
+                <div className="bg-white rounded-[20px] sm:rounded-[24px] border border-[#E7D8C8] overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 flex flex-col sm:flex-row h-full group">
+                  {/* Left Image */}
+                  <div className="relative w-full sm:w-[38%] md:w-[40%] shrink-0 min-h-[200px] sm:min-h-[230px] overflow-hidden bg-[#FAF3EC]">
+                    <Image
+                      src={card.image}
+                      alt={card.title}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
 
-                        {/* Bottom Info on Front */}
-                        <div className="relative z-20 text-white">
-                          <h3 className="font-editorial text-xl sm:text-2xl font-bold leading-snug drop-shadow-sm">
-                            {card.title}
-                          </h3>
-                          <div className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-bold text-[#E8A246] uppercase tracking-wider">
-                            <span>{lang === "hi" ? "टैप करें" : "Tap / Hover to explore"}</span>
-                            <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                  {/* Right Content */}
+                  <div className="p-5 sm:p-6 flex flex-col justify-between flex-1 bg-white">
+                    <div>
+                      <span className="text-[11px] font-bold text-[#E86F1D] uppercase tracking-wider block">
+                        {card.category}
+                      </span>
+                      <h3 className="font-editorial font-bold text-lg sm:text-xl text-[#1F1712] leading-snug mt-1">
+                        {card.title}
+                      </h3>
+                      <p className="text-xs sm:text-[13px] text-[#5C6B73] leading-relaxed mt-2 line-clamp-3">
+                        {card.desc}
+                      </p>
+
+                      {/* Benefits / Points */}
+                      <div className="mt-3.5 pt-3 border-t border-[#F0E4D8] space-y-1.5 sm:space-y-2">
+                        {card.points.map((pt, pIdx) => (
+                          <div key={pIdx} className="flex items-center gap-2 text-xs text-[#2B201A]/85">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#E86F1D] shrink-0" />
+                            <span className="leading-tight">{pt}</span>
                           </div>
-                        </div>
-                      </div>
-
-                      {/* BACK FACE - TIGHT BALANCED DESIGN (NO MIDDLE GAP) */}
-                      <div className={`absolute inset-0 w-full h-full backface-hidden rotate-y-180 rounded-2xl p-4 sm:p-5 bg-gradient-to-b from-[#FFFDF9] via-[#FFF8EE] to-[#FAF2E6] border-2 ${card.borderColor} shadow-warm-lg flex flex-col justify-start overflow-hidden`}>
-                        <div className={`absolute top-0 left-0 right-0 h-1.5 ${card.topLine}`} />
-
-                        {/* Top Header */}
-                        <div className="flex items-center justify-between mb-2">
-                          <span className={`text-[10px] sm:text-[11px] font-bold uppercase tracking-widest ${card.badgeColor}`}>
-                            {card.num} • {card.category}
-                          </span>
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${card.iconBg}`}>
-                            <card.icon className="w-4 h-4" />
-                          </div>
-                        </div>
-
-                        {/* Title & Description */}
-                        <h3 className="font-editorial text-lg sm:text-xl font-bold text-[#2B201A] leading-snug">
-                          {card.title}
-                        </h3>
-                        <p className="text-xs text-[#2B201A]/80 mt-1.5 leading-relaxed">
-                          {card.desc}
-                        </p>
-
-                        {/* Bullet Points immediately under description (zero middle gap) */}
-                        <div className="mt-3 pt-2.5 border-t border-[#E7D8C8] space-y-1.5 sm:space-y-2">
-                          {card.points.map((pt, pIdx) => (
-                            <div key={pIdx} className="flex items-center gap-2 text-xs text-[#2B201A]/85">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-[#2F5A43] shrink-0" />
-                              <span className="leading-tight">{pt}</span>
-                            </div>
-                          ))}
-                        </div>
-
-                        {/* Footer Touch Hint */}
-                        <div className="mt-auto pt-1 flex items-center justify-end text-[10px] font-bold text-[#B8893E] uppercase tracking-wider">
-                          <span className="inline-flex items-center gap-1 opacity-80">
-                            <span>{lang === "hi" ? "वापस जाएँ" : "Tap to flip back"}</span>
-                            <ArrowRight className="w-3 h-3 rotate-180" />
-                          </span>
-                        </div>
+                        ))}
                       </div>
                     </div>
+
+                    <div className="mt-5 pt-2">
+                      <button
+                        onClick={() => openDonateModal(card.title, undefined, true)}
+                        className="inline-flex items-center justify-center px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs uppercase tracking-wider shadow-sm hover:shadow-md transition-all cursor-pointer"
+                      >
+                        <span>{card.btnText}</span>
+                      </button>
+                    </div>
                   </div>
-                </StaggerItem>
-              );
-            })}
+                </div>
+              </StaggerItem>
+            ))}
           </StaggerContainer>
 
-          {/* Bottom Trust & Devotional Seal Banner */}
-          <div className="mt-10 sm:mt-12 rounded-2xl bg-[#FFF9F2] border border-[#E7D8C8] p-5 sm:p-6 shadow-warm-xs">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-5 text-center md:text-left">
-              <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 rounded-full bg-[#E86F1D]/15 text-[#E86F1D] flex items-center justify-center shrink-0">
-                  <Award className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-sm text-[#2B201A] uppercase tracking-wide">
-                    {lang === "hi" ? "विश्वसनीय व पंजीकृत धार्मिक न्यास" : "Government Registered Religious Trust"}
-                  </h4>
-                  <p className="text-xs text-[#2B201A]/70 mt-0.5">
-                    {lang === "hi"
-                      ? "धारा 12A एवं 80G के अंतर्गत पंजीकृत • समस्त दान आयकर छूट हेतु मान्य"
-                      : "Registered under Section 12A & 80G • Zero administrative leakage • Complete annual reporting"}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 sm:gap-4 shrink-0 flex-wrap justify-center">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FAF3EA] border border-[#E7D8C8] text-[11px] font-bold text-[#2B201A]">
-                  <Scroll className="w-3.5 h-3.5 text-[#B8893E]" />
-                  {lang === "hi" ? "सदस्यता पत्र" : "Seva Certificate"}
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FAF3EA] border border-[#E7D8C8] text-[11px] font-bold text-[#2B201A]">
-                  <Heart className="w-3.5 h-3.5 text-[#E86F1D]" />
-                  {lang === "hi" ? "वार्षिक संकल्प" : "Annual Sankalp"}
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FAF3EA] border border-[#E7D8C8] text-[11px] font-bold text-[#2F5A43]">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#2F5A43]" />
-                  {lang === "hi" ? "80G रसीद" : "80G Tax Benefit"}
-                </span>
-              </div>
-            </div>
-          </div>
         </div>
       </SectionReveal>
 
@@ -585,26 +520,25 @@ export default function MembershipPage() {
 
       {/* MEMBERSHIP REGISTRATION FORM */}
       <section className="section-py bg-[#FBF2E7]/60 border-t border-[#E7D8C8]">
-        <div className="page-container max-w-3xl">
-          <div className="card-warm p-8 sm:p-12 space-y-8">
+        <div className="page-container max-w-4xl space-y-8">
+          {/* Form Card (White Background) */}
+          <div className="p-6 sm:p-10 space-y-8 bg-white border border-[#E7D8C8] rounded-[24px] shadow-sm">
             <div className="text-center space-y-2">
-              <p className="text-xs font-bold uppercase tracking-widest text-[#E86F1D]">
-                {lang === "hi" ? "पंजीकरण" : "REGISTRATION"}
-              </p>
               <h2 className="font-editorial text-3xl sm:text-4xl font-bold text-[#E86F1D]">
                 {lang === "hi" ? "सदस्यता पंजीकरण" : "Membership Registration"}
               </h2>
               <HeadingDivider className="my-1.5" />
-              <p className="text-sm text-[#2B201A]/75">
+              <p className="text-sm text-[#4B5563]">
                 {lang === "hi"
                   ? "अपनी सदस्यता योजना चुनें और सदस्यता पूर्ण करने के लिए अपना विवरण साझा करें।"
                   : "Choose your plan and share your details to complete your membership."}
               </p>
             </div>
 
-            <form onSubmit={handleFormSubmit} noValidate className="space-y-5">
+            <form onSubmit={handleFormSubmit} noValidate className="space-y-8">
+              {/* Membership Plan Selection */}
               <fieldset>
-                <legend className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-2">
+                <legend className="block text-xs font-bold uppercase tracking-wider text-[#1F1712] mb-2.5">
                   {lang === "hi" ? "सदस्यता योजना चुनें *" : "Membership Plan *"}
                 </legend>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -616,7 +550,9 @@ export default function MembershipPage() {
                       <label
                         key={p.id}
                         className={`flex items-center justify-between gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-colors ${
-                          selected ? "border-[#E86F1D] bg-[#E86F1D]/5" : "border-[#E7D8C8] bg-[#FFF9F2] hover:border-[#E86F1D]/40"
+                          selected
+                            ? "border-[#E86F1D] bg-[#FFF8F2] shadow-xs"
+                            : "border-[#E5E7EB] bg-white hover:border-[#E86F1D]/40"
                         }`}
                       >
                         <span className="flex items-center gap-2.5">
@@ -626,9 +562,9 @@ export default function MembershipPage() {
                             value={p.id}
                             checked={selected}
                             onChange={() => setPlanId(p.id)}
-                            className="accent-[#E86F1D]"
+                            className="accent-[#E86F1D] w-4 h-4"
                           />
-                          <span className="text-sm font-semibold text-[#2B201A]">{displayName}</span>
+                          <span className="text-sm font-semibold text-[#1F1712]">{displayName}</span>
                         </span>
                         <span className="text-sm font-bold text-[#E86F1D] tabular-nums">{formatINR(p.price)}</span>
                       </label>
@@ -637,102 +573,466 @@ export default function MembershipPage() {
                 </div>
               </fieldset>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* SECTION 1: PERSONAL DETAILS */}
+              <div className="space-y-5 pt-4 border-t border-[#F3F4F6]">
+                <h3 className="font-editorial text-xl font-bold text-[#E86F1D]">
+                  {lang === "hi" ? "व्यक्तिगत विवरण" : "Personal Details"}
+                </h3>
+
+                {/* Photo Upload */}
                 <div>
-                  <label htmlFor="mem-fullname" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
-                    {lang === "hi" ? "पूरा नाम *" : "Full Name *"}
+                  <label className="block text-xs font-bold text-[#1F1712] mb-1.5">
+                    {lang === "hi" ? "फोटो" : "Photo"}
                   </label>
-                  <input
-                    id="mem-fullname"
-                    type="text"
-                    required
-                    maxLength={60}
-                    placeholder={lang === "hi" ? "अपना पूरा नाम दर्ज करें" : "Enter your full name"}
-                    value={formData.fullName}
-                    onChange={(e) => {
-                      setFormData({ ...formData, fullName: e.target.value });
-                      if (errors.fullName && validateName(e.target.value) === null) {
-                        setErrors((prev) => ({ ...prev, fullName: undefined }));
-                      }
-                    }}
-                    onBlur={() => handleBlur("fullName")}
-                    className="input-warm"
-                  />
-                  {errors.fullName && (touched.fullName || errors.fullName) && (
-                    <p className="mt-1 text-xs font-semibold text-[#B3261E]">{errors.fullName}</p>
-                  )}
+                  <div className="border border-dashed border-[#E86F1D] rounded-md px-3 py-2 bg-white inline-flex items-center gap-2.5">
+                    <label className="inline-flex items-center px-3 py-1 rounded border border-[#D1D5DB] bg-[#F9FAFB] hover:bg-[#F3F4F6] text-xs font-semibold text-[#1F1712] cursor-pointer transition-colors">
+                      <span>Choose File</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            setFormData({ ...formData, photoName: e.target.files[0].name });
+                          }
+                        }}
+                      />
+                    </label>
+                    <span className="text-xs text-[#6B7280]">
+                      {formData.photoName || "No file chosen"}
+                    </span>
+                  </div>
                 </div>
 
-                <div>
-                  <label htmlFor="mem-email" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
-                    {lang === "hi" ? "ईमेल पता *" : "Email Address *"}
-                  </label>
-                  <input
-                    id="mem-email"
-                    type="email"
-                    required
-                    maxLength={254}
-                    placeholder="email@domain.com"
-                    value={formData.email}
-                    onChange={(e) => {
-                      setFormData({ ...formData, email: e.target.value });
-                      if (errors.email && validateEmail(e.target.value) === null) {
-                        setErrors((prev) => ({ ...prev, email: undefined }));
-                      }
-                    }}
-                    onBlur={() => handleBlur("email")}
-                    className="input-warm"
-                  />
-                  {errors.email && (touched.email || errors.email) && (
-                    <p className="mt-1 text-xs font-semibold text-[#B3261E]">{errors.email}</p>
-                  )}
+                {/* Row 1: Full Name, S/o W/o D/o, Gender (3 Equal Columns) */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+                  <div>
+                    <label htmlFor="mem-fullname" className="block text-xs font-bold text-[#1F1712] mb-1.5">
+                      {lang === "hi" ? "पूरा नाम" : "Full Name"} <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="mem-fullname"
+                      type="text"
+                      required
+                      maxLength={60}
+                      placeholder={lang === "hi" ? "पूरा नाम" : "Full Name"}
+                      value={formData.fullName}
+                      onChange={(e) => {
+                        setFormData({ ...formData, fullName: e.target.value });
+                        if (errors.fullName && validateName(e.target.value) === null) {
+                          setErrors((prev) => ({ ...prev, fullName: undefined }));
+                        }
+                      }}
+                      onBlur={() => handleBlur("fullName")}
+                      className="w-full h-11 px-3.5 bg-white border border-[#D1D5DB] focus:border-[#E86F1D] focus:ring-1 focus:ring-[#E86F1D] rounded-lg text-sm text-[#1F1712] placeholder:text-[#9CA3AF] outline-none transition-all"
+                    />
+                    {errors.fullName && (touched.fullName || errors.fullName) && (
+                      <p className="mt-1 text-xs font-semibold text-red-600">{errors.fullName}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label htmlFor="mem-guardian" className="block text-xs font-bold text-[#1F1712] mb-1.5">
+                      {lang === "hi" ? "पिता / पति का नाम" : "S/o, W/o, D/o"}
+                    </label>
+                    <input
+                      id="mem-guardian"
+                      type="text"
+                      maxLength={60}
+                      placeholder={lang === "hi" ? "पिता / पति का नाम" : "S/o, W/o, D/o Name"}
+                      value={formData.guardianName}
+                      onChange={(e) => setFormData({ ...formData, guardianName: e.target.value })}
+                      className="w-full h-11 px-3.5 bg-white border border-[#D1D5DB] focus:border-[#E86F1D] focus:ring-1 focus:ring-[#E86F1D] rounded-lg text-sm text-[#1F1712] placeholder:text-[#9CA3AF] outline-none transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="mem-gender" className="block text-xs font-bold text-[#1F1712] mb-1.5">
+                      {lang === "hi" ? "लिंग" : "Gender"} <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      id="mem-gender"
+                      value={formData.gender}
+                      onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                      className="w-full h-11 px-3.5 bg-white border border-[#D1D5DB] focus:border-[#E86F1D] focus:ring-1 focus:ring-[#E86F1D] rounded-lg text-sm text-[#1F1712] outline-none transition-all cursor-pointer"
+                    >
+                      <option value="">{lang === "hi" ? "--लिंग चुनें--" : "--Select Gender--"}</option>
+                      <option value="Male">{lang === "hi" ? "पुरुष (Male)" : "Male"}</option>
+                      <option value="Female">{lang === "hi" ? "महिला (Female)" : "Female"}</option>
+                      <option value="Other">{lang === "hi" ? "अन्य (Other)" : "Other"}</option>
+                    </select>
+                  </div>
                 </div>
 
-                <div>
-                  <label htmlFor="mem-phone" className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/80 mb-1">
-                    {lang === "hi" ? "मोबाइल नंबर *" : "Phone Number *"}
-                  </label>
-                  <input
-                    id="mem-phone"
-                    type="tel"
-                    inputMode="numeric"
-                    required
-                    maxLength={14}
-                    placeholder="+91"
-                    value={formData.phone}
-                    onChange={(e) => {
-                      let val = e.target.value.replace(/\D/g, "");
-                      if (val.length > 10 && val.startsWith("91")) {
-                        val = val.slice(2);
-                      }
-                      const sanitized = val.slice(0, 10);
-                      setFormData({ ...formData, phone: sanitized });
-                      if (errors.phone && validateMobile(sanitized, true) === null) {
-                        setErrors((prev) => ({ ...prev, phone: undefined }));
-                      }
-                    }}
-                    onBlur={() => handleBlur("phone")}
-                    className="input-warm"
-                  />
-                  {errors.phone && (touched.phone || errors.phone) && (
-                    <p className="mt-1 text-xs font-semibold text-[#B3261E]">{errors.phone}</p>
-                  )}
+                {/* Row 2: Caste, Gotra, Email (3 Equal Columns) */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+                  <div>
+                    <label htmlFor="mem-caste" className="block text-xs font-bold text-[#1F1712] mb-1.5">
+                      {lang === "hi" ? "जाति" : "Caste"}
+                    </label>
+                    <input
+                      id="mem-caste"
+                      type="text"
+                      maxLength={40}
+                      placeholder={lang === "hi" ? "जाति" : "Caste"}
+                      value={formData.caste}
+                      onChange={(e) => setFormData({ ...formData, caste: e.target.value })}
+                      className="w-full h-11 px-3.5 bg-white border border-[#D1D5DB] focus:border-[#E86F1D] focus:ring-1 focus:ring-[#E86F1D] rounded-lg text-sm text-[#1F1712] placeholder:text-[#9CA3AF] outline-none transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="mem-gotra" className="block text-xs font-bold text-[#1F1712] mb-1.5">
+                      {lang === "hi" ? "गोत्र" : "Gotra"}
+                    </label>
+                    <input
+                      id="mem-gotra"
+                      type="text"
+                      maxLength={40}
+                      placeholder={lang === "hi" ? "गोत्र" : "Gotra"}
+                      value={formData.gotra}
+                      onChange={(e) => setFormData({ ...formData, gotra: e.target.value })}
+                      className="w-full h-11 px-3.5 bg-white border border-[#D1D5DB] focus:border-[#E86F1D] focus:ring-1 focus:ring-[#E86F1D] rounded-lg text-sm text-[#1F1712] placeholder:text-[#9CA3AF] outline-none transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="mem-email" className="block text-xs font-bold text-[#1F1712] mb-1.5">
+                      {lang === "hi" ? "ईमेल" : "Email"}
+                    </label>
+                    <input
+                      id="mem-email"
+                      type="email"
+                      maxLength={254}
+                      placeholder="email@domain.com"
+                      value={formData.email}
+                      onChange={(e) => {
+                        setFormData({ ...formData, email: e.target.value });
+                        if (errors.email && validateEmail(e.target.value) === null) {
+                          setErrors((prev) => ({ ...prev, email: undefined }));
+                        }
+                      }}
+                      onBlur={() => handleBlur("email")}
+                      className="w-full h-11 px-3.5 bg-white border border-[#D1D5DB] focus:border-[#E86F1D] focus:ring-1 focus:ring-[#E86F1D] rounded-lg text-sm text-[#1F1712] placeholder:text-[#9CA3AF] outline-none transition-all"
+                    />
+                    {errors.email && (touched.email || errors.email) && (
+                      <p className="mt-1 text-xs font-semibold text-red-600">{errors.email}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Row 3: Phone Number, Date of Birth, Empty Col (3 Equal Columns) */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+                  <div>
+                    <label htmlFor="mem-phone" className="block text-xs font-bold text-[#1F1712] mb-1.5">
+                      {lang === "hi" ? "मोबाइल नंबर" : "Phone Number"} <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative flex items-center">
+                      <span className="absolute left-3 text-xs text-[#4B5563] font-medium select-none flex items-center gap-1.5">
+                        <span>🇮🇳</span>
+                        <span>+91</span>
+                      </span>
+                      <input
+                        id="mem-phone"
+                        type="tel"
+                        inputMode="numeric"
+                        required
+                        maxLength={10}
+                        placeholder=""
+                        value={formData.phone}
+                        onChange={(e) => {
+                          let val = e.target.value.replace(/\D/g, "");
+                          if (val.length > 10 && val.startsWith("91")) {
+                            val = val.slice(2);
+                          }
+                          const sanitized = val.slice(0, 10);
+                          setFormData({ ...formData, phone: sanitized });
+                          if (errors.phone && validateMobile(sanitized, true) === null) {
+                            setErrors((prev) => ({ ...prev, phone: undefined }));
+                          }
+                        }}
+                        onBlur={() => handleBlur("phone")}
+                        className="w-full h-11 !pl-16 pr-3.5 bg-white border border-[#D1D5DB] focus:border-[#E86F1D] focus:ring-1 focus:ring-[#E86F1D] rounded-lg text-sm text-[#1F1712] outline-none transition-all"
+                      />
+                    </div>
+                    {errors.phone && (touched.phone || errors.phone) && (
+                      <p className="mt-1 text-xs font-semibold text-red-600">{errors.phone}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label htmlFor="mem-dob" className="block text-xs font-bold text-[#1F1712] mb-1.5">
+                      {lang === "hi" ? "जन्म तिथि" : "Date of Birth"}
+                    </label>
+                    <input
+                      id="mem-dob"
+                      type="date"
+                      value={formData.dob}
+                      onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
+                      className="w-full h-11 px-3.5 bg-white border border-[#D1D5DB] focus:border-[#E86F1D] focus:ring-1 focus:ring-[#E86F1D] rounded-lg text-sm text-[#1F1712] outline-none transition-all cursor-pointer"
+                    />
+                  </div>
+
+                  {/* Empty 3rd Column for exact 3-col alignment */}
+                  <div className="hidden sm:block" />
                 </div>
               </div>
 
-              <p className="flex items-start gap-2 text-xs text-[#2B201A]/70 bg-[#FFF9F2] border border-[#E7D8C8] rounded-xl p-3">
-                <ShieldCheck className="w-4 h-4 text-[#2F5A43] shrink-0" />
-                <span>
-                  {lang === "hi"
-                    ? "इसके बाद, आप ट्रस्ट के आधिकारिक खाते में UPI द्वारा भुगतान करेंगे। भुगतान की पुष्टि होते ही, आपकी सदस्यता पावती और प्रमाणपत्र आपके ईमेल पर भेज दिया जाएगा।"
-                    : "Next, you'll pay by UPI to the Trust's account. Once the Trust confirms your payment, your membership confirmation and certificate are emailed to you."}
-                </span>
-              </p>
+              {/* SECTION 2: ADDRESS DETAILS */}
+              <div className="space-y-5 pt-4 border-t border-[#F3F4F6]">
+                <h3 className="font-editorial text-xl font-bold text-[#E86F1D]">
+                  {lang === "hi" ? "पते का विवरण" : "Address Details"}
+                </h3>
 
-              <button type="submit" className="btn-primary w-full">
-                {lang === "hi" ? "भुगतान के लिए आगे बढ़ें — " : "Continue to Payment — "}
-                {formatINR((MEMBERSHIP_PLANS.find((p) => p.id === planId) ?? MEMBERSHIP_PLANS[0]).price)}
-              </button>
+                {/* Row 1: State, District, Address (3 Equal Columns) */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+                  <div>
+                    <label htmlFor="mem-state" className="block text-xs font-bold text-[#1F1712] mb-1.5">
+                      {lang === "hi" ? "राज्य" : "State"} <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      id="mem-state"
+                      value={formData.state}
+                      onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                      className="w-full h-11 px-3.5 bg-white border border-[#D1D5DB] focus:border-[#E86F1D] focus:ring-1 focus:ring-[#E86F1D] rounded-lg text-sm text-[#1F1712] outline-none transition-all cursor-pointer"
+                    >
+                      <option value="Haryana">Haryana (हरियाणा)</option>
+                      <option value="Delhi">Delhi (दिल्ली)</option>
+                      <option value="Uttar Pradesh">Uttar Pradesh (उत्तर प्रदेश)</option>
+                      <option value="Rajasthan">Rajasthan (राजस्थान)</option>
+                      <option value="Punjab">Punjab (पंजाब)</option>
+                      <option value="Madhya Pradesh">Madhya Pradesh (मध्य प्रदेश)</option>
+                      <option value="Bihar">Bihar (बिहार)</option>
+                      <option value="Maharashtra">Maharashtra (महाराष्ट्र)</option>
+                      <option value="Gujarat">Gujarat (गुजरात)</option>
+                      <option value="Other">Other State (अन्य)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="mem-district" className="block text-xs font-bold text-[#1F1712] mb-1.5">
+                      {lang === "hi" ? "जिला" : "District"} <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="mem-district"
+                      type="text"
+                      placeholder={lang === "hi" ? "--जिला चुनें--" : "--Select District--"}
+                      value={formData.district}
+                      onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                      className="w-full h-11 px-3.5 bg-white border border-[#D1D5DB] focus:border-[#E86F1D] focus:ring-1 focus:ring-[#E86F1D] rounded-lg text-sm text-[#1F1712] placeholder:text-[#9CA3AF] outline-none transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="mem-address" className="block text-xs font-bold text-[#1F1712] mb-1.5">
+                      {lang === "hi" ? "वर्तमान पता" : "Address"} <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="mem-address"
+                      type="text"
+                      placeholder={lang === "hi" ? "वर्तमान पता" : "Current Address"}
+                      value={formData.address}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                      className="w-full h-11 px-3.5 bg-white border border-[#D1D5DB] focus:border-[#E86F1D] focus:ring-1 focus:ring-[#E86F1D] rounded-lg text-sm text-[#1F1712] placeholder:text-[#9CA3AF] outline-none transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* Row 2: Ward Number, Pincode, Empty Col (3 Equal Columns) */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+                  <div>
+                    <label htmlFor="mem-ward" className="block text-xs font-bold text-[#1F1712] mb-1.5">
+                      {lang === "hi" ? "वार्ड नंबर" : "Ward Number"}
+                    </label>
+                    <input
+                      id="mem-ward"
+                      type="text"
+                      maxLength={20}
+                      placeholder={lang === "hi" ? "वार्ड नंबर" : "Ward Number"}
+                      value={formData.wardNumber}
+                      onChange={(e) => setFormData({ ...formData, wardNumber: e.target.value })}
+                      className="w-full h-11 px-3.5 bg-white border border-[#D1D5DB] focus:border-[#E86F1D] focus:ring-1 focus:ring-[#E86F1D] rounded-lg text-sm text-[#1F1712] placeholder:text-[#9CA3AF] outline-none transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="mem-pincode" className="block text-xs font-bold text-[#1F1712] mb-1.5">
+                      {lang === "hi" ? "पिनकोड" : "Pincode"}
+                    </label>
+                    <input
+                      id="mem-pincode"
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={6}
+                      placeholder={lang === "hi" ? "पिनकोड" : "Pincode"}
+                      value={formData.pincode}
+                      onChange={(e) => setFormData({ ...formData, pincode: e.target.value.replace(/\D/g, "").slice(0, 6) })}
+                      className="w-full h-11 px-3.5 bg-white border border-[#D1D5DB] focus:border-[#E86F1D] focus:ring-1 focus:ring-[#E86F1D] rounded-lg text-sm text-[#1F1712] placeholder:text-[#9CA3AF] outline-none transition-all"
+                    />
+                  </div>
+
+                  {/* Empty 3rd Column for exact 3-col alignment */}
+                  <div className="hidden sm:block" />
+                </div>
+
+                {/* Row 3: Occupation, Occupation Details, Empty Col (3 Equal Columns) */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+                  <div>
+                    <label htmlFor="mem-occupation" className="block text-xs font-bold text-[#1F1712] mb-1.5">
+                      {lang === "hi" ? "व्यवसाय" : "Occupation"}
+                    </label>
+                    <select
+                      id="mem-occupation"
+                      value={formData.occupation}
+                      onChange={(e) => setFormData({ ...formData, occupation: e.target.value })}
+                      className="w-full h-11 px-3.5 bg-white border border-[#D1D5DB] focus:border-[#E86F1D] focus:ring-1 focus:ring-[#E86F1D] rounded-lg text-sm text-[#1F1712] outline-none transition-all cursor-pointer"
+                    >
+                      <option value="">{lang === "hi" ? "--व्यवसाय चुनें--" : "--Select Occupation--"}</option>
+                      <option value="Business">{lang === "hi" ? "व्यवसाय (Business)" : "Business"}</option>
+                      <option value="Private Job">{lang === "hi" ? "निजी सेवा (Private Job)" : "Private Job"}</option>
+                      <option value="Government Job">{lang === "hi" ? "सरकारी सेवा (Govt Job)" : "Government Job"}</option>
+                      <option value="Agriculture">{lang === "hi" ? "कृषि (Agriculture)" : "Agriculture"}</option>
+                      <option value="Social Work">{lang === "hi" ? "समाज सेवा (Social Work)" : "Social Work"}</option>
+                      <option value="Self Employed">{lang === "hi" ? "स्वरोजगार (Self Employed)" : "Self Employed"}</option>
+                      <option value="Student">{lang === "hi" ? "विद्यार्थी (Student)" : "Student"}</option>
+                      <option value="Homemaker">{lang === "hi" ? "गृहिणी (Homemaker)" : "Homemaker"}</option>
+                      <option value="Other">{lang === "hi" ? "अन्य (Other)" : "Other"}</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="mem-occ-details" className="block text-xs font-bold text-[#1F1712] mb-1.5">
+                      {lang === "hi" ? "व्यवसाय का विवरण" : "Occupation Details"}
+                    </label>
+                    <input
+                      id="mem-occ-details"
+                      type="text"
+                      placeholder={lang === "hi" ? "विवरण दर्ज करें" : "Mention Details"}
+                      value={formData.occupationDetails}
+                      onChange={(e) => setFormData({ ...formData, occupationDetails: e.target.value })}
+                      className="w-full h-11 px-3.5 bg-white border border-[#D1D5DB] focus:border-[#E86F1D] focus:ring-1 focus:ring-[#E86F1D] rounded-lg text-sm text-[#1F1712] placeholder:text-[#9CA3AF] outline-none transition-all"
+                    />
+                  </div>
+
+                  {/* Empty 3rd Column for exact 3-col alignment */}
+                  <div className="hidden sm:block" />
+                </div>
+              </div>
+
+              {/* SECTION 3: MEMBERSHIP PAYMENT & QR CODE */}
+              <div id="payment-qr" className="pt-8 border-t border-[#F3F4F6] space-y-6">
+                {/* Header & Instructions */}
+                <div className="space-y-1.5 text-left">
+                  <h3 className="font-editorial text-2xl sm:text-3xl font-bold text-[#E86F1D]">
+                    {lang === "hi" ? "सदस्यता भुगतान" : "Membership Payment"}
+                  </h3>
+                  <HeadingDivider align="left" className="!py-0.5" />
+                  <p className="text-xs sm:text-sm text-[#4B5563] pt-0.5">
+                    {lang === "hi"
+                      ? "कृपया नीचे दिए गए QR कोड को स्कैन करके अपना सदस्यता सहयोग पूरा करें।"
+                      : "Please complete your membership payment by scanning the QR code below."}
+                  </p>
+                </div>
+
+                {/* 2-Column Side-by-Side: QR on Left, Details & Instructions on Right */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-start pt-2">
+                  {/* LEFT COLUMN: QR Code Stand & UPI Copy Badge */}
+                  <div className="md:col-span-5 flex flex-col items-center text-center space-y-3.5">
+                    <div className="relative w-full max-w-[280px] sm:max-w-[320px] aspect-[4/5] rounded-2xl overflow-hidden border border-[#E5E7EB] shadow-sm bg-white">
+                      <Image
+                        src="/images/trust-payment-qr.png"
+                        alt="Namo Bhagwate Trust UPI QR Code"
+                        fill
+                        priority
+                        unoptimized
+                        className="object-contain"
+                      />
+                    </div>
+
+                    {/* UPI ID Badge & Copy Button */}
+                    <div className="w-full max-w-[280px] sm:max-w-[320px] flex items-center justify-between gap-2 px-4 py-2.5 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB]">
+                      <span className="text-xs font-mono font-bold text-[#1F1712] truncate">
+                        yespay.smessi49188@yesbankltd
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleCopyUpi}
+                        className="inline-flex items-center gap-1 text-xs font-bold text-[#E86F1D] hover:text-[#D45A0E] cursor-pointer shrink-0"
+                      >
+                        {copiedUpi ? (
+                          <>
+                            <CheckCheck className="w-3.5 h-3.5 text-emerald-600" />
+                            <span className="text-emerald-600 font-bold">{lang === "hi" ? "कॉपी हुआ!" : "Copied!"}</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3.5 h-3.5" />
+                            <span>{lang === "hi" ? "कॉपी" : "Copy"}</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* RIGHT COLUMN: 4-Step Instructions, Trust Notice & Continue CTA */}
+                  <div className="md:col-span-7 flex flex-col space-y-4">
+                    {/* 4-Step Instructions List */}
+                    <ol className="text-xs sm:text-sm text-[#374151] space-y-3 list-decimal list-inside bg-[#F9FAFB] border border-[#E5E7EB] rounded-2xl p-5 sm:p-6 leading-relaxed">
+                      <li className="font-medium">
+                        <span>
+                          {lang === "hi"
+                            ? "अपने पसंदीदा UPI ऐप (GPay, PhonePe, Paytm, BHIM) से QR कोड स्कैन करें।"
+                            : "Scan the QR code using your preferred UPI app."}
+                        </span>
+                      </li>
+                      <li className="font-medium">
+                        <span>
+                          {lang === "hi"
+                            ? `लागू सदस्यता राशि का भुगतान करें: ${formatINR(
+                                (MEMBERSHIP_PLANS.find((p) => p.id === planId) ?? MEMBERSHIP_PLANS[0]).price
+                              )}`
+                            : `Pay the applicable membership amount: ${formatINR(
+                                (MEMBERSHIP_PLANS.find((p) => p.id === planId) ?? MEMBERSHIP_PLANS[0]).price
+                              )}`}
+                        </span>
+                      </li>
+                      <li className="font-medium">
+                        <span>
+                          {lang === "hi"
+                            ? "भुगतान का स्क्रीनशॉट ट्रस्ट कार्यालय को व्हाट्सएप पर भेजें: +91 9910762692 / +91 88606 65000"
+                            : "Share the screenshot over WhatsApp with Trust Office Incharge at +91 9910762692 or +91 88606 65000."}
+                        </span>
+                      </li>
+                      <li className="font-medium">
+                        <span>
+                          {lang === "hi"
+                            ? "हमारी टीम भुगतान का सत्यापन करके आपके खाते की सदस्यता सक्रिय करेगी और प्रमाणपत्र जारी करेगी।"
+                            : "Our team will verify the payment and activate the appropriate membership for your account."}
+                        </span>
+                      </li>
+                    </ol>
+
+                    {/* Trust Confirmation Notice Box */}
+                    <div className="rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] px-4 py-3 text-xs sm:text-sm text-[#374151] flex items-center gap-2.5">
+                      <ShieldCheck className="w-5 h-5 text-[#2F5A43] shrink-0" />
+                      <span>
+                        {lang === "hi"
+                          ? "इसके बाद, आप ट्रस्ट के खाते में UPI द्वारा भुगतान करेंगे। ट्रस्ट द्वारा पुष्टि होने पर, सदस्यता पुष्टि और प्रमाणपत्र आपको ईमेल कर दिया जाएगा।"
+                          : "Next, you'll pay by UPI to the Trust's account. Once the Trust confirms your payment, your membership confirmation and certificate are emailed to you."}
+                      </span>
+                    </div>
+
+                    {/* Continue Button */}
+                    <button
+                      type="submit"
+                      className="w-full py-4 px-6 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-sm sm:text-base uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer text-center"
+                    >
+                      {lang === "hi" ? "भुगतान जारी रखें — " : "CONTINUE TO PAYMENT — "}
+                      {formatINR((MEMBERSHIP_PLANS.find((p) => p.id === planId) ?? MEMBERSHIP_PLANS[0]).price)}
+                    </button>
+                  </div>
+                </div>
+              </div>
             </form>
           </div>
         </div>

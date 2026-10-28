@@ -341,8 +341,8 @@ export default function EventDetailsModal({
 
                     {/* Right: Exact Single Time Pill */}
                     <div className="shrink-0">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#FFF5EA] border border-[#E86F1D]/30 text-[#EA580C] font-bold text-xs">
-                        <Clock className="w-3.5 h-3.5 text-[#EA580C]" />
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#FFF5EA] border border-[#E86F1D]/30 text-[#E86F1D] font-bold text-xs">
+                        <Clock className="w-3.5 h-3.5 text-[#E86F1D]" />
                         <span>{item.timeStr}</span>
                       </span>
                     </div>
@@ -394,7 +394,7 @@ export default function EventDetailsModal({
                 </div>
                 <a
                   href={`tel:${event.contactPhone.replace(/[^0-9+]/g, "")}`}
-                  className="px-3 py-1.5 rounded-lg bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs transition-colors shrink-0"
+                  className="px-3 py-1.5 rounded-lg bg-[#E86F1D] hover:bg-[#D25E12] text-white font-bold text-xs transition-colors shrink-0"
                 >
                   {lang === "hi" ? "कॉल करें" : "Call Now"}
                 </a>
@@ -452,7 +452,7 @@ export default function EventDetailsModal({
                 onClose();
                 onRegister(event.title);
               }}
-              className="flex-1 sm:flex-initial px-5 py-2 rounded-lg bg-[#EA580C] hover:bg-[#D45A0E] text-white font-bold text-xs uppercase tracking-wider inline-flex items-center justify-center gap-1.5 shadow-md hover:shadow-lg transition-all cursor-pointer whitespace-nowrap active:scale-95"
+              className="flex-1 sm:flex-initial px-5 py-2 rounded-lg bg-[#E86F1D] hover:bg-[#D25E12] text-white font-bold text-xs uppercase tracking-wider inline-flex items-center justify-center gap-1.5 shadow-md hover:shadow-lg transition-all cursor-pointer whitespace-nowrap active:scale-95"
             >
               <Heart className="w-3.5 h-3.5 fill-current shrink-0" />
               <span>{lang === "hi" ? "सहयोग / पंजीकरण करें" : "Register / Support Event"}</span>

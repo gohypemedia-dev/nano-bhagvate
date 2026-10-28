@@ -171,18 +171,18 @@ export default function HomePage() {
       <section className="relative w-full overflow-hidden border-b border-[#E7D8C8]">
         {/* ============================================================ */}
         {/* DESKTOP & LAPTOP HERO BANNER (>= 640px / sm) */}
-        {/* Full Image Display - Complete 1920x1080 uncropped, scrolls naturally */}
+        {/* Full Image Display - Complete uncropped, scrolls naturally */}
         {/* ============================================================ */}
         <div className="hidden sm:block relative w-full">
           {/* Full Original Hero Photo - untouched and uncropped */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/desktop-hero-original.webp"
+            src="/images/new-home-page-banner.webp"
             alt="Namo Bhagwate Vasudevaya Trust - Pujya Sadhvi Vijeshanand Saraswati Ji"
             className="w-full h-auto block select-none"
             loading="eager"
-            width={1920}
-            height={1080}
+            width={1672}
+            height={941}
           />
 
           {/* Semantic live H1 for SEO */}
@@ -192,7 +192,7 @@ export default function HomePage() {
           <div className="absolute bottom-4 sm:bottom-6 right-6 md:right-10 z-20 flex items-center gap-3">
             <Link
               href="/initiatives"
-              className="px-5 py-2.5 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 flex items-center justify-center cursor-pointer backdrop-blur-xs"
+              className="px-5 py-2.5 rounded-xl bg-[#E86F1D] hover:bg-[#D25E12] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 flex items-center justify-center cursor-pointer backdrop-blur-xs"
             >
               <span>{lang === "hi" ? "सेवा कार्य देखें" : "Explore Initiatives"}</span>
             </Link>
@@ -208,31 +208,31 @@ export default function HomePage() {
 
         {/* ============================================================ */}
         {/* MOBILE HERO BANNER (< 640px) */}
-        {/* Full Image Display - Complete 1080x1350 uncropped */}
+        {/* Full Image Display - Complete uncropped */}
         {/* ============================================================ */}
         <div className="sm:hidden relative z-10 w-full">
           {/* Full Original Mobile Photo - untouched and uncropped */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/mobile-hero-original.webp"
+            src="/images/new-home-page-banner.webp"
             alt="Namo Bhagwate Vasudevaya Trust - Pujya Sadhvi Vijeshanand Saraswati Ji"
             className="w-full h-auto block select-none"
             loading="eager"
-            width={1080}
-            height={1350}
+            width={1672}
+            height={941}
           />
 
           {/* Mobile Floating Action Buttons */}
-          <div className="absolute bottom-4 inset-x-0 z-20 px-4 flex items-center justify-center gap-2.5">
+          <div className="absolute bottom-3 inset-x-0 z-20 px-3 flex items-center justify-center gap-2">
             <Link
               href="/initiatives"
-              className="flex-1 max-w-[150px] py-2 px-3 rounded-lg bg-[#E86F1D] text-white font-bold text-xs uppercase tracking-wider text-center shadow-lg active:scale-95 transition-transform"
+              className="flex-1 max-w-[140px] py-2 px-3 rounded-lg bg-[#E86F1D] text-white font-bold text-xs uppercase tracking-wider text-center shadow-lg active:scale-95 transition-transform"
             >
               {lang === "hi" ? "सेवा कार्य" : "Initiatives"}
             </Link>
             <button
               onClick={() => openDonateModal("General Donation")}
-              className="flex-1 max-w-[150px] py-2 px-3 rounded-lg bg-white/95 text-[#2B201A] font-bold text-xs uppercase tracking-wider text-center shadow-lg flex items-center justify-center gap-1 cursor-pointer active:scale-95 transition-transform border border-[#E7D8C8]"
+              className="flex-1 max-w-[140px] py-2 px-3 rounded-lg bg-white/95 text-[#2B201A] font-bold text-xs uppercase tracking-wider text-center shadow-lg flex items-center justify-center gap-1 cursor-pointer active:scale-95 transition-transform border border-[#E7D8C8]"
             >
               <Heart className="w-3 h-3 text-[#E86F1D] fill-current" />
               <span>{lang === "hi" ? "सहयोग करें" : "Donate"}</span>
@@ -279,144 +279,149 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* THREE PILLAR ACTION CARDS (WIDE HORIZONTAL RECTANGLE WITH TRANSLUCENT TEXT PLATE) */}
-      <SectionReveal className="py-16 sm:py-20 lg:py-24 bg-[#FFF9F2] border-b border-[#E7D8C8]/60">
+      {/* THREE PILLAR ACTION CARDS (HORIZONTAL SPLIT MATCHING REFERENCE) */}
+      <SectionReveal className="py-14 sm:py-18 lg:py-20 bg-[#FFF9F2] border-b border-[#E7D8C8]/60">
         <div className="w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8">
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-7 items-stretch">
-            {/* Card 1: Books (WebP compressed per Tech a) */}
-            <StaggerItem className="h-full">
-              <div className="relative min-h-[340px] md:h-[325px] h-auto rounded-3xl overflow-hidden shadow-[0_16px_40px_-8px_rgba(43,32,26,0.22),0_8px_20px_-4px_rgba(232,111,29,0.12)] hover:shadow-[0_24px_50px_-10px_rgba(43,32,26,0.32),0_12px_28px_-4px_rgba(232,111,29,0.2)] hover:-translate-y-1.5 transition-all duration-500 group flex flex-col justify-end p-4 sm:p-4.5 border border-[#E7D8C8] hover:border-[#E86F1D]">
-                {/* Full Background Image */}
-                <Image
-                  src="/images/card-books-rect.webp"
-                  alt="Books & Sacred Literature"
-                  fill
-                  priority
-                  unoptimized
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-106"
-                />
-                {/* Soft Vignette Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/35 pointer-events-none" />
+          {/* Section Header */}
+          <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
+            {/* Title */}
+            <h2 className="font-editorial text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
+              <span className="text-[#1F1712]">{lang === "hi" ? "हमारे मुख्य " : "Our Core "}</span>
+              <span className="text-[#E86F1D]">{lang === "hi" ? "प्रकल्प" : "Initiatives"}</span>
+            </h2>
+          </div>
 
-                {/* Translucent Text Plate */}
-                <div className="relative z-10 w-full bg-[#FFF9F2]/95 group-hover:bg-[#FFF9F2]/98 backdrop-blur-md border border-white/85 rounded-2xl p-3 sm:p-3.5 md:p-2.5 md:group-hover:p-4 shadow-xl transition-all duration-500 ease-out mt-8 md:mt-0">
-                  <div className="max-md:max-h-none max-md:opacity-100 md:max-h-0 md:opacity-0 md:group-hover:max-h-48 md:group-hover:opacity-100 transition-all duration-500 ease-in-out overflow-hidden">
-                    <div className="pb-2.5 pt-0.5 transform md:translate-y-2 md:group-hover:translate-y-0 transition-transform duration-500 ease-out">
-                      <h3 className="font-sans font-black text-[#1E1612] tracking-wider text-sm sm:text-base uppercase mb-1.5 leading-snug">
-                        {lang === "hi" ? "ज्ञान के लिए पुस्तकें, जीवन में परिवर्तन" : "BOOKS FOR KNOWLEDGE, LIFE FOR CHANGE"}
-                      </h3>
-                      <p className="text-xs sm:text-[13px] text-[#5C4D43] line-clamp-2 leading-relaxed font-sans">
-                        {lang === "hi"
-                          ? "हमारे पावन ग्रंथों और ज्ञान संग्रह के माध्यम से आध्यात्मिक ज्ञान प्राप्त करें।"
-                          : "Discover spiritual wisdom through our curated collection of sacred texts and teachings."}
-                      </p>
-                    </div>
+          <StaggerContainer className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-7 items-stretch">
+            {/* Card 1: Books */}
+            <StaggerItem className="h-full">
+              <div className="bg-white rounded-[20px] sm:rounded-[24px] border border-[#E7D8C8] overflow-hidden shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-row h-full group">
+                {/* Left Image */}
+                <div className="relative w-[40%] sm:w-[42%] shrink-0 overflow-hidden bg-[#FAF3EC] min-h-[220px]">
+                  <Image
+                    src="/images/card-books-portrait.webp"
+                    alt="Books & Sacred Literature"
+                    fill
+                    priority
+                    unoptimized
+                    className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+
+                {/* Right Content */}
+                <div className="p-4 sm:p-5 lg:p-6 flex flex-col justify-between flex-1 bg-white">
+                  <div className="space-y-2">
+                    <span className="text-[11px] font-bold text-[#E86F1D] uppercase tracking-wider block">
+                      {lang === "hi" ? "साहित्य सेवा" : "SACRED TEXTS"}
+                    </span>
+                    <h3 className="font-editorial font-bold text-base sm:text-lg lg:text-xl text-[#1F1712] leading-snug">
+                      {lang === "hi"
+                        ? "ज्ञान के लिए पुस्तकें, जीवन में परिवर्तन"
+                        : "Books for Knowledge, Life for Change"}
+                    </h3>
+                    <p className="text-xs sm:text-[13px] text-[#5C6B73] leading-relaxed line-clamp-4">
+                      {lang === "hi"
+                        ? "हमारे पावन ग्रंथों, आध्यात्मिक साहित्य और ज्ञान संग्रह के माध्यम से सनातन ज्ञान व जीवन में सकारात्मक परिवर्तन प्राप्त करें।"
+                        : "Discover spiritual wisdom and positive life transformation through our curated collection of sacred texts and teachings."}
+                    </p>
                   </div>
 
-                  {/* Bottom Action Row */}
-                  <div className="flex items-center justify-between gap-2 pt-1 md:pt-0">
-                    <span className="hidden md:inline-block text-[11px] font-bold text-[#8C6B3E] uppercase tracking-wider group-hover:opacity-0 transition-opacity duration-300">
-                      {lang === "hi" ? "साहित्य सेवा" : "Sacred Texts"}
-                    </span>
+                  <div className="mt-4 pt-2">
                     <Link
                       href="/books"
-                      className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#2B201A] hover:bg-[#1E1612] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all w-full md:w-auto"
+                      className="inline-flex items-center justify-center px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs uppercase tracking-wider shadow-sm hover:shadow-md transition-all"
                     >
-                      <span>{lang === "hi" ? "पुस्तकें देखें" : "Explore Books"}</span>
+                      <span>{lang === "hi" ? "पुस्तकें देखें" : "EXPLORE BOOKS"}</span>
                     </Link>
                   </div>
                 </div>
               </div>
             </StaggerItem>
 
-            {/* Card 2: Donate for Seva (WebP compressed per Tech a) */}
+            {/* Card 2: Donate for Seva */}
             <StaggerItem className="h-full">
-              <div className="relative min-h-[340px] md:h-[325px] h-auto rounded-3xl overflow-hidden shadow-[0_16px_40px_-8px_rgba(43,32,26,0.22),0_8px_20px_-4px_rgba(232,111,29,0.12)] hover:shadow-[0_24px_50px_-10px_rgba(43,32,26,0.32),0_12px_28px_-4px_rgba(232,111,29,0.2)] hover:-translate-y-1.5 transition-all duration-500 group flex flex-col justify-end p-4 sm:p-4.5 border border-[#E7D8C8] hover:border-[#E86F1D]">
-                {/* Full Background Image */}
-                <Image
-                  src="/images/card-seva-real.webp"
-                  alt="Donate for Seva"
-                  fill
-                  priority
-                  unoptimized
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-106"
-                />
-                {/* Soft Vignette Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/35 pointer-events-none" />
+              <div className="bg-white rounded-[20px] sm:rounded-[24px] border border-[#E7D8C8] overflow-hidden shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-row h-full group">
+                {/* Left Image */}
+                <div className="relative w-[40%] sm:w-[42%] shrink-0 overflow-hidden bg-[#FAF3EC] min-h-[220px]">
+                  <Image
+                    src="/images/card-seva-real.webp"
+                    alt="Donate for Seva"
+                    fill
+                    priority
+                    unoptimized
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
 
-                {/* Translucent Text Plate */}
-                <div className="relative z-10 w-full bg-[#FFF9F2]/95 group-hover:bg-[#FFF9F2]/98 backdrop-blur-md border border-white/85 rounded-2xl p-3 sm:p-3.5 md:p-2.5 md:group-hover:p-4 shadow-xl transition-all duration-500 ease-out mt-8 md:mt-0">
-                  <div className="max-md:max-h-none max-md:opacity-100 md:max-h-0 md:opacity-0 md:group-hover:max-h-48 md:group-hover:opacity-100 transition-all duration-500 ease-in-out overflow-hidden">
-                    <div className="pb-2.5 pt-0.5 transform md:translate-y-2 md:group-hover:translate-y-0 transition-transform duration-500 ease-out">
-                      <h3 className="font-sans font-black text-[#1E1612] tracking-wider text-sm sm:text-base uppercase mb-1.5 leading-snug">
-                        {lang === "hi" ? "सेवा हेतु सहयोग" : "DONATE FOR SEVA"}
-                      </h3>
-                      <p className="text-xs sm:text-[13px] text-[#5C4D43] line-clamp-2 leading-relaxed font-sans">
-                        {lang === "hi"
-                          ? "अपने उदार सहयोग से मानवता की सेवा के हमारे पावन संकल्प में सहभागी बनें।"
-                          : "Support our mission to serve humanity through your generous contributions."}
-                      </p>
-                    </div>
+                {/* Right Content */}
+                <div className="p-4 sm:p-5 lg:p-6 flex flex-col justify-between flex-1 bg-white">
+                  <div className="space-y-2">
+                    <span className="text-[11px] font-bold text-[#E86F1D] uppercase tracking-wider block">
+                      {lang === "hi" ? "पुण्य सेवा" : "SUPPORT SEVA"}
+                    </span>
+                    <h3 className="font-editorial font-bold text-base sm:text-lg lg:text-xl text-[#1F1712] leading-snug">
+                      {lang === "hi"
+                        ? "मानवता की सेवा ही सच्चा धर्म"
+                        : "Selfless Service is the True Dharma"}
+                    </h3>
+                    <p className="text-xs sm:text-[13px] text-[#5C6B73] leading-relaxed line-clamp-4">
+                      {lang === "hi"
+                        ? "अन्नदान, शिक्षा, चिकित्सा और समाज कल्याण के हमारे पावन संकल्प में अपने उदार सहयोग से सहभागी बनकर पुण्य लाभ प्राप्त करें।"
+                        : "Join our sacred mission of humanitarian relief, healthcare, education, and community service through your generous support."}
+                    </p>
                   </div>
 
-                  {/* Bottom Action Row */}
-                  <div className="flex items-center justify-between gap-2 pt-1 md:pt-0">
-                    <span className="hidden md:inline-flex text-[11px] font-bold text-[#E86F1D] uppercase tracking-wider group-hover:opacity-0 transition-opacity duration-300 items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-[#E86F1D] animate-ping" />
-                      <span>{lang === "hi" ? "पुण्य सेवा" : "Support Seva"}</span>
-                    </span>
+                  <div className="mt-4 pt-2">
                     <button
                       onClick={() => openDonateModal("General Donation")}
-                      className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer w-full md:w-auto"
+                      className="inline-flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs uppercase tracking-wider shadow-sm hover:shadow-md transition-all cursor-pointer"
                     >
                       <Heart className="w-3.5 h-3.5 fill-current" />
-                      <span>{lang === "hi" ? "अभी सहयोग करें" : "Donate Now"}</span>
+                      <span>{lang === "hi" ? "दान करें" : "DONATE NOW"}</span>
                     </button>
                   </div>
                 </div>
               </div>
             </StaggerItem>
 
-            {/* Card 3: Sacred Wisdom / Bhagavad Gita Inspiration (Fixes Tech finding e) */}
+            {/* Card 3: Sacred Wisdom / Bhagavad Gita Inspiration */}
             <StaggerItem className="h-full">
-              <div className="relative min-h-[340px] md:h-[325px] h-auto rounded-3xl overflow-hidden shadow-[0_16px_40px_-8px_rgba(43,32,26,0.22),0_8px_20px_-4px_rgba(232,111,29,0.12)] hover:shadow-[0_24px_50px_-10px_rgba(43,32,26,0.32),0_12px_28px_-4px_rgba(232,111,29,0.2)] hover:-translate-y-1.5 transition-all duration-500 group flex flex-col justify-end p-4 sm:p-4.5 border border-[#E7D8C8] hover:border-[#E86F1D]">
-                {/* Full Background Image (WebP compressed per Tech a) */}
-                <Image
-                  src="/images/card-thought-real.webp"
-                  alt="Sacred Wisdom - Bhagavad Gita"
-                  fill
-                  priority
-                  unoptimized
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-106"
-                />
-                {/* Soft Vignette Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/35 pointer-events-none" />
+              <div className="bg-white rounded-[20px] sm:rounded-[24px] border border-[#E7D8C8] overflow-hidden shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-row h-full group">
+                {/* Left Image */}
+                <div className="relative w-[40%] sm:w-[42%] shrink-0 overflow-hidden bg-[#FAF3EC] min-h-[220px]">
+                  <Image
+                    src="/images/card-thought-real.webp"
+                    alt="Sacred Wisdom - Bhagavad Gita"
+                    fill
+                    priority
+                    unoptimized
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
 
-                {/* Translucent Text Plate */}
-                <div className="relative z-10 w-full bg-[#FFF9F2]/95 group-hover:bg-[#FFF9F2]/98 backdrop-blur-md border border-white/85 rounded-2xl p-3 sm:p-3.5 md:p-2.5 md:group-hover:p-4 shadow-xl transition-all duration-500 ease-out mt-8 md:mt-0">
-                  <div className="max-md:max-h-none max-md:opacity-100 md:max-h-0 md:opacity-0 md:group-hover:max-h-48 md:group-hover:opacity-100 transition-all duration-500 ease-in-out overflow-hidden">
-                    <div className="pb-2.5 pt-0.5 transform md:translate-y-2 md:group-hover:translate-y-0 transition-transform duration-500 ease-out">
-                      <h3 className="font-sans font-black text-[#1E1612] tracking-wider text-sm sm:text-base uppercase mb-1.5 leading-snug">
-                        {lang === "hi" ? "“ निष्काम कर्म ही धर्म ”" : "“ SELFLESS ACTION IS DHARMA ”"}
-                      </h3>
-                      <p className="text-xs sm:text-[13px] text-[#5C4D43] italic leading-relaxed font-sans line-clamp-3 border-l-2 border-[#E86F1D] pl-2.5">
-                        {lang === "hi"
-                          ? "“कर्मण्येवाधिकारस्ते मा फलेषु कदाचन। फल की आसक्ति त्यागकर निष्काम भाव से की गई सेवा ही मानव जीवन को दिव्यता प्रदान करती है।” — श्रीमद्भगवद्गीता"
-                          : "“You have a right to perform your prescribed duties, but never to the fruits of action. Selfless service without attachment brings supreme inner peace.” — Bhagavad Gita 2.47"}
-                      </p>
-                    </div>
+                {/* Right Content */}
+                <div className="p-4 sm:p-5 lg:p-6 flex flex-col justify-between flex-1 bg-white">
+                  <div className="space-y-2">
+                    <span className="text-[11px] font-bold text-[#E86F1D] uppercase tracking-wider block">
+                      {lang === "hi" ? "गीता प्रेरणा" : "GITA WISDOM"}
+                    </span>
+                    <h3 className="font-editorial font-bold text-base sm:text-lg lg:text-xl text-[#1F1712] leading-snug">
+                      {lang === "hi"
+                        ? "निष्काम कर्म ही सच्चा धर्म"
+                        : "Selfless Action is Dharma"}
+                    </h3>
+                    <p className="text-xs sm:text-[13px] text-[#5C6B73] leading-relaxed line-clamp-4">
+                      {lang === "hi"
+                        ? "“कर्मण्येवाधिकारस्ते मा फलेषु कदाचन।” फल की आसक्ति त्यागकर निष्काम भाव से की गई सेवा ही मानव जीवन को दिव्यता प्रदान करती है।"
+                        : '"You have a right to perform your duties, but never to the fruits of action." Selfless service without attachment brings supreme inner peace.'}
+                    </p>
                   </div>
 
-                  {/* Bottom Action Row */}
-                  <div className="flex items-center justify-between gap-2 pt-1 md:pt-0">
-                    <span className="hidden md:inline-block text-[11px] font-bold text-[#8C6B3E] uppercase tracking-wider group-hover:opacity-0 transition-opacity duration-300">
-                      {lang === "hi" ? "गीता प्रेरणा" : "Gita Wisdom"}
-                    </span>
+                  <div className="mt-4 pt-2">
                     <Link
                       href="/founder"
-                      className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#2B201A] hover:bg-[#1E1612] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all w-full md:w-auto"
+                      className="inline-flex items-center justify-center px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs uppercase tracking-wider shadow-sm hover:shadow-md transition-all"
                     >
-                      <span>{lang === "hi" ? "संस्थापक दृष्टिकोण" : "Founder's Vision"}</span>
+                      <span>{lang === "hi" ? "संस्थापक दृष्टिकोण" : "FOUNDER'S VISION"}</span>
                     </Link>
                   </div>
                 </div>
@@ -461,7 +466,7 @@ export default function HomePage() {
                       className="rounded-2xl overflow-hidden bg-white border border-[#E7D8C8] shadow-[0_10px_30px_-8px_rgba(43,32,26,0.1)] hover:shadow-[0_20px_40px_-10px_rgba(232,111,29,0.2)] hover:-translate-y-1.5 transition-all duration-300 group flex flex-col justify-between cursor-pointer h-full"
                     >
                       {/* Top Saffron/Orange Textured Banner with Bold White Devanagari Title (Matching Picture 2, 16px radius) */}
-                      <div className="relative w-full h-[190px] sm:h-[210px] rounded-t-2xl bg-gradient-to-br from-[#F97316] via-[#EA580C] to-[#C2410C] flex items-center justify-center p-6 text-center shadow-inner overflow-hidden">
+                      <div className="relative w-full h-[190px] sm:h-[210px] rounded-t-2xl bg-gradient-to-br from-[#F97316] via-[#E86F1D] to-[#C2410C] flex items-center justify-center p-6 text-center shadow-inner overflow-hidden">
                         {/* Soft subtle radial ambient glow */}
                         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/25 via-transparent to-black/25 pointer-events-none" />
 
@@ -526,7 +531,7 @@ export default function HomePage() {
                 setSelectedEvent(events[0]);
                 setEventModalOpen(true);
               }}
-              className="inline-flex items-center justify-center px-7 py-2.5 rounded-lg bg-[#EA580C] hover:bg-[#D45A0E] text-white font-bold text-sm tracking-wide shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer"
+              className="inline-flex items-center justify-center px-7 py-2.5 rounded-lg bg-[#E86F1D] hover:bg-[#D25E12] text-white font-bold text-sm tracking-wide shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
               <span>{lang === "hi" ? "सभी कार्यक्रम देखें" : "View All"}</span>
             </button>
@@ -550,7 +555,7 @@ export default function HomePage() {
                   className="w-full h-full object-contain"
                 />
               </div>
-              <div className="font-sans font-bold text-2xl sm:text-3xl lg:text-[32px] text-[#E8622A] leading-tight tracking-tight">
+              <div className="font-sans font-bold text-2xl sm:text-3xl lg:text-[32px] text-[#E86F1D] leading-tight tracking-tight">
                 <CountUp start={20000} end={25000} suffix="+" duration={1600} />
               </div>
               <div className="font-sans text-xs sm:text-[13px] md:text-sm font-bold text-black uppercase tracking-wider leading-snug">
@@ -570,7 +575,7 @@ export default function HomePage() {
                   className="w-full h-full object-contain"
                 />
               </div>
-              <div className="font-sans font-bold text-2xl sm:text-3xl lg:text-[32px] text-[#E8622A] leading-tight tracking-tight">
+              <div className="font-sans font-bold text-2xl sm:text-3xl lg:text-[32px] text-[#E86F1D] leading-tight tracking-tight">
                 <CountUp start={300} end={350} suffix="+" duration={1400} />
               </div>
               <div className="font-sans text-xs sm:text-[13px] md:text-sm font-bold text-black uppercase tracking-wider leading-snug">
@@ -590,7 +595,7 @@ export default function HomePage() {
                   className="w-full h-full object-contain"
                 />
               </div>
-              <div className="font-sans font-bold text-2xl sm:text-3xl lg:text-[32px] text-[#E8622A] leading-tight tracking-tight">
+              <div className="font-sans font-bold text-2xl sm:text-3xl lg:text-[32px] text-[#E86F1D] leading-tight tracking-tight">
                 <CountUp start={40} end={50} suffix="+" duration={1200} />
               </div>
               <div className="font-sans text-xs sm:text-[13px] md:text-sm font-bold text-black uppercase tracking-wider leading-snug">
@@ -610,7 +615,7 @@ export default function HomePage() {
                   className="w-full h-full object-contain"
                 />
               </div>
-              <div className="font-sans font-bold text-2xl sm:text-3xl lg:text-[32px] text-[#E8622A] leading-tight tracking-tight">
+              <div className="font-sans font-bold text-2xl sm:text-3xl lg:text-[32px] text-[#E86F1D] leading-tight tracking-tight">
                 <CountUp start={90000} end={100000} suffix="+" duration={1800} />
               </div>
               <div className="font-sans text-xs sm:text-[13px] md:text-sm font-bold text-black uppercase tracking-wider leading-snug">
@@ -630,7 +635,7 @@ export default function HomePage() {
                   className="w-full h-full object-contain"
                 />
               </div>
-              <div className="font-sans font-bold text-2xl sm:text-3xl lg:text-[32px] text-[#E8622A] leading-tight tracking-tight">
+              <div className="font-sans font-bold text-2xl sm:text-3xl lg:text-[32px] text-[#E86F1D] leading-tight tracking-tight">
                 <CountUp start={10} end={15} suffix="+" duration={1000} />
               </div>
               <div className="font-sans text-xs sm:text-[13px] md:text-sm font-bold text-black uppercase tracking-wider leading-snug">
@@ -644,22 +649,24 @@ export default function HomePage() {
       {/* SACRED GALLERY & GLIMPSES SECTION */}
       <GallerySection />
 
-      {/* OUR MEMBERS SECTION (Continuous Auto-Scroll Ticker) */}
-      <SectionReveal className="py-16 sm:py-20 lg:py-24 bg-[#FFF9F2] border-t border-[#E7D8C8] overflow-hidden">
-        <div className="w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 mb-8 sm:mb-10">
-          <div className="flex flex-col items-center justify-center text-center">
-            <TextReveal
-              as="h2"
-              className="font-editorial text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#E86F1D] tracking-wider whitespace-nowrap px-2"
-              text={lang === "hi" ? "हमारे सदस्य" : "Our Members"}
-            />
-            <HeadingDivider className="mt-2.5" />
-          </div>
-        </div>
-
-        {/* Aligned carousel container matching Gallery above */}
+      {/* OUR MEMBERS SECTION (Contained Box Panel Matching Reference) */}
+      <SectionReveal className="py-14 sm:py-18 lg:py-20 bg-[#FFF9F2] border-t border-[#E7D8C8] overflow-hidden">
         <div className="w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8">
-          <MemberCarousel />
+          {/* Contained Peach/Cream Panel with White Cards Inside (No Border) */}
+          <div className="w-full bg-[#FFF3E7] rounded-3xl p-6 sm:p-8 lg:p-10 shadow-[0_8px_30px_-8px_rgba(43,32,26,0.04)]">
+            {/* Header inside the panel */}
+            <div className="flex flex-col items-center justify-center text-center mb-6 sm:mb-8">
+              <TextReveal
+                as="h2"
+                className="font-editorial text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#E86F1D] tracking-wider whitespace-nowrap px-2"
+                text={lang === "hi" ? "हमारे सदस्य" : "Our Members"}
+              />
+              <HeadingDivider className="mt-2.5" />
+            </div>
+
+            {/* Member Carousel with Pure White Cards inside */}
+            <MemberCarousel />
+          </div>
         </div>
       </SectionReveal>
 

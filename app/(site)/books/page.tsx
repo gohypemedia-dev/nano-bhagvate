@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { ShoppingBag, Plus, Minus, CheckCircle2, ShieldCheck, Truck, Star } from "lucide-react";
+import { ShoppingBag, Plus, Minus, ShieldCheck, Truck } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import {
   TextReveal,
@@ -21,17 +21,17 @@ export default function BooksPage() {
 
   const product = {
     id: "sugarcane-guide-01",
-    title: "Guide to Sugarcane Farming in North India (गन्ना खेती मार्गदर्शिका)",
-    titleHi: "गन्ना खेती मार्गदर्शिका - उत्तरी भारत के किसानों हेतु व्यापक गाइड",
+    title: "Guide to Sugarcane Farming in North India",
+    titleHi: "उत्तर भारत में गन्ना खेती की मार्गदर्शिका - डॉ. बक्शी राम (पद्म श्री से सम्मानित)",
     price: 95.0,
-    image: "/images/book-cover.jpg",
+    image: "/images/sugarcane-guide-book.webp",
   };
 
   const handleAddToCart = () => {
     addToCart(
       {
         id: product.id,
-        title: product.title,
+        title: lang === "hi" ? product.titleHi : product.title,
         price: product.price,
         image: product.image,
       },
@@ -45,7 +45,7 @@ export default function BooksPage() {
     addToCart(
       {
         id: product.id,
-        title: product.title,
+        title: lang === "hi" ? product.titleHi : product.title,
         price: product.price,
         image: product.image,
       },
@@ -89,15 +89,15 @@ export default function BooksPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
             {/* Left Product Image Gallery */}
             <div className="lg:col-span-6 flex justify-center">
-              <div className="relative w-full max-w-md aspect-[3/4] rounded-3xl overflow-hidden border-4 border-[#FFF9F2] shadow-2xl group bg-[#FFF9F2]">
+              <div className="relative w-full max-w-lg aspect-square rounded-3xl overflow-hidden border-4 border-[#FFF9F2] shadow-2xl group bg-[#FFF9F2]">
                 <Image
                   src={product.image}
-                  alt="Guide to Sugarcane Farming in North India"
+                  alt="उत्तर भारत में गन्ना खेती की मार्गदर्शिका - डॉ. बक्शी राम"
                   fill
-                  className="object-contain p-2 transition-transform duration-500 group-hover:scale-105"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
                   priority
                 />
-                <div className="absolute top-4 left-4 bg-[#E86F1D] text-white text-xs font-bold px-3 py-1 rounded-full shadow-warm-sm">
+                <div className="absolute top-4 left-4 bg-[#E86F1D] text-white text-xs font-bold px-3 py-1 rounded-full shadow-warm-sm z-10">
                   {lang === "hi" ? "आधिकारिक प्रकाशन" : "OFFICIAL PUBLICATION"}
                 </div>
               </div>
@@ -106,14 +106,12 @@ export default function BooksPage() {
             {/* Right Product Info & Actions */}
             <div className="lg:col-span-6 space-y-6">
               <div className="space-y-2">
-                <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#B8893E] uppercase tracking-widest">
-                  <Star className="w-4 h-4 fill-current text-[#B8893E]" />
-                  <span>{lang === "hi" ? "कृषि ज्ञान श्रृंखला" : "AGRICULTURAL KNOWLEDGE SERIES"}</span>
-                </div>
+                <p className="text-xs font-bold text-[#B8893E] uppercase tracking-widest">
+                  {lang === "hi" ? "कृषि ज्ञान श्रृंखला" : "AGRICULTURAL KNOWLEDGE SERIES"}
+                </p>
                 <TextReveal as="h1" className="font-editorial text-3xl sm:text-4xl lg:text-5xl font-bold text-[#E86F1D] leading-tight">
                   {lang === "hi" ? product.titleHi : product.title}
                 </TextReveal>
-                <HeadingDivider align="left" className="!py-0.5" />
                 <p className="text-sm text-[#2B201A]/70 font-medium">
                   {lang === "hi"
                     ? "नमो भगवते वासुदेवाय ट्रस्ट द्वारा प्रकाशित • भाषा: हिंदी (देवनागरी)"
@@ -215,14 +213,11 @@ export default function BooksPage() {
 
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
             {highlights.map((h, idx) => (
-              <StaggerItem key={idx} className="card-warm space-y-3">
-                <div className="flex items-center gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-[#2F5A43] shrink-0" />
-                  <h3 className="font-editorial text-2xl font-bold text-[#2B201A]">
-                    {lang === "hi" ? h.titleHi : h.title}
-                  </h3>
-                </div>
-                <p className="text-sm text-[#2B201A]/85 leading-relaxed font-sans pl-9">
+              <StaggerItem key={idx} className="card-warm space-y-2.5">
+                <h3 className="font-editorial text-xl sm:text-2xl font-bold text-[#2B201A]">
+                  {lang === "hi" ? h.titleHi : h.title}
+                </h3>
+                <p className="text-sm text-[#2B201A]/85 leading-relaxed font-sans">
                   {lang === "hi" && h.descHi ? h.descHi : h.desc}
                 </p>
               </StaggerItem>

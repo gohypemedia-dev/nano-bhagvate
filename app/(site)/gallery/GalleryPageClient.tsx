@@ -321,7 +321,7 @@ export default function GalleryPageClient({ initialItems }: { initialItems?: Gal
             <button
               type="button"
               onClick={() => setCurrentPage(1)}
-              className="h-11 px-6 rounded-lg bg-[#EA580C] hover:bg-[#D45A0E] text-white font-bold text-xs sm:text-sm tracking-wide shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
+              className="h-11 px-6 rounded-lg bg-[#E86F1D] hover:bg-[#D25E12] text-white font-bold text-xs sm:text-sm tracking-wide shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
             >
               <Search className="w-4 h-4" />
               <span>{lang === "hi" ? "खोजें" : "Search"}</span>
@@ -338,7 +338,7 @@ export default function GalleryPageClient({ initialItems }: { initialItems?: Gal
               }}
               className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 activeMediaFilter === "all"
-                  ? "bg-[#EA580C] text-white shadow-xs"
+                  ? "bg-[#E86F1D] text-white shadow-xs"
                   : "text-[#5C4D43] hover:text-[#1E1612] hover:bg-white/60"
               }`}
             >
@@ -352,7 +352,7 @@ export default function GalleryPageClient({ initialItems }: { initialItems?: Gal
               }}
               className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                 activeMediaFilter === "photos"
-                  ? "bg-[#EA580C] text-white shadow-xs"
+                  ? "bg-[#E86F1D] text-white shadow-xs"
                   : "text-[#5C4D43] hover:text-[#1E1612] hover:bg-white/60"
               }`}
             >
@@ -367,7 +367,7 @@ export default function GalleryPageClient({ initialItems }: { initialItems?: Gal
               }}
               className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                 activeMediaFilter === "videos"
-                  ? "bg-[#EA580C] text-white shadow-xs"
+                  ? "bg-[#E86F1D] text-white shadow-xs"
                   : "text-[#5C4D43] hover:text-[#1E1612] hover:bg-white/60"
               }`}
             >
@@ -401,7 +401,7 @@ export default function GalleryPageClient({ initialItems }: { initialItems?: Gal
                 setActiveMediaFilter("all");
                 setCurrentPage(1);
               }}
-              className="px-6 py-2 rounded-lg bg-[#EA580C] text-white font-bold text-xs"
+              className="px-6 py-2 rounded-lg bg-[#E86F1D] text-white font-bold text-xs"
             >
               {lang === "hi" ? "सभी देखें" : "View All"}
             </button>
@@ -448,7 +448,7 @@ export default function GalleryPageClient({ initialItems }: { initialItems?: Gal
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={safeCurrentPage === 1}
                 aria-label="Previous Page"
-                className="w-8 h-8 rounded-md bg-white border border-[#E7D8C8] text-[#1E1612] hover:bg-[#FFF5EA] hover:border-[#EA580C] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-colors cursor-pointer text-xs"
+                className="w-8 h-8 rounded-md bg-white border border-[#E7D8C8] text-[#1E1612] hover:bg-[#FFF5EA] hover:border-[#E86F1D] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-colors cursor-pointer text-xs"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -474,8 +474,8 @@ export default function GalleryPageClient({ initialItems }: { initialItems?: Gal
                     aria-current={isActive ? "page" : undefined}
                     className={`w-8 h-8 rounded-md font-bold text-xs flex items-center justify-center transition-all cursor-pointer ${
                       isActive
-                        ? "bg-[#EA580C] text-white shadow-xs"
-                        : "bg-white border border-[#E7D8C8] text-[#1E1612] hover:bg-[#FFF5EA] hover:border-[#EA580C]"
+                        ? "bg-[#E86F1D] text-white shadow-xs"
+                        : "bg-white border border-[#E7D8C8] text-[#1E1612] hover:bg-[#FFF5EA] hover:border-[#E86F1D]"
                     }`}
                   >
                     {p}
@@ -488,7 +488,7 @@ export default function GalleryPageClient({ initialItems }: { initialItems?: Gal
                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 disabled={safeCurrentPage === totalPages}
                 aria-label="Next Page"
-                className="w-8 h-8 rounded-md bg-white border border-[#E7D8C8] text-[#1E1612] hover:bg-[#FFF5EA] hover:border-[#EA580C] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-colors cursor-pointer text-xs"
+                className="w-8 h-8 rounded-md bg-white border border-[#E7D8C8] text-[#1E1612] hover:bg-[#FFF5EA] hover:border-[#E86F1D] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-colors cursor-pointer text-xs"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -502,7 +502,7 @@ export default function GalleryPageClient({ initialItems }: { initialItems?: Gal
                   setPageSize(Number(e.target.value));
                   setCurrentPage(1);
                 }}
-                className="px-3 py-1.5 rounded-md border border-[#E7D8C8] bg-white text-xs font-semibold text-[#1E1612] focus:border-[#EA580C] focus:outline-none cursor-pointer"
+                className="px-3 py-1.5 rounded-md border border-[#E7D8C8] bg-white text-xs font-semibold text-[#1E1612] focus:border-[#E86F1D] focus:outline-none cursor-pointer"
               >
                 <option value="12">12 / page</option>
                 <option value="16">16 / page</option>

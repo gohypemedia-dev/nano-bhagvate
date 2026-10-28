@@ -483,7 +483,7 @@ export default function AccountPage() {
                         <div key={item.id} className="flex items-center gap-4">
                           <div className="relative w-16 h-20 rounded-xl overflow-hidden border border-[#E7D8C8] bg-[#FBF2E7] shrink-0">
                             <Image
-                              src={item.image || "/images/book-cover.jpg"}
+                              src={item.image || "/images/sugarcane-guide-book.webp"}
                               alt={item.title}
                               fill
                               className="object-contain p-1"

@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { HeartPulse, GraduationCap, Users, HeartHandshake, CheckCircle2, Heart } from "lucide-react";
+import { HeartPulse, GraduationCap, Users, HeartHandshake, Heart } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import {
   TextReveal,
@@ -189,7 +189,7 @@ export default function InitiativesPage() {
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2 sm:pt-4">
               <a
                 href="#all-initiatives"
-                className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group"
+                className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 rounded-xl bg-[#E86F1D] hover:bg-[#D25E12] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer group"
               >
                 <span>{lang === "hi" ? "सभी सेवा प्रकल्प देखें" : "Explore All Initiatives"}</span>
               </a>
@@ -229,7 +229,7 @@ export default function InitiativesPage() {
                   <div className="p-6 sm:p-8 flex flex-col flex-1 justify-between space-y-6">
                     <div className="space-y-4">
                       {/* Initiative Title */}
-                      <h2 className="font-editorial text-2xl sm:text-3xl font-bold text-[#E86F1D]">
+                      <h2 className="font-sans text-lg sm:text-2xl lg:text-[21px] xl:text-2xl 2xl:text-[28px] font-bold text-[#E86F1D] uppercase tracking-wider whitespace-nowrap">
                         {lang === "hi" ? item.titleHi : item.title}
                       </h2>
                       <HeadingDivider align="left" className="!py-0" />
@@ -243,7 +243,7 @@ export default function InitiativesPage() {
                       <ul className="space-y-3 text-sm text-[#2B201A]/85 font-sans pt-1">
                         {(lang === "hi" && item.bulletsHi ? item.bulletsHi : item.bullets).map((bullet, i) => (
                           <li key={i} className="flex items-start gap-2.5">
-                            <CheckCircle2 className="w-4 h-4 text-[#2F5A43] shrink-0 mt-0.5" />
+                            <span className="w-2 h-2 rounded-full bg-[#E86F1D] shrink-0 mt-1.5" aria-hidden="true" />
                             <span>{bullet}</span>
                           </li>
                         ))}
@@ -273,42 +273,79 @@ export default function InitiativesPage() {
       {/* PREMIUM CTA BANNER */}
       <SectionReveal className="section-py bg-[#FBF2E7]/50 border-t border-[#E7D8C8]">
         <div className="page-container max-w-5xl">
-          <div className="bg-gradient-to-r from-[#2B201A] to-[#3D2C24] text-white rounded-3xl p-8 sm:p-12 text-center border-2 border-[#B8893E] shadow-2xl space-y-6">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#B8893E]">
-              {lang === "hi" ? "पावन सेवा मिशन से जुड़ें" : "JOIN THE SEVA MISSION"}
-            </p>
-            <TextReveal as="h2" className="font-editorial text-3xl sm:text-4xl font-bold leading-tight">
+          <div className="relative overflow-hidden bg-gradient-to-b from-[#FFFDF9] via-[#FFFFFF] to-[#FFF5EB] rounded-3xl sm:rounded-[2rem] p-8 sm:p-14 text-center border border-[#F0D5C3] shadow-xl space-y-6">
+            {/* Bottom subtle warm waves matching reference design */}
+            <div className="absolute inset-x-0 bottom-0 pointer-events-none overflow-hidden h-20 sm:h-28 opacity-60">
+              <svg
+                className="absolute bottom-0 w-full h-full"
+                viewBox="0 0 1200 120"
+                preserveAspectRatio="none"
+                fill="none"
+              >
+                <path
+                  d="M0,80 C180,40 320,110 500,85 C680,60 850,110 1020,70 C1100,50 1160,60 1200,75 L1200,120 L0,120 Z"
+                  fill="#FED7AA"
+                  fillOpacity="0.45"
+                />
+                <path
+                  d="M0,100 C150,65 350,115 550,90 C750,65 950,115 1200,85 L1200,120 L0,120 Z"
+                  fill="#FDBA74"
+                  fillOpacity="0.3"
+                />
+              </svg>
+            </div>
+
+            {/* Top Eyebrow with side accent lines */}
+            <div className="relative z-10 flex items-center justify-center gap-3 sm:gap-4">
+              <span className="w-8 sm:w-16 h-[1.5px] bg-[#E86F1D]/50 rounded-full" />
+              <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-[#2C1810]">
+                {lang === "hi" ? "पावन सेवा मिशन से जुड़ें" : "JOIN THE SEVA MISSION"}
+              </p>
+              <span className="w-8 sm:w-16 h-[1.5px] bg-[#E86F1D]/50 rounded-full" />
+            </div>
+
+            {/* Main Headline: Line 1 Dark Brown, Line 2 Signature Orange */}
+            <TextReveal as="h2" className="relative z-10 font-editorial text-2xl sm:text-4xl md:text-[2.6rem] font-bold leading-tight">
               {lang === "hi" ? (
                 <>
-                  हमारे साथ सेवा करें • प्रकल्प में सहयोग दें
-                  <br />
-                  करुणा को प्रत्यक्ष सेवा में बदलें
+                  <span className="text-[#2B1810] block">हमारे साथ सेवा करें • प्रकल्प में सहयोग दें</span>
+                  <span className="text-[#E86F1D] block mt-1 sm:mt-2">करुणा को प्रत्यक्ष सेवा में बदलें</span>
                 </>
               ) : (
                 <>
-                  Serve with us. Support an initiative.
-                  <br />
-                  Help turn compassion into action.
+                  <span className="text-[#2B1810] block">Serve with us. Support an initiative.</span>
+                  <span className="text-[#E86F1D] block mt-1 sm:mt-2">Help turn compassion into action.</span>
                 </>
               )}
             </TextReveal>
-            <ParagraphReveal className="text-sm sm:text-base text-white/85 max-w-xl mx-auto font-sans">
+
+            {/* Subtext description */}
+            <ParagraphReveal className="relative z-10 text-sm sm:text-base text-[#5C4D44] max-w-2xl mx-auto font-sans leading-relaxed">
               {lang === "hi"
                 ? "आपका प्रत्येक अंशदान सीधे चिकित्सा शिविरों, गुरुकुल शिक्षा, महिला कौशल कार्यशालाओं और जनकल्याण सेवाओं को सशक्त बनाता है।"
                 : "Every contribution directly powers our health camps, Gurukul education, women skill workshops, and farmer advisory programs."}
             </ParagraphReveal>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4 pt-4 max-w-md mx-auto">
-              <Link href="/membership" className="btn-secondary flex-1 text-center">
+            {/* Action Buttons: Pill-shaped Member outline & Donate solid */}
+            <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+              <Link
+                href="/membership"
+                className="w-full sm:w-auto min-w-[200px] px-8 py-3.5 rounded-full border-2 border-[#E86F1D] bg-white hover:bg-[#FFF7ED] text-[#E86F1D] font-bold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 shadow-xs hover:shadow-md active:scale-95 text-center"
+              >
                 {lang === "hi" ? "सदस्यता ग्रहण करें" : "Become a Member"}
               </Link>
               <button
                 onClick={() => openDonateModal(lang === "hi" ? "सामान्य पुण्य दान" : "General Donation")}
-                className="btn-primary flex-1"
+                className="w-full sm:w-auto min-w-[200px] px-8 py-3.5 rounded-full bg-[#E86F1D] hover:bg-[#D25E12] text-white font-bold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Heart className="w-4 h-4 fill-current text-white" />
                 <span>{lang === "hi" ? "दान सहयोग करें" : "Donate Now"}</span>
               </button>
+            </div>
+
+            {/* Standard Signature HeadingDivider as requested */}
+            <div className="relative z-10 pt-2 sm:pt-4">
+              <HeadingDivider />
             </div>
           </div>
         </div>

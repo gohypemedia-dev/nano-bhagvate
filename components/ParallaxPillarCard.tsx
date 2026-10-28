@@ -142,7 +142,7 @@ export default function ParallaxPillarCard({
           {isDonateButton ? (
             <button
               onClick={onClick}
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs uppercase tracking-wider shadow-[0_4px_14px_-2px_rgba(232,111,29,0.35)] hover:shadow-[0_8px_20px_-4px_rgba(232,111,29,0.5)] transition-all duration-300 cursor-pointer group/btn"
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#E86F1D] hover:bg-[#D25E12] text-white font-bold text-xs uppercase tracking-wider shadow-[0_4px_14px_-2px_rgba(232,111,29,0.35)] hover:shadow-[0_8px_20px_-4px_rgba(232,111,29,0.5)] transition-all duration-300 cursor-pointer group/btn"
             >
               <Heart className="w-3.5 h-3.5 fill-current text-white" />
               <span>{buttonText}</span>
@@ -150,7 +150,7 @@ export default function ParallaxPillarCard({
           ) : (
             <Link
               href={href || "#"}
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white font-bold text-xs uppercase tracking-wider shadow-[0_4px_14px_-2px_rgba(232,111,29,0.35)] hover:shadow-[0_8px_20px_-4px_rgba(232,111,29,0.5)] transition-all duration-300 group/btn"
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#E86F1D] hover:bg-[#D25E12] text-white font-bold text-xs uppercase tracking-wider shadow-[0_4px_14px_-2px_rgba(232,111,29,0.35)] hover:shadow-[0_8px_20px_-4px_rgba(232,111,29,0.5)] transition-all duration-300 group/btn"
             >
               <span>{buttonText}</span>
             </Link>
