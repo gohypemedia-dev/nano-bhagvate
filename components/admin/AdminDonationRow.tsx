@@ -3,7 +3,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Ticket } from "lucide-react";
 import StatusBadge from "@/components/admin/StatusBadge";
 import { rupeesFromPaise, formatIST } from "@/lib/admin-format";
 import type { DonationStatus, DonationType } from "@prisma/client";
@@ -17,6 +17,7 @@ export interface AdminDonationItem {
   status: DonationStatus;
   program: string | null;
   createdAt: Date | string;
+  isEvent?: boolean;
 }
 
 interface AdminDonationRowProps {
@@ -63,7 +64,14 @@ export default function AdminDonationRow({ donation: d }: AdminDonationRowProps)
         <div className="text-xs text-[#2B201A]/55">{d.donorEmail}</div>
       </td>
       <td className="px-4 py-3">
-        {d.type === "MEMBERSHIP" && (
+        {d.isEvent ? (
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#E86F1D]/15 text-[#E86F1D] text-[10px] font-bold uppercase tracking-wider">
+              <Ticket className="w-2.5 h-2.5" />
+              <span>Event Pass</span>
+            </span>
+          </div>
+        ) : d.type === "MEMBERSHIP" ? (
           <div className="flex items-center gap-1.5 mb-1">
             <span className="inline-block px-2 py-0.5 rounded-full bg-[#B8893E]/15 text-[#7A5A12] text-[10px] font-bold uppercase tracking-wider">
               Member
@@ -77,7 +85,7 @@ export default function AdminDonationRow({ donation: d }: AdminDonationRowProps)
               <ArrowRight className="w-2.5 h-2.5" />
             </Link>
           </div>
-        )}
+        ) : null}
         <div className="text-xs text-[#2B201A]/75">{d.program ?? "—"}</div>
       </td>
       <td className="px-4 py-3 text-right font-semibold tabular-nums whitespace-nowrap">
@@ -92,4 +100,3 @@ export default function AdminDonationRow({ donation: d }: AdminDonationRowProps)
     </tr>
   );
 }
-

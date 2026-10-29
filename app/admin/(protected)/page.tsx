@@ -30,6 +30,7 @@ const STATUSES = ["PENDING_VERIFICATION", "VERIFIED", "REJECTED", "PENDING_PAYME
 const TYPES = [
   { value: "DONATION", label: "Donations" },
   { value: "MEMBERSHIP", label: "Memberships" },
+  { value: "EVENT", label: "Events" },
 ] as const;
 
 export default async function AdminDashboard({
@@ -44,8 +45,29 @@ export default async function AdminDashboard({
   const q = sp.q?.trim() || undefined;
   const page = Math.max(1, Number.parseInt(sp.page ?? "1", 10) || 1);
 
-  // The stats and status counts follow the Donations / Memberships filter.
-  const typeWhere: Prisma.DonationWhereInput = type ? { type } : {};
+  // Fetch all existing event titles to differentiate event registrations from general donations
+  const allEvents = await prisma.event.findMany({ select: { title: true } });
+  const eventTitles = allEvents.map((e) => e.title);
+
+  // The stats and status counts follow the Donations / Memberships / Events filter.
+  let typeWhere: Prisma.DonationWhereInput = {};
+  if (type === "EVENT") {
+    typeWhere = {
+      type: "DONATION",
+      program: { in: eventTitles },
+    };
+  } else if (type === "DONATION") {
+    typeWhere = {
+      type: "DONATION",
+      OR: [
+        { program: null },
+        { program: { notIn: eventTitles } },
+      ],
+    };
+  } else if (type === "MEMBERSHIP") {
+    typeWhere = { type: "MEMBERSHIP" };
+  }
+
   const where: Prisma.DonationWhereInput = {
     ...typeWhere,
     ...(status ? { status } : {}),
@@ -61,11 +83,16 @@ export default async function AdminDashboard({
       : {}),
   };
 
-  const [grouped, donorRows, donations, total, lastSync, reviewAlerts] = await Promise.all([
+  const [grouped, uniqueDonors, donations, total, lastSync, reviewAlerts] = await Promise.all([
     prisma.donation.groupBy({ by: ["status"], where: typeWhere, _sum: { amountPaise: true }, _count: { _all: true } }),
-    prisma.$queryRaw<{ count: number }[]>`SELECT COUNT(DISTINCT "donorEmail")::int AS count FROM "Donation" WHERE "status" = 'VERIFIED'${
-      type ? Prisma.sql` AND "type" = ${type}::"DonationType"` : Prisma.empty
-    }`,
+    prisma.donation.findMany({
+      where: {
+        status: "VERIFIED",
+        ...typeWhere,
+      },
+      distinct: ["donorEmail"],
+      select: { donorEmail: true },
+    }),
     prisma.donation.findMany({
       where,
       orderBy: { createdAt: "desc" },
@@ -78,17 +105,33 @@ export default async function AdminDashboard({
     alertsNeedingReview(),
   ]);
 
+  const donorCount = uniqueDonors.length;
   const byStatus = (s: DonationStatus) => grouped.find((g) => g.status === s);
   const sum = (s: DonationStatus) => byStatus(s)?._sum.amountPaise ?? 0;
   const count = (s: DonationStatus) => byStatus(s)?._count._all ?? 0;
 
   // Only proof-submitted and verified donations count; QR-only intents are excluded.
-  const noun = type === "MEMBERSHIP" ? "memberships" : "donations";
+  const noun =
+    type === "MEMBERSHIP"
+      ? "memberships"
+      : type === "EVENT"
+      ? "event passes"
+      : "donations";
+
   const stats = [
     { label: `Total ${noun}`, value: rupeesFromPaise(sum("VERIFIED") + sum("PENDING_VERIFICATION")), note: "Verified + pending verification" },
     { label: `Verified ${noun}`, value: rupeesFromPaise(sum("VERIFIED")), note: `${count("VERIFIED")} ${noun}` },
     { label: "Pending verification", value: rupeesFromPaise(sum("PENDING_VERIFICATION")), note: `${count("PENDING_VERIFICATION")} to review`, highlight: count("PENDING_VERIFICATION") > 0 },
-    { label: type === "MEMBERSHIP" ? "Verified members" : "Verified donors", value: (donorRows[0]?.count ?? 0).toLocaleString("en-IN"), note: "Unique email addresses" },
+    {
+      label:
+        type === "MEMBERSHIP"
+          ? "Verified members"
+          : type === "EVENT"
+          ? "Verified attendees"
+          : "Verified donors",
+      value: donorCount.toLocaleString("en-IN"),
+      note: "Unique email addresses",
+    },
   ];
 
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -160,11 +203,25 @@ export default async function AdminDashboard({
               </Link>
             ))}
           </nav>
-          <form action="/admin" className="flex gap-2 w-full lg:w-auto">
+
+          <form method="get" className="flex items-center gap-2">
             {type && <input type="hidden" name="type" value={type} />}
             {status && <input type="hidden" name="status" value={status} />}
-            <input id="admin-search" name="q" defaultValue={q} placeholder="Search ID, name, email or UTR" className="input-warm min-h-10! py-2! text-sm flex-1 lg:w-72" />
-            <button className="btn-outline min-h-10! px-4! text-xs shrink-0">Search</button>
+            <input
+              type="search"
+              name="q"
+              defaultValue={q ?? ""}
+              placeholder="Search ID, name, email or UTR..."
+              className="px-3.5 py-1.5 text-xs bg-white border border-[#E7D8C8] rounded-xl focus:outline-hidden focus:border-[#E86F1D] w-full sm:w-64"
+            />
+            <button type="submit" className="px-3.5 py-1.5 bg-white border border-[#E7D8C8] rounded-xl text-xs font-bold text-[#2B201A] hover:bg-[#FBF2E7]">
+              Search
+            </button>
+            {q && (
+              <Link href={href({ type, status })} className="text-xs text-[#E86F1D] hover:underline">
+                Clear
+              </Link>
+            )}
           </form>
         </div>
 
@@ -189,7 +246,15 @@ export default async function AdminDashboard({
                 </tr>
               )}
               {donations.map((d) => (
-                <AdminDonationRow key={d.donationId} donation={d} />
+                <AdminDonationRow
+                  key={d.donationId}
+                  donation={{
+                    ...d,
+                    isEvent: eventTitles.some(
+                      (t) => t.toLowerCase() === (d.program || "").toLowerCase().trim()
+                    ),
+                  }}
+                />
               ))}
             </tbody>
           </table>

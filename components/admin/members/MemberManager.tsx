@@ -44,7 +44,7 @@ export interface AdminMemberItem {
   createdAt: string | Date;
 }
 
-const TIER_ORDER: MembershipTier[] = ["FREE", "BASIC", "SILVER", "GOLD", "PLATINUM"];
+const TIER_ORDER: MembershipTier[] = ["BASIC", "SILVER", "GOLD", "PLATINUM"];
 
 const TIER_CONFIG: Record<
   MembershipTier,
@@ -489,7 +489,6 @@ export default function MemberManager({ initialMembers }: MemberManagerProps) {
                             <option value="SILVER">Silver Member</option>
                             <option value="GOLD">Gold Member</option>
                             <option value="PLATINUM">Platinum Patron</option>
-                            <option value="FREE">Free Member</option>
                           </select>
 
                           {/* Quick Upgrade & Downgrade icon buttons */}
@@ -638,7 +637,6 @@ export default function MemberManager({ initialMembers }: MemberManagerProps) {
                     <option value="SILVER">Silver (₹5,100 / yr)</option>
                     <option value="GOLD">Gold (₹11,000 / yr)</option>
                     <option value="PLATINUM">Platinum (Lifetime Patron)</option>
-                    <option value="FREE">Free / Registered</option>
                   </select>
                 </div>
                 <div>
@@ -771,7 +769,6 @@ export default function MemberManager({ initialMembers }: MemberManagerProps) {
                     <option value="SILVER">Silver (₹5,100 / yr)</option>
                     <option value="GOLD">Gold (₹11,000 / yr)</option>
                     <option value="PLATINUM">Platinum (Lifetime Patron)</option>
-                    <option value="FREE">Free / Registered</option>
                   </select>
                 </div>
                 <div>

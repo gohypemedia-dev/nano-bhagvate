@@ -25,6 +25,8 @@ import {
   RotateCcw,
   XCircle,
   Award,
+  Ticket,
+  Download,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import HeadingDivider from "@/components/HeadingDivider";
@@ -36,6 +38,34 @@ interface OrderItem {
   price: number;
   quantity: number;
   image?: string | null;
+}
+
+interface UserEventBooking {
+  donationId: string;
+  program: string;
+  donorName: string;
+  donorEmail: string;
+  amountPaise: number;
+  status: string;
+  createdAt: string;
+  verifiedAt: string | null;
+  certificateKey: string;
+  isCompleted: boolean;
+  event: {
+    id: string;
+    slug: string;
+    title: string;
+    titleHi?: string | null;
+    summary?: string | null;
+    summaryHi?: string | null;
+    startDate: string;
+    endDate?: string | null;
+    timeText?: string | null;
+    location: string;
+    address?: string | null;
+    image?: string | null;
+    contactPhone?: string | null;
+  };
 }
 
 interface Order {
@@ -62,9 +92,12 @@ interface Order {
 
 export default function AccountPage() {
   const { user, isLoadingUser, logout, openAuthModal, lang, refreshUser } = useApp();
-  const [activeTab, setActiveTab] = useState<"orders" | "membership" | "profile">("membership");
+  const [activeTab, setActiveTab] = useState<"orders" | "membership" | "events" | "profile">("membership");
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
+  const [userEvents, setUserEvents] = useState<UserEventBooking[]>([]);
+  const [loadingEvents, setLoadingEvents] = useState(false);
+  const [eventsFilter, setEventsFilter] = useState<"all" | "upcoming" | "completed">("all");
 
   // Profile Edit State
   const [isEditing, setIsEditing] = useState(false);
@@ -92,9 +125,25 @@ export default function AccountPage() {
     }
   }, []);
 
+  const fetchEvents = useCallback(async () => {
+    setLoadingEvents(true);
+    try {
+      const res = await fetch("/api/account/events");
+      if (res.ok) {
+        const data = await res.json();
+        setUserEvents(data.events || []);
+      }
+    } catch {
+      // ignore
+    } finally {
+      setLoadingEvents(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (user) {
       fetchOrders();
+      fetchEvents();
       setEditName(user.name || "");
       setEditPhone(user.phone || "");
       setEditAddress(user.address || "");
@@ -102,7 +151,7 @@ export default function AccountPage() {
       setEditState(user.state || "");
       setEditPincode(user.pincode || "");
     }
-  }, [user, fetchOrders]);
+  }, [user, fetchOrders, fetchEvents]);
 
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -133,7 +182,46 @@ export default function AccountPage() {
     }
   };
 
+  const formatEventDate = (startStr: string, endStr?: string | null) => {
+    const s = new Date(startStr);
+    const startFmt = new Intl.DateTimeFormat("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      timeZone: "Asia/Kolkata",
+    }).format(s);
+    if (!endStr || endStr === startStr) return startFmt;
+    const e = new Date(endStr);
+    const endFmt = new Intl.DateTimeFormat("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      timeZone: "Asia/Kolkata",
+    }).format(e);
+    return `${startFmt} – ${endFmt}`;
+  };
+
+  const filteredEvents = userEvents.filter((booking) => {
+    if (eventsFilter === "upcoming") return !booking.isCompleted;
+    if (eventsFilter === "completed") return booking.isCompleted;
+    return true;
+  });
+
   const hi = lang === "hi";
+
+  const getMembershipBannerGradient = (tier?: string) => {
+    switch ((tier || "").toUpperCase()) {
+      case "PLATINUM":
+        return "bg-gradient-to-r from-[#3B0764] via-[#581C87] to-[#2E1065]";
+      case "GOLD":
+        return "bg-gradient-to-r from-[#78350F] via-[#92400E] to-[#A16207]";
+      case "SILVER":
+        return "bg-gradient-to-r from-[#1E293B] via-[#334155] to-[#475569]";
+      case "BASIC":
+      default:
+        return "bg-gradient-to-r from-[#1A3D2F] via-[#2F5A43] to-[#143326]";
+    }
+  };
 
   const getStatusBadge = (status: Order["status"]) => {
     switch (status) {
@@ -219,35 +307,35 @@ export default function AccountPage() {
     <div className="bg-[#FFF9F2] min-h-screen py-6 sm:py-14">
       <div className="page-container max-w-5xl mx-auto space-y-6 sm:space-y-8 px-3 sm:px-6">
         {/* Profile Banner Card */}
-        <div className="bg-[#2B201A] text-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 border-2 border-[#B8893E] shadow-xl relative overflow-hidden">
+        <div className="bg-gradient-to-r from-[#F97316] via-[#E86F1D] to-[#C2410C] text-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-[#EA580C] shadow-warm-lg relative overflow-hidden">
           <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
             <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-[#FFFDF8] text-[#2B201A] flex items-center justify-center font-editorial font-bold text-xl sm:text-2xl border-2 border-[#B8893E] shadow-md shrink-0">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-white text-[#E86F1D] flex items-center justify-center font-editorial font-bold text-xl sm:text-2xl border-2 border-white/80 shadow-md shrink-0">
                 {user.name.charAt(0).toUpperCase()}
               </div>
               <div className="space-y-0.5 sm:space-y-1 min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[11px] font-bold uppercase tracking-widest text-[#B8893E]">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-amber-100">
                     {hi ? "पंजीकृत भक्त" : "Verified Devotee Account"}
                   </span>
                   {user.membership && (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#E86F1D] text-white text-[10px] font-bold uppercase tracking-wider shadow-sm">
-                      <Award className="w-3 h-3" />
+                    <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#2B201A] text-[#FEF08A] text-[10px] font-bold uppercase tracking-wider shadow-md border border-[#FEF08A]/35">
+                      <Award className="w-3.5 h-3.5 text-[#FBBF24]" />
                       <span>{hi ? user.membership.tierNameHi : user.membership.tierName}</span>
                     </span>
                   )}
                 </div>
-                <h1 className="font-editorial text-xl sm:text-3xl font-bold tracking-tight truncate">
+                <h1 className="font-editorial text-xl sm:text-3xl font-bold tracking-tight truncate text-white drop-shadow-2xs">
                   {user.name}
                 </h1>
-                <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-[#E7D8C8]">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-white/90">
                   <span className="flex items-center gap-1 min-w-0 max-w-full">
-                    <Mail className="w-3.5 h-3.5 shrink-0" />
+                    <Mail className="w-3.5 h-3.5 text-amber-200 shrink-0" />
                     <span className="truncate">{user.email}</span>
                   </span>
                   {user.phone && (
                     <span className="flex items-center gap-1">
-                      <Phone className="w-3.5 h-3.5" />
+                      <Phone className="w-3.5 h-3.5 text-amber-200" />
                       <span>{user.phone}</span>
                     </span>
                   )}
@@ -257,7 +345,7 @@ export default function AccountPage() {
 
             <button
               onClick={() => logout()}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-[#E7D8C8] hover:text-white text-xs font-bold uppercase tracking-wider transition-colors border border-white/10 w-full sm:w-auto self-stretch sm:self-center"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-black/20 hover:bg-black/30 text-white text-xs font-bold uppercase tracking-wider transition-colors border border-white/20 hover:border-white/40 shadow-xs w-full sm:w-auto self-stretch sm:self-center"
             >
               <LogOut className="w-4 h-4" />
               <span>{hi ? "लॉग आउट" : "Logout"}</span>
@@ -302,6 +390,23 @@ export default function AccountPage() {
           </button>
 
           <button
+            onClick={() => setActiveTab("events")}
+            className={`flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider whitespace-nowrap shrink-0 transition-colors ${
+              activeTab === "events"
+                ? "bg-[#E86F1D] text-white shadow-warm-sm"
+                : "text-[#2B201A]/70 hover:text-[#2B201A] hover:bg-[#FBF2E7]"
+            }`}
+          >
+            <Ticket className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span>{hi ? "मेरे कार्यक्रम एवं पास" : "My Events"}</span>
+            {userEvents.length > 0 && (
+              <span className="ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] bg-white/25">
+                {userEvents.length}
+              </span>
+            )}
+          </button>
+
+          <button
             onClick={() => setActiveTab("profile")}
             className={`flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider whitespace-nowrap shrink-0 transition-colors ${
               activeTab === "profile"
@@ -320,7 +425,7 @@ export default function AccountPage() {
             {user.membership ? (
               <div className="bg-white rounded-2xl sm:rounded-3xl border border-[#E7D8C8] shadow-warm-md overflow-hidden">
                 {/* Header Banner */}
-                <div className="bg-gradient-to-r from-[#F97316] via-[#E86F1D] to-[#C2410C] p-4 sm:p-8 text-white relative">
+                <div className={`p-4 sm:p-8 text-white relative shadow-inner ${getMembershipBannerGradient(user.membership.tier)}`}>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
                     <div className="space-y-1">
                       <span className="inline-block px-3 py-1 rounded-full bg-white/20 backdrop-blur-xs text-xs font-bold uppercase tracking-wider">
@@ -687,6 +792,289 @@ export default function AccountPage() {
                   </div>
                 );
               })
+            )}
+          </div>
+        )}
+
+        {/* TAB: MY REGISTERED EVENTS & PASSES */}
+        {activeTab === "events" && (
+          <div className="space-y-6">
+            {/* Header & Sub-filter pills */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-[#E7D8C8] shadow-xs">
+              <div>
+                <h3 className="font-editorial text-xl sm:text-2xl font-bold text-[#2B201A]">
+                  {hi ? "मेरे पंजीकृत कार्यक्रम एवं डिजिटल पास" : "My Registered Events & Entry Passes"}
+                </h3>
+                <p className="text-xs text-[#2B201A]/70 mt-0.5">
+                  {hi
+                    ? "आपके द्वारा बुक किए गए आगामी एवं सम्पन्न सत्संग व कथा के आधिकारिक प्रवेश पत्र।"
+                    : "Official entry passes and schedules for all your spiritual events and discourses."}
+                </p>
+              </div>
+
+              {/* Filter Pills: All | Upcoming | Completed */}
+              <div className="inline-flex items-center gap-1 bg-[#FAF6F0] p-1 rounded-xl border border-[#E7D8C8] self-start sm:self-center shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setEventsFilter("all")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    eventsFilter === "all"
+                      ? "bg-[#E86F1D] text-white shadow-xs"
+                      : "text-[#2B201A]/70 hover:text-[#2B201A]"
+                  }`}
+                >
+                  <span>{hi ? "सभी" : "All"}</span>
+                  <span className="ml-1 opacity-75 tabular-nums">({userEvents.length})</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setEventsFilter("upcoming")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    eventsFilter === "upcoming"
+                      ? "bg-[#E86F1D] text-white shadow-xs"
+                      : "text-[#2B201A]/70 hover:text-[#2B201A]"
+                  }`}
+                >
+                  <span>{hi ? "आगामी" : "Upcoming"}</span>
+                  <span className="ml-1 opacity-75 tabular-nums">
+                    ({userEvents.filter((e) => !e.isCompleted).length})
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setEventsFilter("completed")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    eventsFilter === "completed"
+                      ? "bg-[#E86F1D] text-white shadow-xs"
+                      : "text-[#2B201A]/70 hover:text-[#2B201A]"
+                  }`}
+                >
+                  <span>{hi ? "सम्पन्न" : "Completed"}</span>
+                  <span className="ml-1 opacity-75 tabular-nums">
+                    ({userEvents.filter((e) => e.isCompleted).length})
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* Content Area */}
+            {loadingEvents ? (
+              <div className="bg-white rounded-3xl border border-[#E7D8C8] py-16 text-center space-y-2">
+                <Loader2 className="w-6 h-6 animate-spin text-[#E86F1D] mx-auto" />
+                <p className="text-xs text-[#2B201A]/60 font-bold uppercase tracking-wider">
+                  {hi ? "पंजीकृत कार्यक्रम लोड हो रहे हैं..." : "Loading registered events..."}
+                </p>
+              </div>
+            ) : filteredEvents.length === 0 ? (
+              <div className="bg-white rounded-3xl border border-[#E7D8C8] p-8 sm:p-14 text-center space-y-4 shadow-sm">
+                <div className="w-16 h-16 rounded-2xl bg-[#FFF9F2] text-[#E86F1D] mx-auto flex items-center justify-center border border-[#E7D8C8]">
+                  <Calendar className="w-8 h-8" />
+                </div>
+                <div className="space-y-1.5 max-w-md mx-auto">
+                  <h4 className="font-editorial text-xl sm:text-2xl font-bold text-[#2B201A]">
+                    {eventsFilter === "upcoming"
+                      ? hi
+                        ? "कोई आगामी कार्यक्रम पंजीकृत नहीं है"
+                        : "No Upcoming Events Booked"
+                      : eventsFilter === "completed"
+                      ? hi
+                        ? "कोई सम्पन्न कार्यक्रम नहीं मिला"
+                        : "No Completed Past Events"
+                      : hi
+                      ? "अभी तक कोई कार्यक्रम बुक नहीं किया गया है"
+                      : "No Events Registered Yet"}
+                  </h4>
+                  <p className="text-xs sm:text-sm text-[#2B201A]/70 leading-relaxed">
+                    {hi
+                      ? "आश्रम में आयोजित होने वाले आगामी सत्संग, श्रीमद् भागवत कथा और योग शिविरों में भाग लेने हेतु अपना भक्त पास आज ही प्राप्त करें।"
+                      : "Join our upcoming spiritual gatherings, Shrimad Bhagwat Katha, and Vedic conclaves. Reserve your devotee pass today."}
+                  </p>
+                </div>
+                <Link
+                  href="/events"
+                  className="btn-primary inline-flex items-center gap-2 text-xs py-2.5 px-6 shadow-warm-sm"
+                >
+                  <span>{hi ? "आगामी कार्यक्रम देखें (Explore Events)" : "Explore Upcoming Events"}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {filteredEvents.map((booking) => {
+                  const passUrl = `/pass/${booking.donationId}${booking.certificateKey ? `?k=${booking.certificateKey}` : ""}`;
+                  const pdfUrl = `/api/pass/${booking.donationId}${booking.certificateKey ? `?k=${booking.certificateKey}` : ""}`;
+                  const detailsUrl = `/?event=${encodeURIComponent(booking.event.slug)}#events`;
+                  const eventDateStr = formatEventDate(booking.event.startDate, booking.event.endDate);
+
+                  return (
+                    <div
+                      key={booking.donationId}
+                      className="bg-white rounded-2xl sm:rounded-3xl border border-[#E7D8C8] overflow-hidden shadow-xs hover:shadow-sm transition-all"
+                    >
+                      {/* Top Header Strip */}
+                      <div className="p-4 sm:p-5 border-b border-[#E7D8C8] flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#FFFDF8]">
+                        <div className="flex flex-wrap items-center gap-2">
+                          {/* Upcoming vs Completed Tag */}
+                          {!booking.isCompleted ? (
+                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-orange-50 text-[#B4531A] border-[#B4531A]/30 inline-flex items-center gap-1">
+                              <Clock className="w-3 h-3 text-[#B4531A]" />
+                              <span>{hi ? "आगामी कार्यक्रम" : "Upcoming Event"}</span>
+                            </span>
+                          ) : (
+                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-stone-100 text-stone-600 border-stone-300 inline-flex items-center gap-1">
+                              <CheckCircle2 className="w-3 h-3 text-stone-500" />
+                              <span>{hi ? "सम्पन्न कार्यक्रम" : "Completed Event"}</span>
+                            </span>
+                          )}
+
+                          {/* Verification Status */}
+                          {booking.status === "VERIFIED" ? (
+                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-emerald-50 text-emerald-800 border-emerald-300 inline-flex items-center gap-1">
+                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                              <span>{hi ? "पास स्वीकृत (Verified)" : "Pass Verified & Active"}</span>
+                            </span>
+                          ) : booking.status === "CANCELLED" ? (
+                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-stone-100 text-stone-600 border-stone-300 inline-flex items-center gap-1">
+                              <XCircle className="w-3 h-3 text-stone-500" />
+                              <span>{hi ? "रद्द (Cancelled)" : "Booking Cancelled"}</span>
+                            </span>
+                          ) : booking.status === "REJECTED" ? (
+                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-rose-50 text-rose-700 border-rose-200 inline-flex items-center gap-1">
+                              <XCircle className="w-3 h-3 text-rose-600" />
+                              <span>{hi ? "अस्वीकृत (Rejected)" : "Booking Rejected"}</span>
+                            </span>
+                          ) : (
+                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-amber-50 text-amber-900 border-amber-300 inline-flex items-center gap-1">
+                              <Clock className="w-3 h-3 text-amber-700 animate-pulse" />
+                              <span>{hi ? "सत्यापन लंबित" : "Verification Pending"}</span>
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Pass ID */}
+                        <div className="text-xs text-[#2B201A]/60 flex items-center gap-1.5 font-mono">
+                          <span>Ref ID:</span>
+                          <span className="font-bold text-[#2B201A]">{booking.donationId}</span>
+                        </div>
+                      </div>
+
+                      {/* Event Details Content */}
+                      <div className="p-4 sm:p-6">
+                        <div className="flex flex-col md:flex-row gap-5 items-start">
+                          {/* Event Image Thumbnail */}
+                          {booking.event.image && (
+                            <div className="relative w-full md:w-36 h-36 rounded-2xl overflow-hidden shrink-0 border border-[#E7D8C8]">
+                              <Image
+                                src={booking.event.image}
+                                alt={booking.event.title}
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
+                          )}
+
+                          {/* Info columns */}
+                          <div className="flex-1 space-y-3 w-full">
+                            <div>
+                              <h4 className="font-editorial text-xl sm:text-2xl font-bold text-[#2B201A]">
+                                {hi && booking.event.titleHi ? booking.event.titleHi : booking.event.title}
+                              </h4>
+                              {booking.event.titleHi && !hi && (
+                                <p className="text-xs text-[#B8893E] font-medium mt-0.5">
+                                  {booking.event.titleHi}
+                                </p>
+                              )}
+                              {booking.event.summary && (
+                                <p className="text-xs text-[#2B201A]/75 mt-1 line-clamp-2 leading-relaxed">
+                                  {hi && booking.event.summaryHi ? booking.event.summaryHi : booking.event.summary}
+                                </p>
+                              )}
+                            </div>
+
+                            {/* Schedule & Location Grid */}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 text-xs">
+                              <div className="bg-[#FBF2E7] p-3 rounded-xl border border-[#E7D8C8]/60 space-y-1">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B5B4E] flex items-center gap-1">
+                                  <Calendar className="w-3 h-3 text-[#E86F1D]" />
+                                  <span>{hi ? "दिनांक" : "Event Date"}</span>
+                                </span>
+                                <p className="font-bold text-[#2B201A] text-xs">{eventDateStr}</p>
+                              </div>
+
+                              <div className="bg-[#FBF2E7] p-3 rounded-xl border border-[#E7D8C8]/60 space-y-1">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B5B4E] flex items-center gap-1">
+                                  <Clock className="w-3 h-3 text-[#B8893E]" />
+                                  <span>{hi ? "समय" : "Daily Timing"}</span>
+                                </span>
+                                <p className="font-bold text-[#2B201A] text-xs">
+                                  {booking.event.timeText || "4:00 PM – 7:30 PM"}
+                                </p>
+                              </div>
+
+                              <div className="bg-[#FBF2E7] p-3 rounded-xl border border-[#E7D8C8]/60 space-y-1">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B5B4E] flex items-center gap-1">
+                                  <MapPin className="w-3 h-3 text-[#2F5A43]" />
+                                  <span>{hi ? "स्थान / आश्रम" : "Venue"}</span>
+                                </span>
+                                <p className="font-bold text-[#2B201A] text-xs truncate" title={booking.event.location}>
+                                  {booking.event.location}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Seva Amount & Action Buttons */}
+                            <div className="pt-3 border-t border-[#E7D8C8] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                              <div>
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-[#2B201A]/60 block">
+                                  {hi ? "भक्त सेवा सहयोग" : "Devotee Contribution"}
+                                </span>
+                                <span className="font-editorial text-lg font-bold text-[#E86F1D]">
+                                  ₹{(booking.amountPaise / 100).toLocaleString("en-IN")} INR
+                                </span>
+                              </div>
+
+                              <div className="flex flex-wrap items-center gap-2">
+                                {booking.status !== "CANCELLED" && booking.status !== "REJECTED" && (
+                                  <Link
+                                    href={passUrl}
+                                    target="_blank"
+                                    className="btn-primary text-xs py-2 px-3.5 inline-flex items-center gap-1.5 shadow-xs"
+                                  >
+                                    <QrCode className="w-3.5 h-3.5" />
+                                    <span>{hi ? "डिजिटल पास देखें" : "View Digital Pass"}</span>
+                                  </Link>
+                                )}
+
+                                {booking.status === "VERIFIED" && (
+                                  <a
+                                    href={pdfUrl}
+                                    download
+                                    target="_blank"
+                                    className="btn-outline text-xs py-2 px-3 inline-flex items-center gap-1.5"
+                                  >
+                                    <Download className="w-3.5 h-3.5 text-[#E86F1D]" />
+                                    <span>{hi ? "PDF डाउनलोड" : "Download PDF"}</span>
+                                  </a>
+                                )}
+
+                                <Link
+                                  href={detailsUrl}
+                                  className="px-3 py-2 rounded-xl text-xs font-bold text-[#2B201A]/70 hover:text-[#2B201A] hover:bg-[#FBF2E7] border border-[#E7D8C8] inline-flex items-center gap-1 transition-colors"
+                                >
+                                  <span>{hi ? "कार्यक्रम विवरण" : "Event Info"}</span>
+                                  <ArrowRight className="w-3 h-3" />
+                                </Link>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             )}
           </div>
         )}
