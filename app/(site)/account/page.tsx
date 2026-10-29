@@ -377,7 +377,7 @@ export default function AccountPage() {
                   {user.membership.donationId && (
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 pt-1">
                       <Link
-                        href={`/certificate/${user.membership.donationId}`}
+                        href={`/certificate/${user.membership.donationId}${user.membership.certificateKey ? `?k=${user.membership.certificateKey}` : ""}`}
                         target="_blank"
                         className="btn-primary py-3 px-6 text-xs sm:text-sm flex items-center justify-center gap-2 shadow-warm-md w-full sm:w-auto text-center"
                       >
@@ -386,7 +386,7 @@ export default function AccountPage() {
                       </Link>
 
                       <Link
-                        href={`/pass/${user.membership.donationId}`}
+                        href={`/pass/${user.membership.donationId}${user.membership.certificateKey ? `?k=${user.membership.certificateKey}` : ""}`}
                         target="_blank"
                         className="btn-outline py-3 px-6 text-xs sm:text-sm flex items-center justify-center gap-2 w-full sm:w-auto text-center"
                       >

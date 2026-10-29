@@ -32,6 +32,7 @@ export interface UserMembership {
   status: string;
   program?: string | null;
   donationId?: string | null;
+  certificateKey?: string | null;
   amountPaise?: number | null;
   verifiedAt?: string | null;
   benefits?: readonly string[];

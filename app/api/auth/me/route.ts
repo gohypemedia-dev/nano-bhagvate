@@ -4,6 +4,7 @@ import { prisma } from "@/lib/server/prisma";
 import { jsonError } from "@/lib/server/http";
 import { MEMBERSHIP_PLANS } from "@/lib/donation-config";
 import { determineTier } from "@/lib/server/member-sync";
+import { certificateKey } from "@/lib/server/certificate";
 
 export const dynamic = "force-dynamic";
 
@@ -70,6 +71,7 @@ export async function GET() {
       status: memberRecord?.status || "ACTIVE",
       program: membershipDonation?.program || plan.name,
       donationId: membershipDonation?.donationId || null,
+      certificateKey: membershipDonation ? certificateKey(membershipDonation) : null,
       amountPaise: membershipDonation?.amountPaise || plan.price * 100,
       verifiedAt: membershipDonation?.verifiedAt?.toISOString() || null,
       benefits: plan.benefits,

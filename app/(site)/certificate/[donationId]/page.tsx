@@ -5,6 +5,8 @@ import { amountInWords, certificateKey, certificateNumber } from "@/lib/server/c
 import { env } from "@/lib/server/env";
 import { prisma } from "@/lib/server/prisma";
 import { donationIdSchema } from "@/lib/validation/donation";
+import { getCurrentUser } from "@/lib/server/user-auth";
+import { getAdmin } from "@/lib/server/auth";
 import { formatINR, membershipValidUntil, planForProgram, type MembershipPlan } from "@/lib/donation-config";
 
 export const metadata: Metadata = {
@@ -28,9 +30,29 @@ export default async function CertificatePage({
   const donation = donationIdSchema.safeParse(donationId).success
     ? await prisma.donation.findUnique({ where: { donationId } })
     : null;
-  const valid = donation && k === certificateKey(donation);
+  if (!donation) {
+    return (
+      <Notice icon={<FileX2 className="w-12 h-12 text-[#B3261E]" />} title="Certificate not found">
+        This certificate link is not valid. Please open it again from your confirmation email, or contact the Trust at{" "}
+        <a href="mailto:help@namobhagwatevasudevaya.com" className="font-semibold text-[#E86F1D] hover:underline">help@namobhagwatevasudevaya.com</a>.
+      </Notice>
+    );
+  }
 
-  if (!valid) {
+  const [currentUser, admin] = await Promise.all([
+    getCurrentUser().catch(() => null),
+    getAdmin().catch(() => null),
+  ]);
+
+  const isOwner = Boolean(
+    currentUser &&
+      (currentUser.email.toLowerCase() === donation.donorEmail.toLowerCase() ||
+        (currentUser.phone && donation.donorMobile && currentUser.phone === donation.donorMobile))
+  );
+  const isAdmin = Boolean(admin);
+  const keyMatches = Boolean(k && k === certificateKey(donation));
+
+  if (!keyMatches && !isOwner && !isAdmin) {
     return (
       <Notice icon={<FileX2 className="w-12 h-12 text-[#B3261E]" />} title="Certificate not found">
         This certificate link is not valid. Please open it again from your confirmation email, or contact the Trust at{" "}
@@ -53,7 +75,8 @@ export default async function CertificatePage({
   const longDate = (d: Date) =>
     new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", day: "2-digit", month: "long", year: "numeric" }).format(d);
   const date = longDate(donation.verifiedAt ?? donation.updatedAt);
-  const pdfUrl = `/api/certificate/${donation.donationId}?k=${k}`;
+  const effectiveKey = k || certificateKey(donation);
+  const pdfUrl = `/api/certificate/${donation.donationId}?k=${effectiveKey}`;
   const signatory = { name: env().CERT_SIGNATORY_NAME, title: env().CERT_SIGNATORY_TITLE };
 
   return (
