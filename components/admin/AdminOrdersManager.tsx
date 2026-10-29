@@ -279,7 +279,7 @@ export default function AdminOrdersManager({ initialOrders }: Props) {
       <div ref={listRef} className="bg-white rounded-2xl border border-[#E7D8C8] shadow-xs overflow-hidden scroll-mt-4">
         {/* Filters and search */}
         <div className="p-3 sm:p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 border-b border-[#E7D8C8]">
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth pb-1 sm:pb-0">
             {filters.map((f) => (
               <button
                 key={f.key}

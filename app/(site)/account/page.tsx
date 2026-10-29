@@ -24,6 +24,7 @@ import {
   Banknote,
   RotateCcw,
   XCircle,
+  Award,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import HeadingDivider from "@/components/HeadingDivider";
@@ -61,7 +62,7 @@ interface Order {
 
 export default function AccountPage() {
   const { user, isLoadingUser, logout, openAuthModal, lang, refreshUser } = useApp();
-  const [activeTab, setActiveTab] = useState<"orders" | "profile">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "membership" | "profile">("membership");
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
 
@@ -215,26 +216,34 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="bg-[#FFF9F2] min-h-screen py-10 sm:py-14">
-      <div className="page-container max-w-5xl mx-auto space-y-8 px-4 sm:px-6">
+    <div className="bg-[#FFF9F2] min-h-screen py-6 sm:py-14">
+      <div className="page-container max-w-5xl mx-auto space-y-6 sm:space-y-8 px-3 sm:px-6">
         {/* Profile Banner Card */}
-        <div className="bg-[#2B201A] text-white rounded-3xl p-6 sm:p-8 border-2 border-[#B8893E] shadow-xl relative overflow-hidden">
-          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-[#FFFDF8] text-[#2B201A] flex items-center justify-center font-editorial font-bold text-2xl border-2 border-[#B8893E] shadow-md shrink-0">
+        <div className="bg-[#2B201A] text-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 border-2 border-[#B8893E] shadow-xl relative overflow-hidden">
+          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
+            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-[#FFFDF8] text-[#2B201A] flex items-center justify-center font-editorial font-bold text-xl sm:text-2xl border-2 border-[#B8893E] shadow-md shrink-0">
                 {user.name.charAt(0).toUpperCase()}
               </div>
-              <div className="space-y-1">
-                <div className="inline-block text-[11px] font-bold uppercase tracking-widest text-[#B8893E]">
-                  <span>{hi ? "पंजीकृत भक्त" : "Verified Devotee Account"}</span>
+              <div className="space-y-0.5 sm:space-y-1 min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-[#B8893E]">
+                    {hi ? "पंजीकृत भक्त" : "Verified Devotee Account"}
+                  </span>
+                  {user.membership && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#E86F1D] text-white text-[10px] font-bold uppercase tracking-wider shadow-sm">
+                      <Award className="w-3 h-3" />
+                      <span>{hi ? user.membership.tierNameHi : user.membership.tierName}</span>
+                    </span>
+                  )}
                 </div>
-                <h1 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight">
+                <h1 className="font-editorial text-xl sm:text-3xl font-bold tracking-tight truncate">
                   {user.name}
                 </h1>
-                <div className="flex flex-wrap items-center gap-3 text-xs text-[#E7D8C8]">
-                  <span className="flex items-center gap-1">
-                    <Mail className="w-3.5 h-3.5" />
-                    <span>{user.email}</span>
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-[#E7D8C8]">
+                  <span className="flex items-center gap-1 min-w-0 max-w-full">
+                    <Mail className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">{user.email}</span>
                   </span>
                   {user.phone && (
                     <span className="flex items-center gap-1">
@@ -248,7 +257,7 @@ export default function AccountPage() {
 
             <button
               onClick={() => logout()}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-[#E7D8C8] hover:text-white text-xs font-bold uppercase tracking-wider transition-colors border border-white/10 self-start sm:self-center"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-[#E7D8C8] hover:text-white text-xs font-bold uppercase tracking-wider transition-colors border border-white/10 w-full sm:w-auto self-stretch sm:self-center"
             >
               <LogOut className="w-4 h-4" />
               <span>{hi ? "लॉग आउट" : "Logout"}</span>
@@ -257,36 +266,184 @@ export default function AccountPage() {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex gap-2 border-b border-[#E7D8C8] pb-1">
+        <div className="overflow-x-auto no-scrollbar scroll-smooth flex items-center gap-1.5 sm:gap-2 border-b border-[#E7D8C8] pb-1.5 -mx-3 px-3 sm:mx-0 sm:px-0">
           <button
             onClick={() => setActiveTab("orders")}
-            className={`flex items-center gap-2 px-5 py-3 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider whitespace-nowrap shrink-0 transition-colors ${
               activeTab === "orders"
                 ? "bg-[#E86F1D] text-white shadow-warm-sm"
                 : "text-[#2B201A]/70 hover:text-[#2B201A] hover:bg-[#FBF2E7]"
             }`}
           >
-            <Package className="w-4 h-4" />
-            <span>{hi ? "मेरे पुस्तक आर्डर्स" : "My Book Orders"}</span>
+            <Package className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span>{hi ? "मेरे आर्डर्स" : "My Orders"}</span>
             {orders.length > 0 && (
-              <span className="ml-1 px-2 py-0.5 rounded-full text-[10px] bg-white/25">
+              <span className="ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] bg-white/25">
                 {orders.length}
               </span>
             )}
           </button>
 
           <button
+            onClick={() => setActiveTab("membership")}
+            className={`flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider whitespace-nowrap shrink-0 transition-colors ${
+              activeTab === "membership"
+                ? "bg-[#E86F1D] text-white shadow-warm-sm"
+                : "text-[#2B201A]/70 hover:text-[#2B201A] hover:bg-[#FBF2E7]"
+            }`}
+          >
+            <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span>{hi ? "मेरी सदस्यता" : "My Membership"}</span>
+            {user.membership && (
+              <span className="ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] bg-white/25 font-bold">
+                {user.membership.tier}
+              </span>
+            )}
+          </button>
+
+          <button
             onClick={() => setActiveTab("profile")}
-            className={`flex items-center gap-2 px-5 py-3 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider whitespace-nowrap shrink-0 transition-colors ${
               activeTab === "profile"
                 ? "bg-[#E86F1D] text-white shadow-warm-sm"
                 : "text-[#2B201A]/70 hover:text-[#2B201A] hover:bg-[#FBF2E7]"
             }`}
           >
-            <MapPin className="w-4 h-4" />
-            <span>{hi ? "प्रोफ़ाइल एवं डिलीवरी पता" : "Profile & Delivery Address"}</span>
+            <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span>{hi ? "प्रोफ़ाइल एवं पता" : "Profile & Address"}</span>
           </button>
         </div>
+
+        {/* TAB: MEMBERSHIP */}
+        {activeTab === "membership" && (
+          <div className="space-y-6">
+            {user.membership ? (
+              <div className="bg-white rounded-2xl sm:rounded-3xl border border-[#E7D8C8] shadow-warm-md overflow-hidden">
+                {/* Header Banner */}
+                <div className="bg-gradient-to-r from-[#F97316] via-[#E86F1D] to-[#C2410C] p-4 sm:p-8 text-white relative">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
+                    <div className="space-y-1">
+                      <span className="inline-block px-3 py-1 rounded-full bg-white/20 backdrop-blur-xs text-xs font-bold uppercase tracking-wider">
+                        {hi ? "सक्रिय ट्रस्ट सदस्यता" : "Official Trust Membership"}
+                      </span>
+                      <h2 className="font-editorial text-2xl sm:text-4xl font-bold tracking-tight">
+                        {hi && user.membership.tierNameHi ? user.membership.tierNameHi : user.membership.tierName}
+                      </h2>
+                      <p className="text-white/85 text-xs sm:text-sm font-medium">
+                        Namo Bhagwate Vasudevaya Trust • Devotee Member Roll
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="px-3.5 py-1.5 rounded-xl bg-white text-[#2B201A] font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-md">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                        <span>{hi ? "सक्रिय (Active)" : "Active Status"}</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Details Body */}
+                <div className="p-4 sm:p-8 space-y-5 sm:space-y-6">
+                  {/* Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-5 rounded-2xl bg-[#FFF9F2] border border-[#E7D8C8]">
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-[#2B201A]/60">
+                        {hi ? "सदस्य का नाम" : "Member Name"}
+                      </p>
+                      <p className="font-bold text-[#2B201A] text-sm mt-0.5">{user.name}</p>
+                    </div>
+
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-[#2B201A]/60">
+                        {hi ? "सदस्यता श्रेणी" : "Membership Plan"}
+                      </p>
+                      <p className="font-bold text-[#E86F1D] text-sm mt-0.5">
+                        {user.membership.tierName}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-[#2B201A]/60">
+                        {hi ? "सदस्यता संदर्भ / ID" : "Donation / Reference ID"}
+                      </p>
+                      <p className="font-mono font-bold text-[#2B201A] text-sm mt-0.5">
+                        {user.membership.donationId || "NBVT-VERIFIED"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Certificate & Digital Pass Links */}
+                  {user.membership.donationId && (
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 pt-1">
+                      <Link
+                        href={`/certificate/${user.membership.donationId}`}
+                        target="_blank"
+                        className="btn-primary py-3 px-6 text-xs sm:text-sm flex items-center justify-center gap-2 shadow-warm-md w-full sm:w-auto text-center"
+                      >
+                        <Award className="w-4 h-4" />
+                        <span>{hi ? "ट्रस्ट सदस्यता प्रमाणपत्र देखें" : "View Membership Certificate"}</span>
+                      </Link>
+
+                      <Link
+                        href={`/pass/${user.membership.donationId}`}
+                        target="_blank"
+                        className="btn-outline py-3 px-6 text-xs sm:text-sm flex items-center justify-center gap-2 w-full sm:w-auto text-center"
+                      >
+                        <QrCode className="w-4 h-4 text-[#E86F1D]" />
+                        <span>{hi ? "डिजिटल भक्त पास देखें" : "View Devotee Digital Pass"}</span>
+                      </Link>
+                    </div>
+                  )}
+
+                  {/* Benefits */}
+                  <div className="space-y-3 pt-4 border-t border-[#E7D8C8]">
+                    <h3 className="font-editorial text-lg font-bold text-[#2B201A]">
+                      {hi ? "सदस्यता के अंतर्गत प्राप्त पावन सेवा लाभ" : "Included Membership Seva Privileges"}
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {(user.membership.benefits || [
+                        "Annual Trust Membership Certificate",
+                        "Monthly Spiritual Newsletter & E-books",
+                        "Invitation to Annual Spiritual Gathering",
+                        "Direct Seva Participation Opportunities",
+                        "Special Prasad & Blessing Card from Ashram",
+                      ]).map((b, i) => (
+                        <div key={i} className="flex items-start gap-2.5 text-xs text-[#2B201A]/85">
+                          <CheckCircle2 className="w-4 h-4 text-[#2F5A43] shrink-0 mt-0.5" />
+                          <span>{b}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-white rounded-3xl border border-[#E7D8C8] p-8 sm:p-12 text-center space-y-5 shadow-sm">
+                <div className="w-16 h-16 rounded-2xl bg-[#FFF9F2] text-[#E86F1D] mx-auto flex items-center justify-center border border-[#E7D8C8]">
+                  <Award className="w-8 h-8" />
+                </div>
+                <div className="space-y-2 max-w-md mx-auto">
+                  <h3 className="font-editorial text-2xl sm:text-3xl font-bold text-[#2B201A]">
+                    {hi ? "ट्रस्ट की पावन सदस्यता प्राप्त करें" : "Become a Trust Member"}
+                  </h3>
+                  <p className="text-sm text-[#2B201A]/70 leading-relaxed">
+                    {hi
+                      ? "गुरुकुल शिक्षा, गौ सेवा, किसान कल्याण और आध्यात्मिक आयोजनों में ट्रस्ट के साथ जुड़कर पुण्य के भागी बनें।"
+                      : "Join the Namo Bhagwate Vasudevaya Trust family. Support Gurukul education, Gau Seva, and community welfare programs."}
+                  </p>
+                </div>
+                <Link
+                  href="/membership"
+                  className="btn-primary inline-flex items-center gap-2 text-sm py-3 px-8 shadow-warm-md"
+                >
+                  <span>{hi ? "सदस्यता योजनाएं देखें (View Plans)" : "Explore Membership Plans"}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* TAB 1: ORDERS LIST */}
         {activeTab === "orders" && (
@@ -332,7 +489,7 @@ export default function AccountPage() {
                     className="bg-white rounded-3xl border border-[#E7D8C8] shadow-sm overflow-hidden divide-y divide-[#E7D8C8]"
                   >
                     {/* Order Header */}
-                    <div className="p-5 sm:p-6 bg-[#FBF2E7]/70 flex flex-wrap items-center justify-between gap-4">
+                    <div className="p-4 sm:p-6 bg-[#FBF2E7]/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                       <div className="space-y-1">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="font-mono font-bold text-sm text-[#2B201A]">
@@ -402,7 +559,7 @@ export default function AccountPage() {
                         </p>
                       </div>
 
-                      <div className="text-right">
+                      <div className="flex items-center justify-between sm:block sm:text-right border-t sm:border-t-0 pt-2 sm:pt-0 border-[#E7D8C8]/60">
                         <p className="text-[11px] font-bold uppercase tracking-wider text-[#2B201A]/60">
                           {hi ? "कुल राशि" : "Total Amount"}
                         </p>
@@ -478,7 +635,7 @@ export default function AccountPage() {
                     )}
 
                     {/* Order Items List */}
-                    <div className="p-5 sm:p-6 space-y-4">
+                    <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
                       {order.items.map((item) => (
                         <div key={item.id} className="flex items-center gap-4">
                           <div className="relative w-16 h-20 rounded-xl overflow-hidden border border-[#E7D8C8] bg-[#FBF2E7] shrink-0">
@@ -503,7 +660,7 @@ export default function AccountPage() {
                     </div>
 
                     {/* Shipping Address Footer */}
-                    <div className="p-5 sm:p-6 bg-[#FFFDF8] flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
+                    <div className="p-4 sm:p-6 bg-[#FFFDF8] flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 text-xs">
                       <div className="space-y-1">
                         <p className="font-bold text-[#6B5B4E] uppercase tracking-wider flex items-center gap-1.5">
                           <MapPin className="w-3.5 h-3.5 text-[#E86F1D]" />
@@ -536,8 +693,8 @@ export default function AccountPage() {
 
         {/* TAB 2: PROFILE & ADDRESS */}
         {activeTab === "profile" && (
-          <div className="bg-white rounded-3xl border border-[#E7D8C8] p-6 sm:p-10 shadow-sm space-y-6">
-            <div className="flex items-center justify-between border-b border-[#E7D8C8] pb-4">
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-[#E7D8C8] p-4 sm:p-10 shadow-sm space-y-5 sm:space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 border-b border-[#E7D8C8] pb-4">
               <div>
                 <h3 className="font-editorial text-2xl font-bold text-[#2B201A]">
                   {hi ? "व्यक्तिगत विवरण एवं पता" : "Personal Details & Shipping Address"}

@@ -97,8 +97,8 @@ export default async function DonationDetailPage({ params }: { params: Promise<{
           <section className="rounded-xl border border-[#E7D8C8] bg-white">
             <dl className="divide-y divide-[#E7D8C8]">
               {rows.map(([label, value]) => (
-                <div key={label} className="grid grid-cols-[130px_1fr] sm:grid-cols-[170px_1fr] gap-3 px-4 sm:px-5 py-3 text-sm">
-                  <dt className="text-[#2B201A]/60">{label}</dt>
+                <div key={label} className="grid grid-cols-1 sm:grid-cols-[170px_1fr] gap-1 sm:gap-3 px-4 sm:px-5 py-2.5 sm:py-3 text-sm">
+                  <dt className="text-xs sm:text-sm text-[#2B201A]/60 font-medium sm:font-normal">{label}</dt>
                   <dd className="text-[#2B201A] font-semibold min-w-0">{value}</dd>
                 </div>
               ))}

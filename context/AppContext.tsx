@@ -25,6 +25,19 @@ export interface CartItem {
   image: string;
 }
 
+export interface UserMembership {
+  tier: string;
+  tierName?: string;
+  tierNameHi?: string;
+  status: string;
+  program?: string | null;
+  donationId?: string | null;
+  amountPaise?: number | null;
+  verifiedAt?: string | null;
+  benefits?: readonly string[];
+  price?: number;
+}
+
 export interface UserProfile {
   id: string;
   name: string;
@@ -35,6 +48,7 @@ export interface UserProfile {
   state?: string | null;
   pincode?: string | null;
   createdAt?: string;
+  membership?: UserMembership | null;
 }
 
 interface AppContextType {

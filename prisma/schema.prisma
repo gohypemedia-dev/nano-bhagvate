@@ -68,7 +68,7 @@ model Donation {
   proofSubmittedAt   DateTime?
   // Hash of the one-time token in the "approve this payment" email sent to the Trust.
   approvalTokenHash  String?             @unique
-  providerRef       String?             @unique
+  providerRef        String?             @unique
   adminNote          String?
   verifiedById       String?
   verifiedBy         AdminUser?          @relation("VerifiedBy", fields: [verifiedById], references: [id])
@@ -194,7 +194,6 @@ model GalleryItem {
   @@index([isActive, displayOrder])
 }
 
-
 // Events shown on /events, /events/[slug] and the home page; managed from /admin/events.
 // Dates are stored as midnight IST of the chosen day; `timeText` holds the time as written.
 model Event {
@@ -241,21 +240,23 @@ enum RefundStatus {
 }
 
 model User {
-  id           String        @id @default(cuid())
-  email        String        @unique
-  name         String
-  phone        String?
-  passwordHash String
-  image        String?
-  googleId     String?       @unique
-  address      String?
-  city         String?
-  state        String?
-  pincode      String?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  sessions     UserSession[]
-  orders       Order[]
+  id               String        @id @default(cuid())
+  email            String        @unique
+  name             String
+  phone            String?
+  passwordHash     String
+  image            String?
+  googleId         String?       @unique
+  address          String?
+  city             String?
+  state            String?
+  pincode          String?
+  membershipTier   String        @default("FREE")
+  membershipStatus String        @default("ACTIVE")
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  sessions         UserSession[]
+  orders           Order[]
 
   @@index([email])
 }
@@ -310,3 +311,24 @@ model OrderItem {
   createdAt DateTime @default(now())
 }
 
+// Members managed via /admin/members
+model Member {
+  id               String    @id @default(cuid())
+  name             String
+  email            String?
+  phone            String?
+  tier             String    @default("BASIC") // BASIC, SILVER, GOLD, PLATINUM
+  status           String    @default("ACTIVE") // ACTIVE, INACTIVE, EXPIRED
+  role             String?   // Devotee Member, Volunteer, Trustee, Patron
+  address          String?
+  city             String?
+  state            String?
+  pincode          String?
+  photoUrl         String?
+  validUntil       DateTime?
+  userId           String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([tier, status])
+}

@@ -2,7 +2,7 @@
 
 import Link, { useLinkStatus } from "next/link";
 import { usePathname } from "next/navigation";
-import { HeartHandshake, Images, Calendar, ExternalLink, Package, Loader2, type LucideIcon } from "lucide-react";
+import { HeartHandshake, Images, Calendar, Package, Users, Loader2, type LucideIcon } from "lucide-react";
 
 // Swaps the tab icon for a spinner (same size, so no layout shift) while the clicked page loads.
 function NavIcon({ icon: Icon }: { icon: LucideIcon }) {
@@ -15,6 +15,7 @@ export default function AdminNav() {
   const pathname = usePathname();
 
   const isDonations = pathname === "/admin" || pathname.startsWith("/admin/donations");
+  const isMembers = pathname.startsWith("/admin/members");
   const isOrders = pathname.startsWith("/admin/orders");
   const isEvents = pathname.startsWith("/admin/events");
   const isGallery = pathname.startsWith("/admin/gallery");
@@ -25,6 +26,12 @@ export default function AdminNav() {
       label: "Donations",
       active: isDonations,
       icon: HeartHandshake,
+    },
+    {
+      href: "/admin/members",
+      label: "Members",
+      active: isMembers,
+      icon: Users,
     },
     {
       href: "/admin/orders",
@@ -47,13 +54,13 @@ export default function AdminNav() {
   ];
 
   return (
-    <nav className="flex items-center gap-1.5 sm:gap-2">
+    <nav className="flex items-center gap-1 sm:gap-2">
       {links.map((link) => {
         return (
           <Link
             key={link.href}
             href={link.href}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-colors ${
+            className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap shrink-0 transition-colors ${
               link.active
                 ? "bg-[#2B201A] text-white shadow-xs"
                 : "text-[#2B201A]/70 hover:text-[#2B201A] hover:bg-[#FBF2E7]"
@@ -64,17 +71,6 @@ export default function AdminNav() {
           </Link>
         );
       })}
-
-      <Link
-        href="/gallery"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="hidden md:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#2B201A]/60 hover:text-[#E86F1D] hover:bg-[#FBF2E7] transition-colors ml-1"
-        title="View live website gallery in a new tab"
-      >
-        <span>View Site</span>
-        <ExternalLink className="w-3 h-3" />
-      </Link>
     </nav>
   );
 }

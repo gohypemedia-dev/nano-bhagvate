@@ -1,4 +1,5 @@
-export function formatIST(date: Date) {
+export function formatIST(date: Date | string) {
+  const d = typeof date === "string" ? new Date(date) : date;
   return new Intl.DateTimeFormat("en-IN", {
     timeZone: "Asia/Kolkata",
     day: "2-digit",
@@ -7,7 +8,7 @@ export function formatIST(date: Date) {
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
-  }).format(date);
+  }).format(d);
 }
 
 export function rupeesFromPaise(paise: number) {

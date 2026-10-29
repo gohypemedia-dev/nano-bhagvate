@@ -1,14 +1,17 @@
 import Link from "next/link";
 import { Prisma, type DonationStatus } from "@prisma/client";
+import { Users, ArrowRight } from "lucide-react";
 import { requireAdminPage } from "@/lib/server/auth";
 import { prisma } from "@/lib/server/prisma";
 import { formatIST, rupeesFromPaise, STATUS_LABELS } from "@/lib/admin-format";
 import StatusBadge from "@/components/admin/StatusBadge";
+import AdminDonationRow from "@/components/admin/AdminDonationRow";
 import BankAlertsPanel from "@/components/admin/BankAlertsPanel";
 import AutoRefresh from "@/components/admin/AutoRefresh";
-import { alertsNeedingReview, lastBankSync } from "@/lib/server/bank-alerts";
 
-const PAGE_SIZE = 25;
+export const dynamic = "force-dynamic";
+
+const PAGE_SIZE = 50;
 const STATUSES = ["PENDING_VERIFICATION", "VERIFIED", "REJECTED", "PENDING_PAYMENT", "CANCELLED"] as const;
 const TYPES = [
   { value: "DONATION", label: "Donations" },
@@ -18,20 +21,20 @@ const TYPES = [
 export default async function AdminDashboard({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; type?: string; q?: string; page?: string }>;
+  searchParams: Promise<{ type?: string; status?: string; q?: string; page?: string }>;
 }) {
   await requireAdminPage();
   const sp = await searchParams;
-  const status = STATUSES.find((s) => s === sp.status);
+  const status = STATUSES.includes(sp.status as DonationStatus) ? (sp.status as DonationStatus) : undefined;
   const type = TYPES.find((t) => t.value === sp.type)?.value;
-  const q = sp.q?.trim().slice(0, 100) ?? "";
+  const q = sp.q?.trim() || undefined;
   const page = Math.max(1, Number.parseInt(sp.page ?? "1", 10) || 1);
 
   // The stats and status counts follow the Donations / Memberships filter.
   const typeWhere: Prisma.DonationWhereInput = type ? { type } : {};
   const where: Prisma.DonationWhereInput = {
     ...typeWhere,
-    ...(status ? { status } : {}),
+    ...(status ? { status } : { status: { notIn: ["CANCELLED", "REJECTED"] } }),
     ...(q
       ? {
           OR: [
@@ -74,19 +77,20 @@ export default async function AdminDashboard({
     { label: type === "MEMBERSHIP" ? "Verified members" : "Verified donors", value: (donorRows[0]?.count ?? 0).toLocaleString("en-IN"), note: "Unique email addresses" },
   ];
 
-  const href = (params: { status?: string; type?: string; q?: string; page?: number }) => {
-    const u = new URLSearchParams();
-    if (params.type) u.set("type", params.type);
-    if (params.status) u.set("status", params.status);
-    if (params.q) u.set("q", params.q);
-    if (params.page && params.page > 1) u.set("page", String(params.page));
-    const s = u.toString();
-    return s ? `/admin?${s}` : "/admin";
-  };
-  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const pages = Math.ceil(total / PAGE_SIZE);
+
+  function href(opts: { type?: string; status?: string; q?: string; page?: number }) {
+    const p = new URLSearchParams();
+    if (opts.type) p.set("type", opts.type);
+    if (opts.status) p.set("status", opts.status);
+    if (opts.q) p.set("q", opts.q);
+    if (opts.page && opts.page > 1) p.set("page", String(opts.page));
+    const qs = p.toString();
+    return qs ? `/admin?${qs}` : "/admin";
+  }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <AutoRefresh />
       <BankAlertsPanel
         lastSync={lastSync ? formatIST(lastSync) : null}
@@ -101,31 +105,42 @@ export default async function AdminDashboard({
         }))}
       />
 
-      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         {stats.map((s) => (
-          <div key={s.label} className={`rounded-xl border bg-white p-4 sm:p-5 ${s.highlight ? "border-[#B8893E]" : "border-[#E7D8C8]"}`}>
-            <p className="text-[11px] font-bold uppercase tracking-wider text-[#2B201A]/60">{s.label}</p>
-            <p className="mt-1 text-xl sm:text-2xl font-extrabold text-[#2B201A] tabular-nums">{s.value}</p>
+          <div key={s.label} className={`rounded-xl border bg-white p-3 sm:p-5 ${s.highlight ? "border-[#B8893E]" : "border-[#E7D8C8]"}`}>
+            <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#2B201A]/60">{s.label}</p>
+            <p className="mt-1 text-lg sm:text-2xl font-extrabold text-[#2B201A] tabular-nums">{s.value}</p>
             <p className={`mt-0.5 text-xs ${s.highlight ? "text-[#7A5A12] font-semibold" : "text-[#2B201A]/55"}`}>{s.note}</p>
           </div>
         ))}
       </section>
 
       <section className="space-y-4">
-        <nav className="flex flex-wrap gap-1.5" aria-label="Filter by type">
-          {[{ value: undefined, label: "Everything" }, ...TYPES].map((t) => (
-            <Link key={t.label} href={href({ type: t.value, status, q })} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${type === t.value ? "bg-[#E86F1D] text-white border-[#E86F1D]" : "bg-white border-[#E7D8C8] text-[#2B201A]/75 hover:border-[#E86F1D]/50"}`}>
-              {t.label}
-            </Link>
-          ))}
-        </nav>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <nav className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 sm:pb-0" aria-label="Filter by type">
+            {[{ value: undefined, label: "Everything" }, ...TYPES].map((t) => (
+              <Link key={t.label} href={href({ type: t.value, status, q })} className={`px-3 py-1.5 rounded-lg text-xs font-bold border shrink-0 whitespace-nowrap ${type === t.value ? "bg-[#E86F1D] text-white border-[#E86F1D]" : "bg-white border-[#E7D8C8] text-[#2B201A]/75 hover:border-[#E86F1D]/50"}`}>
+                {t.label}
+              </Link>
+            ))}
+          </nav>
+
+          <Link
+            href="/admin/members"
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#FAF3EA] hover:bg-[#E86F1D] text-[#E86F1D] hover:text-white border border-[#E86F1D]/30 hover:border-[#E86F1D] text-xs font-bold transition-all shadow-xs w-full sm:w-auto text-center"
+          >
+            <Users className="w-3.5 h-3.5 shrink-0" />
+            <span>Manage Members (Upgrade / Downgrade Tiers & Remove) →</span>
+          </Link>
+        </div>
+
         <div className="flex flex-col lg:flex-row lg:items-center gap-3 lg:justify-between">
-          <nav className="flex flex-wrap gap-1.5" aria-label="Filter by status">
-            <Link href={href({ type, q })} className={`px-3 py-1.5 rounded-full text-xs font-bold border ${!status ? "bg-[#2B201A] text-white border-[#2B201A]" : "bg-white border-[#E7D8C8] text-[#2B201A]/75 hover:border-[#2B201A]/40"}`}>
+          <nav className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 sm:pb-0" aria-label="Filter by status">
+            <Link href={href({ type, q })} className={`px-3 py-1.5 rounded-full text-xs font-bold border shrink-0 whitespace-nowrap ${!status ? "bg-[#2B201A] text-white border-[#2B201A]" : "bg-white border-[#E7D8C8] text-[#2B201A]/75 hover:border-[#2B201A]/40"}`}>
               All
             </Link>
             {STATUSES.map((s) => (
-              <Link key={s} href={href({ type, status: s, q })} className={`px-3 py-1.5 rounded-full text-xs font-bold border ${status === s ? "bg-[#2B201A] text-white border-[#2B201A]" : "bg-white border-[#E7D8C8] text-[#2B201A]/75 hover:border-[#2B201A]/40"}`}>
+              <Link key={s} href={href({ type, status: s, q })} className={`px-3 py-1.5 rounded-full text-xs font-bold border shrink-0 whitespace-nowrap ${status === s ? "bg-[#2B201A] text-white border-[#2B201A]" : "bg-white border-[#E7D8C8] text-[#2B201A]/75 hover:border-[#2B201A]/40"}`}>
                 {STATUS_LABELS[s]} <span className="opacity-60 tabular-nums">{count(s)}</span>
               </Link>
             ))}
@@ -133,13 +148,13 @@ export default async function AdminDashboard({
           <form action="/admin" className="flex gap-2 w-full lg:w-auto">
             {type && <input type="hidden" name="type" value={type} />}
             {status && <input type="hidden" name="status" value={status} />}
-            <input id="admin-search" name="q" defaultValue={q} placeholder="Search ID, name, email or UTR" className="input-warm min-h-10! py-2! text-sm lg:w-72" />
-            <button className="btn-outline min-h-10! px-4! text-xs">Search</button>
+            <input id="admin-search" name="q" defaultValue={q} placeholder="Search ID, name, email or UTR" className="input-warm min-h-10! py-2! text-sm flex-1 lg:w-72" />
+            <button className="btn-outline min-h-10! px-4! text-xs shrink-0">Search</button>
           </form>
         </div>
 
         <div className="overflow-x-auto rounded-xl border border-[#E7D8C8] bg-white">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm min-w-[680px]">
             <thead>
               <tr className="text-left text-[11px] uppercase tracking-wider text-[#2B201A]/60 border-b border-[#E7D8C8]">
                 <th className="px-4 py-3 font-bold">Donation ID</th>
@@ -159,41 +174,40 @@ export default async function AdminDashboard({
                 </tr>
               )}
               {donations.map((d) => (
-                <tr key={d.donationId} className="border-b border-[#E7D8C8] last:border-0 hover:bg-[#FBF2E7]/60">
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <Link href={`/admin/donations/${d.donationId}`} className="font-mono font-semibold text-[#E86F1D] hover:underline">
-                      {d.donationId}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="font-semibold text-[#2B201A]">{d.donorName}</div>
-                    <div className="text-xs text-[#2B201A]/55">{d.donorEmail}</div>
-                  </td>
-                  <td className="px-4 py-3">
-                    {d.type === "MEMBERSHIP" && (
-                      <span className="inline-block mb-0.5 px-2 py-0.5 rounded-full bg-[#B8893E]/15 text-[#7A5A12] text-[10px] font-bold uppercase tracking-wider">Member</span>
-                    )}
-                    <div className="text-xs text-[#2B201A]/75">{d.program ?? "—"}</div>
-                  </td>
-                  <td className="px-4 py-3 text-right font-semibold tabular-nums whitespace-nowrap">{rupeesFromPaise(d.amountPaise)}</td>
-                  <td className="px-4 py-3"><StatusBadge status={d.status} /></td>
-                  <td className="px-4 py-3 text-xs text-[#2B201A]/65 whitespace-nowrap">{formatIST(d.createdAt)}</td>
-                </tr>
+                <AdminDonationRow key={d.donationId} donation={d} />
               ))}
             </tbody>
           </table>
         </div>
 
         {pages > 1 && (
-          <div className="flex items-center justify-between text-sm">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
             <span className="text-[#2B201A]/60">Page {page} of {pages} · {total} {noun}</span>
             <div className="flex gap-2">
-              {page > 1 && <Link href={href({ type, status, q, page: page - 1 })} className="btn-outline min-h-9! px-3! text-xs">Previous</Link>}
-              {page < pages && <Link href={href({ type, status, q, page: page + 1 })} className="btn-outline min-h-9! px-3! text-xs">Next</Link>}
+              <Link href={href({ type, status, q, page: page - 1 })} className={`btn-outline px-3! py-1! text-xs ${page <= 1 ? "pointer-events-none opacity-40" : ""}`}>
+                Previous
+              </Link>
+              <Link href={href({ type, status, q, page: page + 1 })} className={`btn-outline px-3! py-1! text-xs ${page >= pages ? "pointer-events-none opacity-40" : ""}`}>
+                Next
+              </Link>
             </div>
           </div>
         )}
       </section>
     </div>
   );
+}
+
+async function lastBankSync() {
+  const row = await prisma.syncState.findUnique({ where: { id: "bank-emails" } });
+  return row?.lastRunAt ?? null;
+}
+
+async function alertsNeedingReview() {
+  return prisma.paymentAlert.findMany({
+    where: { status: { in: ["AMBIGUOUS", "UNMATCHED"] } },
+    orderBy: { receivedAt: "desc" },
+    take: 10,
+    select: { id: true, amountPaise: true, receivedAt: true, utr: true, payer: true, status: true, note: true },
+  });
 }

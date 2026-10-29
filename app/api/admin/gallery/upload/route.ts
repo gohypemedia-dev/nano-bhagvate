@@ -5,7 +5,8 @@ import { requireAdminApi } from "@/lib/server/auth";
 import { jsonError, sniffMedia } from "@/lib/server/http";
 import { isR2Configured, uploadPublicFileToR2, deletePublicFileFromR2 } from "@/lib/server/r2";
 
-const MAX_UPLOAD_BYTES = 100 * 1024 * 1024; // 100 MB for images & videos
+const MAX_IMAGE_BYTES = 100 * 1024 * 1024; // 100 MB for images
+const MAX_VIDEO_BYTES = 5 * 1024 * 1024; // 5 MB for videos as requested
 
 export async function POST(request: Request) {
   const admin = await requireAdminApi(request);
@@ -25,7 +26,16 @@ export async function POST(request: Request) {
     return jsonError("No file uploaded. Please choose an image or video to upload.", 400);
   }
 
-  if (file.size > MAX_UPLOAD_BYTES) {
+  // Pre-check if video MIME before reading buffer
+  if (file.type.startsWith("video/") && file.size > MAX_VIDEO_BYTES) {
+    const sizeInMb = (file.size / (1024 * 1024)).toFixed(1);
+    return jsonError(
+      `Video size (${sizeInMb}MB) exceeds the 5MB limit. Please upload a video under 5MB (वीडियो का आकार 5MB से अधिक है, कृपया 5MB से छोटा वीडियो अपलोड करें).`,
+      400
+    );
+  }
+
+  if (file.size > MAX_IMAGE_BYTES) {
     return jsonError("File size exceeds the 100MB limit.", 400);
   }
 
@@ -34,6 +44,15 @@ export async function POST(request: Request) {
   const sniffed = sniffMedia(bytes, ext);
   if (!sniffed) {
     return jsonError("Invalid file type. Allowed formats: JPG, PNG, WebP images, or MP4, WebM, MOV videos.", 400);
+  }
+
+  // Enforce 5MB limit on sniffed video
+  if (sniffed.isVideo && file.size > MAX_VIDEO_BYTES) {
+    const sizeInMb = (file.size / (1024 * 1024)).toFixed(1);
+    return jsonError(
+      `Video size (${sizeInMb}MB) exceeds the 5MB limit. Please upload a video under 5MB (वीडियो का आकार 5MB से अधिक है, कृपया 5MB से छोटा वीडियो अपलोड करें).`,
+      400
+    );
   }
 
   // If oldUrl was passed and belongs to R2, remove it so old uploads are deleted!
@@ -99,15 +118,19 @@ export async function DELETE(request: Request) {
   const admin = await requireAdminApi(request);
   if (admin instanceof Response) return admin;
 
+  const url = new URL(request.url);
+  const fileUrl = url.searchParams.get("url");
+
+  if (!fileUrl) {
+    return jsonError("File URL is required.", 400);
+  }
+
   try {
-    const body = await request.json().catch(() => ({}));
-    const { url } = body;
-    if (url && (url.includes(".r2.dev/") || url.includes("gallery/"))) {
-      await deletePublicFileFromR2(url);
-    }
-    return Response.json({ success: true, message: "Upload removed from storage." });
+    await deletePublicFileFromR2(fileUrl);
+    return Response.json({ success: true });
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "Delete failed";
+    console.error("Failed to delete R2 asset:", err);
+    const msg = err instanceof Error ? err.message : "Could not delete asset.";
     return jsonError(msg, 500);
   }
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import { toast as sonnerToast } from "sonner";
+
 import React, { useState, useMemo, useRef } from "react";
 import Image from "next/image";
 import {
@@ -75,6 +77,7 @@ export default function GalleryManager({
   const [isDeletingUpload, setIsDeletingUpload] = useState(false);
   const [showMoreFields, setShowMoreFields] = useState(false);
   const [toast, setToast] = useState<{ text: string; type: "success" | "error" } | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   // Source selection: "link" (fetch directly from external url) vs "upload" (save to Cloudflare R2)
   const [sourceMode, setSourceMode] = useState<"link" | "upload">("upload");
@@ -144,6 +147,7 @@ export default function GalleryManager({
 
   // Open Modal to Edit
   const handleOpenEdit = (item: AdminGalleryItem) => {
+    setUploadError(null);
     setEditingItem(item);
     setShowMoreFields(Boolean(item.titleHi || item.date || item.focalPoint !== "center"));
 
@@ -419,7 +423,7 @@ export default function GalleryManager({
       {/* TOAST MESSAGE */}
       {toast && (
         <div
-          className={`fixed top-5 right-5 z-50 flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg border text-sm font-semibold transition-all animate-in fade-in slide-in-from-top-2 ${
+          className={`fixed top-5 right-5 z-[99999] flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg border text-sm font-semibold transition-all animate-in fade-in slide-in-from-top-2 ${
             toast.type === "success"
               ? "bg-[#2B201A] text-white border-[#E86F1D]"
               : "bg-red-600 text-white border-red-700"
@@ -748,6 +752,24 @@ export default function GalleryManager({
                     )}
                   </div>
 
+                  {/* IN-MODAL ALERT FOR ERRORS (>5MB) */}
+                  {uploadError && (
+                    <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-start gap-2.5 animate-in fade-in">
+                      <AlertCircle className="w-4 h-4 shrink-0 text-red-600 mt-0.5" />
+                      <div className="flex-1">
+                        <p className="font-bold">Video Upload Restricted (Max 5MB)</p>
+                        <p className="text-[11px] text-red-600 mt-0.5">{uploadError}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setUploadError(null)}
+                        className="text-red-400 hover:text-red-700 cursor-pointer"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+
                   {/* Hidden file inputs */}
                   <input
                     ref={fileInputRef}
@@ -833,7 +855,7 @@ export default function GalleryManager({
                             <p className="text-[11px] text-[#2B201A]/50 mt-0.5">
                               {formData.type === "PHOTO"
                                 ? "JPG, PNG, or WebP. Saves to Cloudflare R2."
-                                : "MP4, WebM, or MOV up to 100MB. Saves to Cloudflare R2."}
+                                : "MP4, WebM, or MOV (Max 5MB). Saves to Cloudflare R2."}
                             </p>
                           </div>
                         </>

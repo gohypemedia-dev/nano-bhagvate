@@ -78,6 +78,8 @@ export async function getCurrentUser() {
           city: true,
           state: true,
           pincode: true,
+          membershipTier: true,
+          membershipStatus: true,
           createdAt: true,
         },
       },

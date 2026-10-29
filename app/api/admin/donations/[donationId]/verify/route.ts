@@ -3,6 +3,7 @@ import { requireAdminApi } from "@/lib/server/auth";
 import { sendApprovedNoticeEmail, sendConfirmationEmail } from "@/lib/server/email";
 import { jsonError } from "@/lib/server/http";
 import { prisma } from "@/lib/server/prisma";
+import { syncDonationToMember } from "@/lib/server/member-sync";
 
 const schema = z.object({ note: z.string().trim().max(1000).optional() });
 
@@ -28,6 +29,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ don
   }
 
   const donation = await prisma.donation.findUniqueOrThrow({ where: { donationId } });
+
+  // If this was a membership purchase, automatically sync to Member table!
+  if (donation.type === "MEMBERSHIP") {
+    await syncDonationToMember(donation).catch((err) => {
+      console.warn("Failed to sync membership to Member table:", err);
+    });
+  }
+
   const email = await sendConfirmationEmail(donation);
   await sendApprovedNoticeEmail(await prisma.donation.findUniqueOrThrow({ where: { donationId } }), `${admin.name} (dashboard)`);
 
