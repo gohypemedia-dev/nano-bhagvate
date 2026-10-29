@@ -577,7 +577,7 @@ function localizeError(msg: string | undefined, isHi: boolean): string {
                       autoComplete="tel"
                       inputMode="numeric"
                       maxLength={10}
-                      placeholder="9876543210"
+                      placeholder="+91"
                       value={donorPhone}
                       onChange={(e) => {
                         const sanitized = e.target.value.replace(/\D/g, "").slice(0, 10);

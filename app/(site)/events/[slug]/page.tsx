@@ -56,7 +56,7 @@ export default async function EventDetailPage({
         {/* Navigation Back */}
         <div>
           <Link
-            href="/#events"
+            href="/events"
             className="inline-flex items-center gap-2 text-xs font-bold text-[#E86F1D] hover:underline uppercase tracking-wider"
           >
             <ArrowLeft className="w-4 h-4" />

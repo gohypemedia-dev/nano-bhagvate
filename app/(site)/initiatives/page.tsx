@@ -229,7 +229,7 @@ export default function InitiativesPage() {
                   <div className="p-6 sm:p-8 flex flex-col flex-1 justify-between space-y-6">
                     <div className="space-y-4">
                       {/* Initiative Title */}
-                      <h2 className="font-sans text-lg sm:text-2xl lg:text-[21px] xl:text-2xl 2xl:text-[28px] font-bold text-[#E86F1D] uppercase tracking-wider whitespace-nowrap">
+                      <h2 className="font-sans text-sm min-[380px]:text-[15px] sm:text-lg md:text-xl lg:text-[16px] xl:text-[19px] 2xl:text-[22px] font-bold text-[#E86F1D] uppercase tracking-normal sm:tracking-wide whitespace-nowrap">
                         {lang === "hi" ? item.titleHi : item.title}
                       </h2>
                       <HeadingDivider align="left" className="!py-0" />

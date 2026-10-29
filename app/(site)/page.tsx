@@ -525,16 +525,12 @@ export default function HomePage() {
 
           {/* Centered View All Button (Matching Picture 2) */}
           <div className="mt-8 sm:mt-10 text-center">
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedEvent(events[0]);
-                setEventModalOpen(true);
-              }}
+            <Link
+              href="/events"
               className="inline-flex items-center justify-center px-7 py-2.5 rounded-lg bg-[#E86F1D] hover:bg-[#D25E12] text-white font-bold text-sm tracking-wide shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
               <span>{lang === "hi" ? "सभी कार्यक्रम देखें" : "View All"}</span>
-            </button>
+            </Link>
           </div>
         </div>
       </section>

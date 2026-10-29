@@ -59,7 +59,7 @@ export default function AboutPage() {
       badgeHi: "सेवा स्तंभ ३",
       desc: "Providing young people with character-building guidance, skill workshops, and mentorship so they can grow into confident and grounded contributors to society.",
       descHi: "युवाओं को चारित्रिक विकास, कौशल संवर्धन कार्यशालाएँ और नैतिक मार्गदर्शन देना ताकि वे आत्मविश्वास से परिपूर्ण होकर समाज के जिम्मेदार नागरिक बन सकें।",
-      image: "/images/pillar-youth.jpg",
+      image: "/images/pillar-youth.webp",
       points: [
         { en: "Career mentorship & digital literacy programs", hi: "करियर मार्गदर्शन एवं डिजिटल कौशल विकास" },
         { en: "Leadership & teamwork development camps", hi: "नेतृत्व क्षमता एवं व्यक्तित्व विकास शिविर" },
@@ -74,7 +74,7 @@ export default function AboutPage() {
       badgeHi: "सेवा स्तंभ ४",
       desc: "Introducing children to Bhagavad Gita teachings, Sanskrit heritage, and meditation practices that cultivate mental focus, resilience, moral values, and inner peace.",
       descHi: "बच्चों और विद्यार्थियों को श्रीमद्भगवद्गीता के पावन श्लोक, संस्कृत धरोहर और ध्यान साधना से जोड़ना ताकि उनमें एकाग्रता, मानसिक शांति व उच्च संस्कार विकसित हों।",
-      image: "/images/pillar-spiritual.jpg",
+      image: "/images/pillar-spiritual.webp",
       points: [
         { en: "Bal Sanskar & Bhagavad Gita sloka chanting", hi: "बाल संस्कार शाला एवं श्रीमद्भगवद्गीता श्लोक पाठ" },
         { en: "Daily meditation & mindfulness for students", hi: "विद्यार्थियों के लिए दैनिक ध्यान एवं एकाग्रता अभ्यास" },

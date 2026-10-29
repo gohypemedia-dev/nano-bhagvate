@@ -26,7 +26,6 @@ export default function AuthModal() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [sacredImage, setSacredImage] = useState<"gurukul" | "vasudeva" | "krishna">("gurukul");
 
   // Form states
   const [email, setEmail] = useState("");
@@ -99,15 +98,9 @@ export default function AuthModal() {
       >
         {/* ================= LEFT CARD: VEDIC GURUKUL & SACRED VISUAL BRANDING ================= */}
         <div className="relative md:col-span-6 bg-[#FCF9F2] rounded-3xl border-2 border-[#C9A24B] shadow-xl overflow-hidden pt-5 pb-4 px-4 sm:p-6 flex flex-col justify-between min-h-[380px] md:min-h-[580px]">
-          {/* Sacred Divine Art: Vedic Gurukul / Vasudeva / Krishna */}
+          {/* Sacred Divine Art: Vedic Gurukul */}
           <Image
-            src={
-              sacredImage === "gurukul"
-                ? "/images/vedic-gurukul-hd.jpg?v=6"
-                : sacredImage === "vasudeva"
-                ? "/images/divine-vasudeva.jpg?v=6"
-                : "/images/divine-krishna-portrait.jpg?v=6"
-            }
+            src="/images/gurukul-real.webp"
             alt="Namo Bhagwate Vasudevaya - Vedic Gurukul"
             fill
             priority
@@ -115,7 +108,7 @@ export default function AuthModal() {
             className="object-cover object-center"
           />
 
-          {/* Top Bar: Luminous White & Gold Trust Badge & Art Switcher */}
+          {/* Top Bar: Luminous White & Gold Trust Badge & Gurukul Badge */}
           <div className="relative z-10 flex items-center justify-between gap-2">
             <div className="flex items-center gap-2.5 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-[#B8893E]/50 shadow-md">
               <div className="relative w-8 h-8 rounded-full border-2 border-[#B8893E] bg-white overflow-hidden shrink-0">
@@ -136,44 +129,9 @@ export default function AuthModal() {
               </div>
             </div>
 
-            {/* Art Toggle Switch (Bright Glassmorphism) */}
-            <div className="flex items-center bg-white/90 backdrop-blur-md p-1 rounded-full border border-[#C9A24B]/50 shadow-md text-[9px] sm:text-[10px]">
-              <button
-                type="button"
-                onClick={() => setSacredImage("gurukul")}
-                className={`px-2.5 py-1 rounded-full font-bold transition-all ${
-                  sacredImage === "gurukul"
-                    ? "bg-[#E86F1D] text-white shadow-sm"
-                    : "text-[#2B201A]/75 hover:text-[#E86F1D]"
-                }`}
-                title="वैदिक गुरुकुल (Vedic Gurukul)"
-              >
-                गुरुकुल
-              </button>
-              <button
-                type="button"
-                onClick={() => setSacredImage("vasudeva")}
-                className={`px-2.5 py-1 rounded-full font-bold transition-all ${
-                  sacredImage === "vasudeva"
-                    ? "bg-[#E86F1D] text-white shadow-sm"
-                    : "text-[#2B201A]/75 hover:text-[#E86F1D]"
-                }`}
-                title="भगवान वासुदेव (Vishnu)"
-              >
-                वासुदेव
-              </button>
-              <button
-                type="button"
-                onClick={() => setSacredImage("krishna")}
-                className={`px-2.5 py-1 rounded-full font-bold transition-all ${
-                  sacredImage === "krishna"
-                    ? "bg-[#E86F1D] text-white shadow-sm"
-                    : "text-[#2B201A]/75 hover:text-[#E86F1D]"
-                }`}
-                title="श्री कृष्ण (Sri Krishna)"
-              >
-                कृष्ण
-              </button>
+            {/* Gurukul Badge */}
+            <div className="flex items-center bg-white/90 backdrop-blur-md px-3 py-1 rounded-full border border-[#C9A24B]/50 shadow-md text-[10px] sm:text-xs font-bold text-[#E86F1D]">
+              गुरुकुल
             </div>
           </div>
         </div>
@@ -316,7 +274,7 @@ export default function AuthModal() {
                       required
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      placeholder="+91 98765 43210"
+                      placeholder="+91"
                       className="w-full pl-10 pr-3 py-2.5 bg-white border border-[#E7D8C8] rounded-xl text-sm focus:outline-hidden focus:border-[#E86F1D]"
                     />
                   </div>
