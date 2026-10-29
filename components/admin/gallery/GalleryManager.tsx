@@ -179,6 +179,16 @@ export default function GalleryManager({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if ((isVideoFile || file.type.startsWith("video/")) && file.size > 10 * 1024 * 1024) {
+      const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+      const errMsg = `Video size (${sizeMb}MB) exceeds the 10MB limit. Please upload a video under 10MB (वीडियो का आकार 10MB से अधिक है, कृपया 10MB से छोटा वीडियो अपलोड करें).`;
+      setUploadError(errMsg);
+      showToast(errMsg, "error");
+      if (videoFileInputRef.current) videoFileInputRef.current.value = "";
+      return;
+    }
+    setUploadError(null);
+
     setIsUploading(true);
     const body = new FormData();
     body.append("file", file);
@@ -219,6 +229,7 @@ export default function GalleryManager({
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Upload error";
+      setUploadError(msg);
       showToast(msg, "error");
     } finally {
       setIsUploading(false);
@@ -752,12 +763,12 @@ export default function GalleryManager({
                     )}
                   </div>
 
-                  {/* IN-MODAL ALERT FOR ERRORS (>5MB) */}
+                  {/* IN-MODAL ALERT FOR ERRORS (>10MB) */}
                   {uploadError && (
                     <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-start gap-2.5 animate-in fade-in">
                       <AlertCircle className="w-4 h-4 shrink-0 text-red-600 mt-0.5" />
                       <div className="flex-1">
-                        <p className="font-bold">Video Upload Restricted (Max 5MB)</p>
+                        <p className="font-bold">Video Upload Restricted (Max 10MB)</p>
                         <p className="text-[11px] text-red-600 mt-0.5">{uploadError}</p>
                       </div>
                       <button
@@ -855,7 +866,7 @@ export default function GalleryManager({
                             <p className="text-[11px] text-[#2B201A]/50 mt-0.5">
                               {formData.type === "PHOTO"
                                 ? "JPG, PNG, or WebP. Saves to Cloudflare R2."
-                                : "MP4, WebM, or MOV (Max 5MB). Saves to Cloudflare R2."}
+                                : "MP4, WebM, or MOV (Max 10MB). Saves to Cloudflare R2."}
                             </p>
                           </div>
                         </>

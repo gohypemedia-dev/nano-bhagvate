@@ -6,7 +6,7 @@ import { jsonError, sniffMedia } from "@/lib/server/http";
 import { isR2Configured, uploadPublicFileToR2, deletePublicFileFromR2 } from "@/lib/server/r2";
 
 const MAX_IMAGE_BYTES = 100 * 1024 * 1024; // 100 MB for images
-const MAX_VIDEO_BYTES = 5 * 1024 * 1024; // 5 MB for videos as requested
+const MAX_VIDEO_BYTES = 10 * 1024 * 1024; // 10 MB for videos as requested
 
 export async function POST(request: Request) {
   const admin = await requireAdminApi(request);
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
   if (file.type.startsWith("video/") && file.size > MAX_VIDEO_BYTES) {
     const sizeInMb = (file.size / (1024 * 1024)).toFixed(1);
     return jsonError(
-      `Video size (${sizeInMb}MB) exceeds the 5MB limit. Please upload a video under 5MB (वीडियो का आकार 5MB से अधिक है, कृपया 5MB से छोटा वीडियो अपलोड करें).`,
+      `Video size (${sizeInMb}MB) exceeds the 10MB limit. Please upload a video under 10MB (वीडियो का आकार 10MB से अधिक है, कृपया 10MB से छोटा वीडियो अपलोड करें).`,
       400
     );
   }
@@ -46,11 +46,11 @@ export async function POST(request: Request) {
     return jsonError("Invalid file type. Allowed formats: JPG, PNG, WebP images, or MP4, WebM, MOV videos.", 400);
   }
 
-  // Enforce 5MB limit on sniffed video
+  // Enforce 10MB limit on sniffed video
   if (sniffed.isVideo && file.size > MAX_VIDEO_BYTES) {
     const sizeInMb = (file.size / (1024 * 1024)).toFixed(1);
     return jsonError(
-      `Video size (${sizeInMb}MB) exceeds the 5MB limit. Please upload a video under 5MB (वीडियो का आकार 5MB से अधिक है, कृपया 5MB से छोटा वीडियो अपलोड करें).`,
+      `Video size (${sizeInMb}MB) exceeds the 10MB limit. Please upload a video under 10MB (वीडियो का आकार 10MB से अधिक है, कृपया 10MB से छोटा वीडियो अपलोड करें).`,
       400
     );
   }

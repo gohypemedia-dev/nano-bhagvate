@@ -11,7 +11,21 @@ import AutoRefresh from "@/components/admin/AutoRefresh";
 
 export const dynamic = "force-dynamic";
 
-const PAGE_SIZE = 50;
+function getPageNumbers(current: number, total: number): (number | "…")[] {
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+  const pages: (number | "…")[] = [1];
+  const start = Math.max(2, current - 1);
+  const end = Math.min(total - 1, current + 1);
+  if (start > 2) pages.push("…");
+  for (let i = start; i <= end; i++) pages.push(i);
+  if (end < total - 1) pages.push("…");
+  pages.push(total);
+  return pages;
+}
+
+const PAGE_SIZE = 10;
 const STATUSES = ["PENDING_VERIFICATION", "VERIFIED", "REJECTED", "PENDING_PAYMENT", "CANCELLED"] as const;
 const TYPES = [
   { value: "DONATION", label: "Donations" },
@@ -34,7 +48,7 @@ export default async function AdminDashboard({
   const typeWhere: Prisma.DonationWhereInput = type ? { type } : {};
   const where: Prisma.DonationWhereInput = {
     ...typeWhere,
-    ...(status ? { status } : { status: { notIn: ["CANCELLED", "REJECTED"] } }),
+    ...(status ? { status } : {}),
     ...(q
       ? {
           OR: [
@@ -77,7 +91,8 @@ export default async function AdminDashboard({
     { label: type === "MEMBERSHIP" ? "Verified members" : "Verified donors", value: (donorRows[0]?.count ?? 0).toLocaleString("en-IN"), note: "Unique email addresses" },
   ];
 
-  const pages = Math.ceil(total / PAGE_SIZE);
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const pageNumbers = getPageNumbers(page, pages);
 
   function href(opts: { type?: string; status?: string; q?: string; page?: number }) {
     const p = new URLSearchParams();
@@ -181,14 +196,49 @@ export default async function AdminDashboard({
         </div>
 
         {pages > 1 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
-            <span className="text-[#2B201A]/60">Page {page} of {pages} · {total} {noun}</span>
-            <div className="flex gap-2">
-              <Link href={href({ type, status, q, page: page - 1 })} className={`btn-outline px-3! py-1! text-xs ${page <= 1 ? "pointer-events-none opacity-40" : ""}`}>
-                Previous
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-[#E7D8C8]/60 text-xs sm:text-sm">
+            <span className="text-[#2B201A]/70 font-medium">
+              Showing <strong className="text-[#2B201A]">{(page - 1) * PAGE_SIZE + 1}</strong>–<strong className="text-[#2B201A]">{Math.min(page * PAGE_SIZE, total)}</strong> of <strong className="text-[#2B201A]">{total}</strong> {noun}
+            </span>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <Link
+                href={href({ type, status, q, page: page - 1 })}
+                className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#E7D8C8] bg-white text-xs font-bold text-[#2B201A]/80 hover:bg-[#FBF2E7] transition-colors ${
+                  page <= 1 ? "pointer-events-none opacity-40" : ""
+                }`}
+              >
+                <span>← Previous</span>
               </Link>
-              <Link href={href({ type, status, q, page: page + 1 })} className={`btn-outline px-3! py-1! text-xs ${page >= pages ? "pointer-events-none opacity-40" : ""}`}>
-                Next
+
+              <div className="flex items-center gap-1">
+                {pageNumbers.map((p, idx) =>
+                  p === "…" ? (
+                    <span key={`ellipsis-${idx}`} className="px-2 py-1 text-xs text-[#2B201A]/40 font-bold">
+                      …
+                    </span>
+                  ) : (
+                    <Link
+                      key={p}
+                      href={href({ type, status, q, page: p })}
+                      className={`min-w-8 h-8 px-2 flex items-center justify-center rounded-lg text-xs font-bold border transition-colors ${
+                        page === p
+                          ? "bg-[#2B201A] text-white border-[#2B201A] shadow-xs"
+                          : "bg-white text-[#2B201A]/80 border-[#E7D8C8] hover:bg-[#FBF2E7]"
+                      }`}
+                    >
+                      {p}
+                    </Link>
+                  )
+                )}
+              </div>
+
+              <Link
+                href={href({ type, status, q, page: page + 1 })}
+                className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#E7D8C8] bg-white text-xs font-bold text-[#2B201A]/80 hover:bg-[#FBF2E7] transition-colors ${
+                  page >= pages ? "pointer-events-none opacity-40" : ""
+                }`}
+              >
+                <span>Next →</span>
               </Link>
             </div>
           </div>
