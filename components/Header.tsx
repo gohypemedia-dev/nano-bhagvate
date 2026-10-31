@@ -68,13 +68,13 @@ export default function Header() {
         }`}
       >
       {/* DESKTOP 3-ZONE GRID LAYOUT (visible >= 1024px / lg) */}
-      <div className="max-w-[1560px] w-full mx-auto px-3 sm:px-5 lg:px-6 xl:px-8 2xl:px-10 box-border">
-        {/* DESKTOP HEADER (visible >= 1000px) */}
-        <div className="hidden min-[1000px]:flex items-center justify-between h-[76px] xl:h-[82px] gap-2 lg:gap-3 xl:gap-6">
+      <div className="max-w-[1560px] w-full mx-auto px-3 sm:px-4 lg:px-3 xl:px-6 2xl:px-8 box-border">
+        {/* DESKTOP HEADER (visible >= 1024px) */}
+        <div className="hidden lg:flex items-center justify-between h-[72px] xl:h-[80px] 2xl:h-[84px] gap-1.5 lg:gap-2 xl:gap-4 2xl:gap-6">
           
-          {/* 1. LEFT: Trust Logo + Brand Name (Enlarged for readability per PM Audit) */}
-          <Link href="/" className="flex items-center gap-2 xl:gap-3 shrink-0 min-w-0 group whitespace-nowrap">
-            <div className="relative w-[48px] h-[48px] xl:w-[56px] xl:h-[56px] 2xl:w-[62px] 2xl:h-[62px] rounded-full overflow-hidden border-2 border-[#B8893E] shadow-sm transition-transform group-hover:scale-105 shrink-0 bg-white">
+          {/* 1. LEFT: Trust Logo + Brand Name */}
+          <Link href="/" className="flex items-center gap-1.5 lg:gap-2 xl:gap-3 shrink-0 group whitespace-nowrap">
+            <div className="relative w-[38px] h-[38px] lg:w-[44px] lg:h-[44px] xl:w-[54px] xl:h-[54px] 2xl:w-[60px] 2xl:h-[60px] rounded-full overflow-hidden border-2 border-[#B8893E] shadow-sm transition-transform group-hover:scale-105 shrink-0 bg-white">
               <Image
                 src="/images/logo.jpg"
                 alt="Namo Bhagwate Vasudevaya Trust Logo"
@@ -83,25 +83,25 @@ export default function Header() {
                 priority
               />
             </div>
-            <div className="flex flex-col shrink-0 min-w-0 justify-center">
-              <span className="font-editorial text-[14px] xl:text-[17px] 2xl:text-xl font-bold tracking-tight text-[#2B201A] leading-tight group-hover:text-[#E86F1D] transition-colors whitespace-nowrap">
+            <div className="flex flex-col shrink-0 justify-center">
+              <span className="font-editorial text-[13px] lg:text-[14px] xl:text-[17px] 2xl:text-xl font-bold tracking-tight text-[#2B201A] leading-tight group-hover:text-[#E86F1D] transition-colors whitespace-nowrap">
                 NAMO BHAGWATE
               </span>
-              <span className="text-[9px] xl:text-[10.5px] 2xl:text-xs font-extrabold tracking-[0.14em] text-[#B8893E] uppercase whitespace-nowrap">
+              <span className="text-[8px] lg:text-[8.5px] xl:text-[10.5px] 2xl:text-xs font-extrabold tracking-[0.12em] xl:tracking-[0.14em] text-[#B8893E] uppercase whitespace-nowrap">
                 VASUDEVAYA TRUST
               </span>
             </div>
           </Link>
 
-          {/* 2. CENTER: Navigation Menu (Active down to 1024px per PM Audit) */}
-          <nav className="flex items-center justify-center gap-0.5 xl:gap-1.5 2xl:gap-2.5 min-w-0 whitespace-nowrap px-1">
+          {/* 2. CENTER: Navigation Menu */}
+          <nav className="flex items-center justify-center gap-0.5 xl:gap-1 2xl:gap-2 shrink-0 whitespace-nowrap">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`px-1.5 lg:px-2 xl:px-2.5 py-1.5 rounded-lg text-[11px] xl:text-[12.5px] 2xl:text-sm font-semibold transition-all duration-200 whitespace-nowrap shrink-0 ${
+                  className={`px-1.5 lg:px-2 xl:px-2.5 2xl:px-3 py-1 xl:py-1.5 rounded-lg text-[11px] xl:text-[12.5px] 2xl:text-sm font-semibold transition-all duration-200 whitespace-nowrap shrink-0 ${
                     isActive
                       ? "text-[#E86F1D] bg-[#FBF2E7] font-bold shadow-xs"
                       : "text-[#2B201A]/85 hover:text-[#E86F1D] hover:bg-[#FBF2E7]/70"
@@ -114,11 +114,11 @@ export default function Header() {
           </nav>
 
           {/* 3. RIGHT: Language Selector + Cart + Account + Orange Donate Button */}
-          <div className="flex items-center justify-end gap-1.5 xl:gap-2.5 2xl:gap-3.5 shrink-0 whitespace-nowrap">
+          <div className="flex items-center justify-end gap-1 lg:gap-1.5 xl:gap-2.5 2xl:gap-3.5 shrink-0 whitespace-nowrap">
             {/* Language Selector */}
             <button
               onClick={() => setLang(lang === "en" ? "hi" : "en")}
-              className="flex items-center gap-1 xl:gap-1.5 px-2 xl:px-3 py-1.5 rounded-xl border border-[#E7D8C8] text-xs font-bold text-[#2B201A] hover:bg-[#FBF2E7] transition-colors min-h-[40px] xl:min-h-[44px]"
+              className="flex items-center gap-1 xl:gap-1.5 px-2 xl:px-2.5 py-1 xl:py-1.5 rounded-lg xl:rounded-xl border border-[#E7D8C8] text-[11px] xl:text-xs font-bold text-[#2B201A] hover:bg-[#FBF2E7] transition-colors min-h-[36px] xl:min-h-[42px] shrink-0"
               title="Change Language"
             >
               <Globe className="w-3.5 h-3.5 xl:w-4 xl:h-4 text-[#B8893E]" />
@@ -128,7 +128,7 @@ export default function Header() {
             {/* Cart Icon */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-1.5 xl:p-2 text-[#2B201A] hover:text-[#E86F1D] rounded-xl hover:bg-[#FBF2E7] transition-colors min-h-[40px] min-w-[40px] xl:min-h-[44px] xl:min-w-[44px] flex items-center justify-center border border-transparent hover:border-[#E7D8C8]"
+              className="relative p-1.5 xl:p-2 text-[#2B201A] hover:text-[#E86F1D] rounded-lg xl:rounded-xl hover:bg-[#FBF2E7] transition-colors min-h-[36px] min-w-[36px] xl:min-h-[42px] xl:min-w-[42px] flex items-center justify-center border border-transparent hover:border-[#E7D8C8] shrink-0"
               aria-label="View Cart"
             >
               <ShoppingBag className="w-4 h-4 xl:w-5 xl:h-5" />
@@ -141,11 +141,11 @@ export default function Header() {
 
             {/* Account Icon (Shown when logged in, or on xl+ screens) */}
             {isLoadingUser ? (
-              <span className="min-h-[40px] min-w-[40px]" aria-hidden />
+              <span className="min-h-[36px] min-w-[36px] xl:min-h-[42px] xl:min-w-[42px]" aria-hidden />
             ) : !user ? (
               <button
                 onClick={() => openAuthModal()}
-                className="hidden xl:flex p-2 text-[#2B201A] hover:text-[#E86F1D] rounded-xl border border-[#E7D8C8] hover:bg-[#FBF2E7] transition-colors min-h-[40px] min-w-[40px] xl:min-h-[44px] xl:min-w-[44px] items-center justify-center"
+                className="hidden xl:flex p-1.5 xl:p-2 text-[#2B201A] hover:text-[#E86F1D] rounded-lg xl:rounded-xl border border-[#E7D8C8] hover:bg-[#FBF2E7] transition-colors min-h-[36px] min-w-[36px] xl:min-h-[42px] xl:min-w-[42px] items-center justify-center shrink-0"
                 aria-label={lang === "hi" ? "साइन इन करें" : "Sign in"}
                 title={lang === "hi" ? "साइन इन करें" : "Sign in"}
               >
@@ -154,7 +154,7 @@ export default function Header() {
             ) : (
               <Link
                 href="/account"
-                className="relative p-2 text-[#E86F1D] hover:text-[#D25E12] rounded-xl border border-[#B8893E] bg-[#FBF2E7] hover:bg-[#E7D8C8]/60 transition-colors min-h-[40px] min-w-[40px] xl:min-h-[44px] xl:min-w-[44px] flex items-center justify-center"
+                className="relative p-1.5 xl:p-2 text-[#E86F1D] hover:text-[#D25E12] rounded-lg xl:rounded-xl border border-[#B8893E] bg-[#FBF2E7] hover:bg-[#E7D8C8]/60 transition-colors min-h-[36px] min-w-[36px] xl:min-h-[42px] xl:min-w-[42px] flex items-center justify-center shrink-0"
                 aria-label="My Account & Orders"
                 title={`Signed in as ${user.name}`}
               >
@@ -162,10 +162,10 @@ export default function Header() {
               </Link>
             )}
 
-            {/* Orange Donate CTA Button (Desktop >= 1000px) */}
+            {/* Orange Donate CTA Button */}
             <button
               onClick={() => openDonateModal("General Donation")}
-              className="flex items-center gap-1.5 h-[40px] xl:h-[44px] 2xl:h-[48px] px-3 xl:px-4 2xl:px-5 bg-[#E86F1D] hover:bg-[#D25E12] text-white text-[11px] xl:text-xs font-bold uppercase tracking-wider rounded-[14px] shadow-warm-sm hover:shadow-warm-md transition-all shrink-0 cursor-pointer"
+              className="flex items-center gap-1 xl:gap-1.5 h-[36px] xl:h-[42px] 2xl:h-[46px] px-2.5 xl:px-4 2xl:px-5 bg-[#E86F1D] hover:bg-[#D25E12] text-white text-[10.5px] xl:text-xs font-bold uppercase tracking-wider rounded-xl xl:rounded-[14px] shadow-warm-sm hover:shadow-warm-md transition-all shrink-0 cursor-pointer"
             >
               <Heart className="w-3.5 h-3.5 xl:w-4 xl:h-4 fill-current text-white" />
               <span>{lang === "hi" ? "दान करें" : "Donate"}</span>
@@ -174,8 +174,8 @@ export default function Header() {
 
         </div>
 
-        {/* MOBILE / TABLET HEADER BAR (< 1000px) */}
-        <div className="flex min-[1000px]:hidden items-center justify-between h-[68px] sm:h-[74px] gap-2">
+        {/* MOBILE / TABLET HEADER BAR (< 1024px) */}
+        <div className="flex lg:hidden items-center justify-between h-[68px] sm:h-[74px] gap-2">
           {/* Mobile Logo + Brand (Enlarged for readability per PM Audit) */}
           <Link href="/" className="flex items-center gap-2 sm:gap-2.5 min-w-0 group shrink">
             <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 border-[#B8893E] shadow-sm shrink-0 bg-white">
@@ -268,7 +268,7 @@ export default function Header() {
 
       {/* MOBILE / TABLET MENU DRAWER (< 1000px) - PORTAL SLIDE-OVER DRAWER (Fixes PM Finding 8) */}
       {mounted && mobileMenuOpen && createPortal(
-        <div className="min-[1000px]:hidden fixed inset-0 z-[9999]">
+        <div className="lg:hidden fixed inset-0 z-[9999]">
           {/* Dimmed Backdrop */}
           <div
             onClick={() => setMobileMenuOpen(false)}
@@ -376,7 +376,7 @@ export default function Header() {
       </header>
       {/* Invisible spacer so fixed header does not collapse the flow of following content */}
       <div
-        className="h-[68px] sm:h-[74px] min-[1000px]:h-[76px] xl:h-[82px] w-full shrink-0 pointer-events-none"
+        className="h-[68px] sm:h-[74px] lg:h-[72px] xl:h-[80px] 2xl:h-[84px] w-full shrink-0 pointer-events-none"
         aria-hidden="true"
       />
     </>
