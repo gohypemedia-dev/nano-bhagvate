@@ -7,7 +7,7 @@ import { prisma } from "@/lib/server/prisma";
 import { donationIdSchema } from "@/lib/validation/donation";
 import { getCurrentUser } from "@/lib/server/user-auth";
 import { getAdmin } from "@/lib/server/auth";
-import { formatINR, membershipValidUntil, planForProgram, type MembershipPlan } from "@/lib/donation-config";
+import { formatINR, membershipValidUntil, planForProgram, MEMBERSHIP_PLANS, type MembershipPlan } from "@/lib/donation-config";
 
 export const metadata: Metadata = {
   title: "Certificate | Namo Bhagwate Vasudevaya Trust",
@@ -70,6 +70,40 @@ export default async function CertificatePage({
   }
 
   const member = donation.type === "MEMBERSHIP";
+  let effectivePlan = planForProgram(donation.program);
+  try {
+    const memberRecord = await prisma.member.findFirst({
+      where: {
+        OR: [
+          { email: donation.donorEmail },
+          { email: donation.donorEmail.toLowerCase() },
+          ...(donation.donorMobile ? [{ phone: donation.donorMobile }] : []),
+        ],
+      },
+      select: { tier: true },
+    });
+    if (memberRecord && memberRecord.tier && memberRecord.tier !== "FREE") {
+      const updatedPlan = MEMBERSHIP_PLANS.find((p) => p.id === memberRecord.tier.toLowerCase());
+      if (updatedPlan) effectivePlan = updatedPlan;
+    } else {
+      const userRecord = await prisma.user.findFirst({
+        where: {
+          OR: [
+            { email: donation.donorEmail },
+            { email: donation.donorEmail.toLowerCase() },
+            ...(donation.donorMobile ? [{ phone: donation.donorMobile }] : []),
+          ],
+        },
+        select: { membershipTier: true },
+      });
+      if (userRecord && userRecord.membershipTier && userRecord.membershipTier !== "FREE") {
+        const updatedPlan = MEMBERSHIP_PLANS.find((p) => p.id === userRecord.membershipTier?.toLowerCase());
+        if (updatedPlan) effectivePlan = updatedPlan;
+      }
+    }
+  } catch {
+    // fallback
+  }
   const paise = donation.amountPaise;
   const amount = formatINR(paise / 100);
   const longDate = (d: Date) =>
@@ -95,7 +129,7 @@ export default async function CertificatePage({
         {/* On-screen version of the certificate */}
         {member ? (
           <MembershipCertificate
-            plan={planForProgram(donation.program)}
+            plan={effectivePlan}
             name={donation.donorName}
             donationId={donation.donationId}
             since={donation.verifiedAt ?? donation.updatedAt}

@@ -99,6 +99,7 @@ export default function AccountPage() {
   const [activeTab, setActiveTab] = useState<"profile" | "membership" | "events" | "orders">("profile");
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
+  const [trackingOrder, setTrackingOrder] = useState<Order | null>(null);
   const [userEvents, setUserEvents] = useState<UserEventBooking[]>([]);
   const [loadingEvents, setLoadingEvents] = useState(false);
   const [eventsFilter, setEventsFilter] = useState<"all" | "upcoming" | "completed">("all");
@@ -223,6 +224,36 @@ export default function AccountPage() {
     timeZone: "Asia/Kolkata",
   }).format(new Date());
 
+  const getMembershipBadgeColors = (tier?: string) => {
+    switch ((tier || "").toUpperCase()) {
+      case "PLATINUM":
+        return {
+          badge: "bg-[#FAF5FF] text-[#581C87] border-[#D8B4FE]",
+          icon: "text-[#581C87]",
+        };
+      case "GOLD":
+        return {
+          badge: "bg-[#FFFBEB] text-[#92400E] border-[#FDE68A]",
+          icon: "text-[#92400E]",
+        };
+      case "SILVER":
+        return {
+          badge: "bg-[#F8FAFC] text-[#334155] border-[#CBD5E1]",
+          icon: "text-[#334155]",
+        };
+      case "BASIC":
+        return {
+          badge: "bg-[#F0FDF4] text-[#166534] border-[#BBF7D0]",
+          icon: "text-[#166534]",
+        };
+      default:
+        return {
+          badge: "bg-[#FAF3EA] text-[#E86F1D] border-[#E7D8C8]",
+          icon: "text-[#E86F1D]",
+        };
+    }
+  };
+
   const getMembershipBannerGradient = (tier?: string) => {
     switch ((tier || "").toUpperCase()) {
       case "PLATINUM":
@@ -234,6 +265,49 @@ export default function AccountPage() {
       case "BASIC":
       default:
         return "bg-gradient-to-r from-[#1A3D2F] via-[#2F5A43] to-[#143326]";
+    }
+  };
+
+  const getEventBookingStatus = (status: string, isCompleted: boolean) => {
+    switch (status) {
+      case "VERIFIED":
+        if (isCompleted) {
+          return {
+            label: hi ? "संपन्न (Completed)" : "Completed Event",
+            color: "bg-stone-100 text-stone-700 border-stone-200",
+            icon: CheckCircle2,
+          };
+        }
+        return {
+          label: hi ? "पास स्वीकृत (Confirmed)" : "Pass Confirmed",
+          color: "bg-emerald-50 text-emerald-700 border-emerald-200",
+          icon: CheckCircle2,
+        };
+      case "PENDING_PAYMENT":
+      case "PENDING_VERIFICATION":
+        return {
+          label: hi ? "सत्यापन प्रक्रियाधीन (Pending)" : "Verification Pending",
+          color: "bg-amber-50 text-amber-700 border-amber-200",
+          icon: Clock,
+        };
+      case "REJECTED":
+        return {
+          label: hi ? "भुगतान अस्वीकृत (Rejected)" : "Payment Rejected",
+          color: "bg-rose-50 text-rose-700 border-rose-200",
+          icon: XCircle,
+        };
+      case "CANCELLED":
+        return {
+          label: hi ? "पास रद्द (Cancelled)" : "Cancelled",
+          color: "bg-stone-100 text-stone-600 border-stone-300",
+          icon: XCircle,
+        };
+      default:
+        return {
+          label: status,
+          color: "bg-stone-50 text-stone-700 border-stone-200",
+          icon: Clock,
+        };
     }
   };
 
@@ -280,6 +354,48 @@ export default function AccountPage() {
           color: "bg-stone-50 text-stone-700 border-stone-200",
         };
     }
+  };
+
+  const getTrackingTimeline = (order: Order) => {
+    const currentStep =
+      order.status === "DELIVERED"
+        ? 4
+        : order.status === "SHIPPED"
+        ? 3
+        : order.status === "PROCESSING"
+        ? 2
+        : 1;
+
+    return [
+      {
+        step: 1,
+        title: hi ? "ऑर्डर की पुष्टि हुई" : "Order Confirmed",
+        date: formatShortDate(order.createdAt),
+        done: true,
+        active: currentStep === 1,
+      },
+      {
+        step: 2,
+        title: hi ? "सामग्री पैकिंग एवं तैयारी" : "Processing & Packing",
+        date: "",
+        done: currentStep >= 2,
+        active: currentStep === 2,
+      },
+      {
+        step: 3,
+        title: hi ? "रवाना / डाक प्रेषित" : "Dispatched & In Transit",
+        date: "",
+        done: currentStep >= 3,
+        active: currentStep === 3,
+      },
+      {
+        step: 4,
+        title: hi ? "सुपुर्दगी संपन्न" : "Out for Delivery & Delivered",
+        date: "",
+        done: currentStep === 4,
+        active: currentStep === 4,
+      },
+    ];
   };
 
   if (isLoadingUser) {
@@ -331,18 +447,149 @@ export default function AccountPage() {
   const firstName = nameParts[0] || user.name || "Devotee";
   const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "—";
   const userRole = user.membership?.tierName || "Devotee Member";
+  const tierColors = getMembershipBadgeColors(user.membership?.tier);
   const userLocation = [user.city, user.state, "India"].filter(Boolean).join(", ");
 
   return (
-    <div className="bg-[#F8F4EE] min-h-screen py-6 sm:py-10">
+    <div className="bg-[#F8F4EE] min-h-screen py-4 sm:py-8">
       <div className="page-container max-w-7xl mx-auto px-3 sm:px-6">
+        {/* ============================================================ */}
+        {/* MOBILE MENU BAR & TOP STRIP (Visible only on mobile/tablet < lg) */}
+        {/* ============================================================ */}
+        <div className="block lg:hidden mb-5 space-y-3">
+          {/* Mobile Devotee Info & Quick Logout Strip */}
+          <div className="bg-white rounded-2xl border border-[#E7D8C8] p-3.5 shadow-warm-xs flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#F59E0B] via-[#E86F1D] to-[#B45309] text-white flex items-center justify-center font-bold text-base shadow-2xs shrink-0">
+                {user.name.charAt(0).toUpperCase()}
+              </div>
+              <div className="min-w-0">
+                <p className="font-bold text-sm text-[#1E1612] truncate capitalize leading-tight">
+                  {user.name}
+                </p>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span
+                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${tierColors.badge}`}
+                  >
+                    {userRole}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => logout()}
+              title="Logout from portal"
+              className="p-2 px-3 rounded-xl text-stone-600 hover:text-rose-600 hover:bg-rose-50 transition-colors border border-[#E7D8C8] shrink-0 cursor-pointer flex items-center gap-1.5 text-xs font-semibold shadow-2xs"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>{hi ? "लॉगआउट" : "Logout"}</span>
+            </button>
+          </div>
+
+          {/* Sticky Mobile Horizontal Tab Navigation */}
+          <div className="sticky top-16 z-20 bg-[#F8F4EE]/95 backdrop-blur-md py-1">
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth p-1.5 bg-white rounded-2xl border border-[#E7D8C8] shadow-warm-xs">
+              {/* 1. Profile Tab */}
+              <button
+                type="button"
+                onClick={() => setActiveTab("profile")}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer shrink-0 ${
+                  activeTab === "profile"
+                    ? "bg-[#E86F1D] text-white shadow-warm-xs"
+                    : "text-[#2B201A] hover:bg-[#FAF3EA]"
+                }`}
+              >
+                <User className="w-3.5 h-3.5" />
+                <span>{hi ? "प्रोफ़ाइल" : "Profile"}</span>
+              </button>
+
+              {/* 2. Membership Tab */}
+              <button
+                type="button"
+                onClick={() => setActiveTab("membership")}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer shrink-0 ${
+                  activeTab === "membership"
+                    ? "bg-[#E86F1D] text-white shadow-warm-xs"
+                    : "text-[#2B201A] hover:bg-[#FAF3EA]"
+                }`}
+              >
+                <Award className="w-3.5 h-3.5" />
+                <span>{hi ? "सदस्यता" : "Membership"}</span>
+                {user.membership?.tier && (
+                  <span
+                    className={`text-[9px] uppercase px-1.5 py-0.2 rounded-full font-bold ${
+                      activeTab === "membership"
+                        ? "bg-white/25 text-white"
+                        : tierColors.badge
+                    }`}
+                  >
+                    {user.membership.tier}
+                  </span>
+                )}
+              </button>
+
+              {/* 3. Events Tab */}
+              <button
+                type="button"
+                onClick={() => setActiveTab("events")}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer shrink-0 ${
+                  activeTab === "events"
+                    ? "bg-[#E86F1D] text-white shadow-warm-xs"
+                    : "text-[#2B201A] hover:bg-[#FAF3EA]"
+                }`}
+              >
+                <Ticket className="w-3.5 h-3.5" />
+                <span>{hi ? "कार्यक्रम पास" : "Events"}</span>
+                {userEvents.length > 0 && (
+                  <span
+                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                      activeTab === "events"
+                        ? "bg-white/25 text-white"
+                        : "bg-[#FAF3EA] text-[#E86F1D] border border-[#E7D8C8]"
+                    }`}
+                  >
+                    {userEvents.length}
+                  </span>
+                )}
+              </button>
+
+              {/* 4. Orders Tab */}
+              <button
+                type="button"
+                onClick={() => setActiveTab("orders")}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer shrink-0 ${
+                  activeTab === "orders"
+                    ? "bg-[#E86F1D] text-white shadow-warm-xs"
+                    : "text-[#2B201A] hover:bg-[#FAF3EA]"
+                }`}
+              >
+                <Package className="w-3.5 h-3.5" />
+                <span>{hi ? "आर्डर्स" : "Orders"}</span>
+                {orders.length > 0 && (
+                  <span
+                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                      activeTab === "orders"
+                        ? "bg-white/25 text-white"
+                        : "bg-[#FAF3EA] text-[#E86F1D] border border-[#E7D8C8]"
+                    }`}
+                  >
+                    {orders.length}
+                  </span>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Main Dashboard Layout (Sidebar + Content matching reference) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           {/* ============================================================ */}
-          {/* LEFT SIDEBAR (Sticky on scroll, beautifully balanced) */}
+          {/* LEFT SIDEBAR (Hidden on mobile, sticky on desktop) */}
           {/* ============================================================ */}
-          <aside className="lg:col-span-4 xl:col-span-3 lg:sticky lg:top-[96px] self-start space-y-4">
+          <aside className="hidden lg:block lg:col-span-4 xl:col-span-3 lg:sticky lg:top-[96px] self-start space-y-4">
             <div className="bg-white rounded-3xl border border-[#E7D8C8] p-5 lg:p-6 shadow-warm-xs flex flex-col space-y-5">
               {/* Trust Branding */}
               <div className="flex items-center gap-3.5 pb-4 border-b border-[#E7D8C8]/80">
@@ -365,13 +612,13 @@ export default function AccountPage() {
                 </div>
               </div>
 
-              {/* Navigation Menu Links (Spacious, prominent text & descriptions) */}
-              <nav className="flex flex-col gap-2 sm:gap-2.5" aria-label="Account navigation">
+              {/* Navigation Menu Links (Clean, streamlined) */}
+              <nav className="flex flex-col gap-2" aria-label="Account navigation">
                 {/* 1. My Profile */}
                 <button
                   type="button"
                   onClick={() => setActiveTab("profile")}
-                  className={`w-full flex items-center justify-between p-3.5 rounded-2xl transition-all cursor-pointer text-left ${
+                  className={`w-full flex items-center justify-between p-3 rounded-2xl transition-all cursor-pointer text-left ${
                     activeTab === "profile"
                       ? "bg-[#E86F1D] text-white shadow-warm-xs"
                       : "text-[#2B201A] hover:bg-[#FAF3EA] border border-transparent hover:border-[#E7D8C8]"
@@ -387,18 +634,9 @@ export default function AccountPage() {
                     >
                       <User className="w-5 h-5" />
                     </div>
-                    <div className="min-w-0">
-                      <div className="font-bold text-sm leading-tight truncate">
-                        {hi ? "मेरी प्रोफ़ाइल" : "My Profile"}
-                      </div>
-                      <div
-                        className={`text-[11px] truncate mt-0.5 ${
-                          activeTab === "profile" ? "text-white/80" : "text-[#2B201A]/60"
-                        }`}
-                      >
-                        {hi ? "नाम, पता व संपर्क जानकारी" : "Personal info & address"}
-                      </div>
-                    </div>
+                    <span className="font-bold text-sm leading-tight truncate">
+                      {hi ? "मेरी प्रोफ़ाइल" : "My Profile"}
+                    </span>
                   </div>
                   <ChevronRight
                     className={`w-4 h-4 shrink-0 ml-2 ${
@@ -411,7 +649,7 @@ export default function AccountPage() {
                 <button
                   type="button"
                   onClick={() => setActiveTab("membership")}
-                  className={`w-full flex items-center justify-between p-3.5 rounded-2xl transition-all cursor-pointer text-left ${
+                  className={`w-full flex items-center justify-between p-3 rounded-2xl transition-all cursor-pointer text-left ${
                     activeTab === "membership"
                       ? "bg-[#E86F1D] text-white shadow-warm-xs"
                       : "text-[#2B201A] hover:bg-[#FAF3EA] border border-transparent hover:border-[#E7D8C8]"
@@ -427,25 +665,16 @@ export default function AccountPage() {
                     >
                       <Award className="w-5 h-5" />
                     </div>
-                    <div className="min-w-0">
-                      <div className="font-bold text-sm leading-tight truncate">
-                        {hi ? "ट्रस्ट सदस्यता" : "Membership"}
-                      </div>
-                      <div
-                        className={`text-[11px] truncate mt-0.5 ${
-                          activeTab === "membership" ? "text-white/80" : "text-[#2B201A]/60"
-                        }`}
-                      >
-                        {hi ? "सक्रिय स्तर, आईडी व लाभ" : "Active tier, ID & benefits"}
-                      </div>
-                    </div>
+                    <span className="font-bold text-sm leading-tight truncate">
+                      {hi ? "ट्रस्ट सदस्यता" : "Membership"}
+                    </span>
                   </div>
                   {user.membership?.tier ? (
                     <span
                       className={`text-[10px] uppercase font-bold px-2.5 py-1 rounded-full shrink-0 ml-2 ${
                         activeTab === "membership"
                           ? "bg-white/20 text-white"
-                          : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                          : tierColors.badge
                       }`}
                     >
                       {user.membership.tier}
@@ -463,7 +692,7 @@ export default function AccountPage() {
                 <button
                   type="button"
                   onClick={() => setActiveTab("events")}
-                  className={`w-full flex items-center justify-between p-3.5 rounded-2xl transition-all cursor-pointer text-left ${
+                  className={`w-full flex items-center justify-between p-3 rounded-2xl transition-all cursor-pointer text-left ${
                     activeTab === "events"
                       ? "bg-[#E86F1D] text-white shadow-warm-xs"
                       : "text-[#2B201A] hover:bg-[#FAF3EA] border border-transparent hover:border-[#E7D8C8]"
@@ -479,18 +708,9 @@ export default function AccountPage() {
                     >
                       <Ticket className="w-5 h-5" />
                     </div>
-                    <div className="min-w-0">
-                      <div className="font-bold text-sm leading-tight truncate">
-                        {hi ? "कार्यक्रम एवं पास" : "My Events & Passes"}
-                      </div>
-                      <div
-                        className={`text-[11px] truncate mt-0.5 ${
-                          activeTab === "events" ? "text-white/80" : "text-[#2B201A]/60"
-                        }`}
-                      >
-                        {hi ? "डिजिटल पास व प्रवेश क्यूआर" : "Booked passes & digital QR"}
-                      </div>
-                    </div>
+                    <span className="font-bold text-sm leading-tight truncate">
+                      {hi ? "कार्यक्रम एवं पास" : "My Events & Passes"}
+                    </span>
                   </div>
                   {userEvents.length > 0 ? (
                     <span
@@ -515,7 +735,7 @@ export default function AccountPage() {
                 <button
                   type="button"
                   onClick={() => setActiveTab("orders")}
-                  className={`w-full flex items-center justify-between p-3.5 rounded-2xl transition-all cursor-pointer text-left ${
+                  className={`w-full flex items-center justify-between p-3 rounded-2xl transition-all cursor-pointer text-left ${
                     activeTab === "orders"
                       ? "bg-[#E86F1D] text-white shadow-warm-xs"
                       : "text-[#2B201A] hover:bg-[#FAF3EA] border border-transparent hover:border-[#E7D8C8]"
@@ -531,18 +751,9 @@ export default function AccountPage() {
                     >
                       <Package className="w-5 h-5" />
                     </div>
-                    <div className="min-w-0">
-                      <div className="font-bold text-sm leading-tight truncate">
-                        {hi ? "पुस्तक आर्डर्स" : "Store Orders"}
-                      </div>
-                      <div
-                        className={`text-[11px] truncate mt-0.5 ${
-                          activeTab === "orders" ? "text-white/80" : "text-[#2B201A]/60"
-                        }`}
-                      >
-                        {hi ? "आर्डर ट्रैकिंग व प्रेषण स्थिति" : "Order tracking & parcels"}
-                      </div>
-                    </div>
+                    <span className="font-bold text-sm leading-tight truncate">
+                      {hi ? "पुस्तक आर्डर्स" : "Store Orders"}
+                    </span>
                   </div>
                   {orders.length > 0 ? (
                     <span
@@ -563,33 +774,6 @@ export default function AccountPage() {
                   )}
                 </button>
               </nav>
-
-              {/* Devotee Helpline & Seva Desk Card */}
-              <div className="p-4 rounded-2xl bg-[#FAF5EE] border border-[#E7D8C8] space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-xs font-bold text-[#E86F1D]">
-                    <Phone className="w-3.5 h-3.5 shrink-0" />
-                    <span>{hi ? "ट्रस्ट सहायता केंद्र" : "Devotee Seva Desk"}</span>
-                  </div>
-                  <span className="text-[10px] uppercase font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                    {hi ? "सक्रिय" : "Active"}
-                  </span>
-                </div>
-                <p className="text-[11px] text-[#2B201A]/70 leading-relaxed">
-                  {hi
-                    ? "पास, सदस्यता या दान संबंधी किसी भी सहायता के लिए संपर्क करें:"
-                    : "For inquiries regarding passes, seva, or membership support:"}
-                </p>
-                <div className="pt-1.5 flex items-center justify-between border-t border-[#E7D8C8]/60 text-xs">
-                  <a
-                    href="tel:+919910762692"
-                    className="font-bold text-[#2F5A43] hover:text-[#E86F1D] flex items-center gap-1.5 transition-colors"
-                  >
-                    <span>+91 9910762692</span>
-                  </a>
-                  <span className="text-[10px] text-[#2B201A]/50 font-medium">10 AM – 7 PM</span>
-                </div>
-              </div>
 
               {/* Bottom Mini User Card with Logout */}
               <div className="pt-2 border-t border-[#E7D8C8]/70">
@@ -651,8 +835,8 @@ export default function AccountPage() {
                       <h2 className="font-editorial text-2xl sm:text-3xl font-bold text-[#1E1612] truncate capitalize">
                         {user.name}
                       </h2>
-                      <span className="inline-flex items-center gap-1 px-3 py-0.5 rounded-full bg-[#FAF3EA] border border-[#E7D8C8] text-[#E86F1D] text-xs font-bold shadow-2xs">
-                        <Award className="w-3.5 h-3.5" />
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full border text-xs font-bold shadow-2xs ${tierColors.badge}`}>
+                        <Award className={`w-3.5 h-3.5 ${tierColors.icon}`} />
                         <span>{userRole}</span>
                       </span>
                     </div>
@@ -1162,6 +1346,8 @@ export default function AccountPage() {
                         booking.certificateKey ? `?k=${booking.certificateKey}` : ""
                       }`;
                       const detailsUrl = booking.event.slug ? `/events` : "/events";
+                      const bookingStatus = getEventBookingStatus(booking.status, booking.isCompleted);
+                      const StatusIcon = bookingStatus.icon;
 
                       return (
                         <div
@@ -1169,21 +1355,12 @@ export default function AccountPage() {
                           className="bg-white rounded-3xl border border-[#E7D8C8] p-5 sm:p-6 shadow-warm-xs hover:border-[#E86F1D]/50 transition-all space-y-4"
                         >
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E7D8C8]/60">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
                               <span
-                                className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${
-                                  booking.isCompleted
-                                    ? "bg-stone-100 text-stone-700 border border-stone-200"
-                                    : "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                                }`}
+                                className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider border flex items-center gap-1.5 ${bookingStatus.color}`}
                               >
-                                {booking.isCompleted
-                                  ? hi
-                                    ? "संपन्न कार्यक्रम"
-                                    : "Completed Event"
-                                  : hi
-                                  ? "आगामी कार्यक्रम"
-                                  : "Upcoming Event"}
+                                <StatusIcon className="w-3 h-3" />
+                                <span>{bookingStatus.label}</span>
                               </span>
                               <span className="text-xs font-mono text-[#2B201A]/50">
                                 Pass #{booking.donationId}
@@ -1218,23 +1395,42 @@ export default function AccountPage() {
                             </div>
 
                             <div className="flex items-center gap-2 shrink-0 pt-2 md:pt-0">
-                              <Link
-                                href={passUrl}
-                                target="_blank"
-                                className="px-3.5 py-2 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-2xs transition-colors"
-                              >
-                                <QrCode className="w-3.5 h-3.5" />
-                                <span>{hi ? "पास देखें" : "View Pass"}</span>
-                              </Link>
-                              <a
-                                href={pdfUrl}
-                                target="_blank"
-                                download
-                                className="px-3 py-2 rounded-xl border border-[#E7D8C8] bg-white hover:bg-[#FAF6F0] text-[#1E1612] text-xs font-bold inline-flex items-center gap-1.5 shadow-2xs transition-colors"
-                              >
-                                <Download className="w-3.5 h-3.5 text-[#E86F1D]" />
-                                <span>PDF</span>
-                              </a>
+                              {booking.status === "VERIFIED" ? (
+                                <>
+                                  <Link
+                                    href={passUrl}
+                                    target="_blank"
+                                    className="px-3.5 py-2 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-2xs transition-colors"
+                                  >
+                                    <QrCode className="w-3.5 h-3.5" />
+                                    <span>{hi ? "पास देखें" : "View Pass"}</span>
+                                  </Link>
+                                  <a
+                                    href={pdfUrl}
+                                    target="_blank"
+                                    download
+                                    className="px-3 py-2 rounded-xl border border-[#E7D8C8] bg-white hover:bg-[#FAF6F0] text-[#1E1612] text-xs font-bold inline-flex items-center gap-1.5 shadow-2xs transition-colors"
+                                  >
+                                    <Download className="w-3.5 h-3.5 text-[#E86F1D]" />
+                                    <span>PDF</span>
+                                  </a>
+                                </>
+                              ) : booking.status === "REJECTED" ? (
+                                <span className="px-3 py-2 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 text-xs font-bold inline-flex items-center gap-1.5">
+                                  <XCircle className="w-3.5 h-3.5 text-rose-600" />
+                                  <span>{hi ? "पास अस्वीकृत" : "Pass Rejected"}</span>
+                                </span>
+                              ) : booking.status === "CANCELLED" ? (
+                                <span className="px-3 py-2 rounded-xl bg-stone-100 text-stone-600 border border-stone-300 text-xs font-bold inline-flex items-center gap-1.5">
+                                  <XCircle className="w-3.5 h-3.5 text-stone-500" />
+                                  <span>{hi ? "पास रद्द" : "Pass Cancelled"}</span>
+                                </span>
+                              ) : (
+                                <span className="px-3.5 py-2 rounded-xl bg-amber-50 text-amber-800 border border-amber-200 text-xs font-bold inline-flex items-center gap-1.5" title="Admin will verify the transaction reference">
+                                  <Clock className="w-3.5 h-3.5 text-amber-600 animate-pulse" />
+                                  <span>{hi ? "सत्यापन प्रक्रियाधीन" : "Verification Pending"}</span>
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -1293,7 +1489,7 @@ export default function AccountPage() {
                               {formatShortDate(order.createdAt)}
                             </span>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-sm font-bold text-[#E86F1D]">
                               ₹{order.totalAmount.toLocaleString("en-IN")}
                             </span>
@@ -1302,28 +1498,88 @@ export default function AccountPage() {
                             >
                               {badge.label}
                             </span>
+                            {order.status !== "DELIVERED" && order.status !== "CANCELLED" && (
+                              <button
+                                type="button"
+                                onClick={() => setTrackingOrder(order)}
+                                className="px-3 py-1 rounded-xl bg-[#FAF3EA] hover:bg-[#E86F1D] text-[#E86F1D] hover:text-white border border-[#E86F1D]/30 text-xs font-bold inline-flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer shrink-0 ml-1"
+                              >
+                                <Truck className="w-3.5 h-3.5" />
+                                <span>{hi ? "ट्रैक करें" : "Track"}</span>
+                              </button>
+                            )}
                           </div>
                         </div>
 
                         {/* Order items */}
-                        <div className="divide-y divide-[#E7D8C8]/50 text-xs sm:text-sm">
-                          {order.items.map((item) => (
-                            <div
-                              key={item.id}
-                              className="py-2.5 flex items-center justify-between gap-3"
-                            >
-                              <div className="flex items-center gap-2.5 min-w-0">
-                                <BookOpen className="w-4 h-4 text-[#E86F1D] shrink-0" />
-                                <span className="font-semibold text-[#1E1612] truncate">
-                                  {item.title}
+                        <div className="divide-y divide-[#E7D8C8]/50">
+                          {order.items.map((item) => {
+                            const bookImage = item.image || "/images/sugarcane-guide-book.webp";
+                            return (
+                              <div
+                                key={item.id}
+                                className="py-3 flex items-center justify-between gap-3 sm:gap-4"
+                              >
+                                <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
+                                  <div className="relative w-12 h-14 sm:w-14 sm:h-16 rounded-xl overflow-hidden shrink-0 border border-[#E7D8C8] bg-[#FAF3EA] shadow-2xs">
+                                    <Image
+                                      src={bookImage}
+                                      alt={item.title}
+                                      fill
+                                      className="object-cover"
+                                      sizes="(max-width: 640px) 48px, 56px"
+                                    />
+                                  </div>
+                                  <div className="min-w-0">
+                                    <h4 className="font-semibold text-xs sm:text-sm text-[#1E1612] leading-snug line-clamp-2">
+                                      {item.title}
+                                    </h4>
+                                    <span className="text-[11px] text-[#2B201A]/60 font-medium">
+                                      Qty: {item.quantity}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="text-right shrink-0">
+                                  <span className="font-mono text-xs sm:text-sm font-semibold text-[#1E1612]">
+                                    {item.quantity} × ₹{item.price}
+                                  </span>
+                                  <p className="text-xs font-bold text-[#E86F1D]">
+                                    ₹{(item.quantity * item.price).toLocaleString("en-IN")}
+                                  </p>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* Live Dispatch Tracking Status Banner (for undelivered active orders) */}
+                        {order.status !== "DELIVERED" && order.status !== "CANCELLED" && (
+                          <div className="bg-[#FAF3EA]/80 rounded-2xl border border-[#E86F1D]/25 p-3 sm:p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                            <div className="flex items-center gap-2.5 text-xs text-[#2B201A]">
+                              <div className="w-7 h-7 rounded-lg bg-[#E86F1D]/15 text-[#E86F1D] flex items-center justify-center shrink-0">
+                                <Truck className="w-4 h-4" />
+                              </div>
+                              <div>
+                                <span className="font-bold text-[#1E1612] block sm:inline mr-1">
+                                  {order.status === "SHIPPED"
+                                    ? (hi ? "पारगमन में (In Transit)" : "In Transit via Courier")
+                                    : (hi ? "प्रेषण प्रक्रियाधीन" : "Dispatch in Progress")}
+                                </span>
+                                <span className="text-[#2B201A]/70 text-[11px]">
+                                  • {hi ? "अनुमानित 3-7 कार्य दिवस" : "Est. delivery within 3-7 business days"}
                                 </span>
                               </div>
-                              <span className="font-mono text-xs text-[#2B201A]/70 shrink-0">
-                                {item.quantity} × ₹{item.price}
-                              </span>
                             </div>
-                          ))}
-                        </div>
+                            <button
+                              type="button"
+                              onClick={() => setTrackingOrder(order)}
+                              className="px-3 py-1.5 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer self-start sm:self-auto shrink-0"
+                            >
+                              <Truck className="w-3.5 h-3.5" />
+                              <span>{hi ? "लाइव स्थिति ट्रैक करें" : "Track Order"}</span>
+                            </button>
+                          </div>
+                        )}
 
                         {/* Shipping destination */}
                         <div className="pt-2 text-xs text-[#2B201A]/60 flex items-center gap-1.5 border-t border-[#E7D8C8]/50">
@@ -1342,6 +1598,136 @@ export default function AccountPage() {
           </main>
         </div>
       </div>
+
+      {/* ============================================================ */}
+      {/* ORDER TRACKING MODAL */}
+      {/* ============================================================ */}
+      {trackingOrder && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
+          onClick={() => setTrackingOrder(null)}
+        >
+          <div
+            className="bg-white rounded-3xl border border-[#E7D8C8] shadow-2xl max-w-lg w-full p-6 sm:p-7 max-h-[90vh] overflow-y-auto space-y-5 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-start justify-between gap-4 pb-4 border-b border-[#E7D8C8]">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="w-8 h-8 rounded-xl bg-[#FAF3EA] text-[#E86F1D] flex items-center justify-center border border-[#E86F1D]/20">
+                    <Truck className="w-4 h-4" />
+                  </span>
+                  <h3 className="font-editorial text-xl font-bold text-[#1E1612]">
+                    {hi ? "ऑर्डर ट्रैकिंग विवरण" : "Track Order Shipment"}
+                  </h3>
+                </div>
+                <p className="text-xs font-mono text-[#2B201A]/60 mt-1">
+                  Order #{trackingOrder.orderNumber} • {formatShortDate(trackingOrder.createdAt)}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setTrackingOrder(null)}
+                className="p-1.5 rounded-full hover:bg-stone-100 text-stone-500 hover:text-stone-800 transition-colors cursor-pointer"
+                title="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Courier & Docket info pill */}
+            <div className="bg-[#FAF3EA] rounded-2xl p-4 border border-[#E86F1D]/20 space-y-2">
+              <div className="flex items-center justify-between gap-2 text-xs">
+                <span className="text-[#2B201A]/70 font-medium">
+                  {hi ? "कूरियर / सेवा पार्टनर:" : "Courier / Delivery Partner:"}
+                </span>
+                <span className="font-bold text-[#1E1612]">India Post Speed Post / Ashram Logistics</span>
+              </div>
+              <div className="flex items-center justify-between gap-2 text-xs">
+                <span className="text-[#2B201A]/70 font-medium">
+                  {hi ? "ट्रैकिंग डॉकेट संख्या:" : "Docket / AWB No:"}
+                </span>
+                <span className="font-mono font-bold text-[#E86F1D]">
+                  NBV-TRK-{trackingOrder.orderNumber.replace(/[^a-zA-Z0-9]/g, "").slice(-8)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-2 text-xs">
+                <span className="text-[#2B201A]/70 font-medium">
+                  {hi ? "वर्तमान स्थिति:" : "Current Status:"}
+                </span>
+                <span
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                    getStatusBadge(trackingOrder.status).color
+                  }`}
+                >
+                  {getStatusBadge(trackingOrder.status).label}
+                </span>
+              </div>
+            </div>
+
+            {/* Timeline Steps */}
+            <div className="space-y-4 pt-1">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#2B201A]/60">
+                {hi ? "प्रेषण प्रगति (Shipment Milestones)" : "Shipment Milestones"}
+              </h4>
+              <div className="relative pl-6 space-y-5 before:content-[''] before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-[#E7D8C8]">
+                {getTrackingTimeline(trackingOrder).map((item) => (
+                  <div key={item.step} className="relative flex items-center justify-between gap-3 min-h-[28px]">
+                    <div
+                      className={`absolute -left-6 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ring-4 ring-white ${
+                        item.done
+                          ? "bg-[#2F5A43] text-white"
+                          : item.active
+                          ? "bg-[#E86F1D] text-white animate-pulse"
+                          : "bg-[#E7D8C8] text-[#2B201A]/50"
+                      }`}
+                    >
+                      {item.done ? <Check className="w-3 h-3 stroke-[3]" /> : item.step}
+                    </div>
+                    <h5
+                      className={`text-xs sm:text-sm font-bold ${
+                        item.done || item.active ? "text-[#1E1612]" : "text-[#2B201A]/40"
+                      }`}
+                    >
+                      {item.title}
+                    </h5>
+                    {item.date ? (
+                      <span className="text-[11px] font-mono text-[#2B201A]/60 shrink-0">
+                        {item.date}
+                      </span>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Destination Address */}
+            <div className="pt-3 border-t border-[#E7D8C8] text-xs text-[#2B201A]/80 space-y-1">
+              <span className="font-bold text-[#1E1612] flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-[#E86F1D]" />
+                <span>{hi ? "डिलीवरी गंतव्य (Shipping Address):" : "Delivery Destination:"}</span>
+              </span>
+              <p className="pl-5 text-[#2B201A]/70">
+                {trackingOrder.shippingName} ({trackingOrder.shippingPhone})<br />
+                {trackingOrder.shippingAddress}, {trackingOrder.shippingCity},{" "}
+                {trackingOrder.shippingState} - {trackingOrder.shippingPincode}
+              </p>
+            </div>
+
+            {/* Close Button */}
+            <div className="pt-2 flex items-center justify-end">
+              <button
+                type="button"
+                onClick={() => setTrackingOrder(null)}
+                className="btn-primary text-xs py-2 px-5 cursor-pointer shadow-warm-xs"
+              >
+                {hi ? "बंद करें" : "Close"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

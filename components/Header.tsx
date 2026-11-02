@@ -139,27 +139,26 @@ export default function Header() {
               )}
             </button>
 
-            {/* Account Icon (Shown when logged in, or on xl+ screens) */}
-            {isLoadingUser ? (
-              <span className="min-h-[36px] min-w-[36px] xl:min-h-[42px] xl:min-w-[42px]" aria-hidden />
-            ) : !user ? (
-              <button
-                onClick={() => openAuthModal()}
-                className="hidden xl:flex p-1.5 xl:p-2 text-[#2B201A] hover:text-[#E86F1D] rounded-lg xl:rounded-xl border border-[#E7D8C8] hover:bg-[#FBF2E7] transition-colors min-h-[36px] min-w-[36px] xl:min-h-[42px] xl:min-w-[42px] items-center justify-center shrink-0"
-                aria-label={lang === "hi" ? "साइन इन करें" : "Sign in"}
-                title={lang === "hi" ? "साइन इन करें" : "Sign in"}
-              >
-                <User className="w-4 h-4 xl:w-5 xl:h-5" />
-              </button>
-            ) : (
+            {/* Account Icon (Instant 0ms render, no layout shift or delayed pop-in) */}
+            {user ? (
               <Link
                 href="/account"
-                className="relative p-1.5 xl:p-2 text-[#E86F1D] hover:text-[#D25E12] rounded-lg xl:rounded-xl border border-[#B8893E] bg-[#FBF2E7] hover:bg-[#E7D8C8]/60 transition-colors min-h-[36px] min-w-[36px] xl:min-h-[42px] xl:min-w-[42px] flex items-center justify-center shrink-0"
+                className="relative p-1.5 xl:p-2 text-[#E86F1D] hover:text-[#D25E12] rounded-lg xl:rounded-xl border border-[#B8893E] bg-[#FBF2E7] hover:bg-[#E7D8C8]/60 transition-colors min-h-[36px] min-w-[36px] xl:min-h-[42px] xl:min-w-[42px] flex items-center justify-center shrink-0 cursor-pointer"
                 aria-label="My Account & Orders"
                 title={`Signed in as ${user.name}`}
               >
                 <User className="w-4 h-4 xl:w-5 xl:h-5" />
               </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={() => openAuthModal()}
+                className="flex p-1.5 xl:p-2 text-[#2B201A] hover:text-[#E86F1D] rounded-lg xl:rounded-xl border border-[#E7D8C8] hover:bg-[#FBF2E7] transition-colors min-h-[36px] min-w-[36px] xl:min-h-[42px] xl:min-w-[42px] items-center justify-center shrink-0 cursor-pointer"
+                aria-label={lang === "hi" ? "साइन इन करें" : "Sign in"}
+                title={lang === "hi" ? "साइन इन करें" : "Sign in"}
+              >
+                <User className="w-4 h-4 xl:w-5 xl:h-5" />
+              </button>
             )}
 
             {/* Orange Donate CTA Button */}
@@ -232,26 +231,26 @@ export default function Header() {
               )}
             </button>
 
-            {/* Account Icon */}
-            {isLoadingUser ? (
-              <span className="min-h-[36px] min-w-[36px]" aria-hidden />
-            ) : !user ? (
-              <button
-                onClick={() => openAuthModal()}
-                className="p-1.5 sm:p-2 rounded-lg min-h-[36px] min-w-[36px] flex items-center justify-center border border-[#E7D8C8] text-[#2B201A]"
-                aria-label={lang === "hi" ? "साइन इन करें" : "Sign in"}
-              >
-                <User className="w-4 h-4" />
-              </button>
-            ) : (
+            {/* Account Icon (Instant 0ms render) */}
+            {user ? (
               <Link
                 href="/account"
-                className="p-1.5 sm:p-2 rounded-lg min-h-[36px] min-w-[36px] flex items-center justify-center border border-[#B8893E] bg-[#FBF2E7] text-[#E86F1D]"
+                className="p-1.5 sm:p-2 rounded-lg min-h-[36px] min-w-[36px] flex items-center justify-center border border-[#B8893E] bg-[#FBF2E7] text-[#E86F1D] cursor-pointer"
                 aria-label="Account"
                 title={user.name}
               >
                 <User className="w-4 h-4" />
               </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={() => openAuthModal()}
+                className="p-1.5 sm:p-2 rounded-lg min-h-[36px] min-w-[36px] flex items-center justify-center border border-[#E7D8C8] text-[#2B201A] cursor-pointer"
+                aria-label={lang === "hi" ? "साइन इन करें" : "Sign in"}
+                title={lang === "hi" ? "साइन इन करें" : "Sign in"}
+              >
+                <User className="w-4 h-4" />
+              </button>
             )}
 
             {/* Mobile Hamburger Toggle */}

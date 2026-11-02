@@ -69,10 +69,7 @@ export async function GET() {
           ? "रजत (सिल्वर) सदस्यता"
           : "बेसिक सदस्यता",
       status: memberRecord?.status || "ACTIVE",
-      program:
-        membershipDonation?.program === "Membership"
-          ? "Basic Membership"
-          : membershipDonation?.program || plan.name,
+      program: plan.name,
       donationId: membershipDonation?.donationId || null,
       certificateKey: membershipDonation ? certificateKey(membershipDonation) : null,
       amountPaise: membershipDonation?.amountPaise || plan.price * 100,

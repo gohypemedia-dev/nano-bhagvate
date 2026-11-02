@@ -128,23 +128,49 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [cart]);
 
-  // User auth state
+  // User auth state with local cache for instant 0ms header rendering
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authSuccessCb, setAuthSuccessCb] = useState<(() => void) | null>(null);
+
+  // Instant local cache restore on client mount (0ms, eliminates 1-2s delay on Vercel)
+  useEffect(() => {
+    try {
+      const cached = localStorage.getItem("nbv_user_profile");
+      if (cached) {
+        setUser(JSON.parse(cached));
+        setIsLoadingUser(false);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
 
   const refreshUser = useCallback(async () => {
     try {
       const res = await fetch("/api/auth/me");
       if (res.ok) {
         const data = await res.json();
-        setUser(data.user || null);
+        if (data.user) {
+          setUser(data.user);
+          try {
+            localStorage.setItem("nbv_user_profile", JSON.stringify(data.user));
+          } catch {}
+        } else {
+          setUser(null);
+          try {
+            localStorage.removeItem("nbv_user_profile");
+          } catch {}
+        }
       } else {
         setUser(null);
+        try {
+          localStorage.removeItem("nbv_user_profile");
+        } catch {}
       }
     } catch {
-      setUser(null);
+      // If network fails temporarily, retain cached user
     } finally {
       setIsLoadingUser(false);
     }
@@ -156,11 +182,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
+      try {
+        localStorage.removeItem("nbv_user_profile");
+      } catch {}
+      setUser(null);
       await fetch("/api/auth/logout", { method: "POST" });
     } catch {
       // ignore
     }
-    setUser(null);
   };
 
   const openAuthModal = (onSuccess?: () => void) => {

@@ -4,6 +4,7 @@ import { requireAdminApi } from "@/lib/server/auth";
 import { jsonError } from "@/lib/server/http";
 import { prisma } from "@/lib/server/prisma";
 import { certificateKey } from "@/lib/server/certificate";
+import { MEMBERSHIP_PLANS } from "@/lib/donation-config";
 
 const updateMemberSchema = z.object({
   name: z.string().trim().min(2).max(100).optional(),
@@ -350,6 +351,36 @@ export async function PATCH(
           data: {
             membershipTier: parsed.data.tier,
             membershipStatus: parsed.data.status ?? existing.status,
+          },
+        })
+        .catch(() => null);
+    }
+
+    // Also synchronize member's membership donation record so Certificate and Passes immediately reflect the updated tier
+    const targetPlan = MEMBERSHIP_PLANS.find((p) => p.id === parsed.data.tier?.toLowerCase());
+    const newProgramName = targetPlan ? targetPlan.name : `${parsed.data.tier} Membership`;
+
+    const donationOrConditions: Prisma.DonationWhereInput[] = [];
+    if (existing.email) {
+      donationOrConditions.push({ donorEmail: existing.email });
+      donationOrConditions.push({ donorEmail: existing.email.toLowerCase() });
+    }
+    if (existing.phone) {
+      donationOrConditions.push({ donorMobile: existing.phone });
+    }
+    if (donationOrConditions.length > 0) {
+      await prisma.donation
+        .updateMany({
+          where: {
+            OR: [
+              { type: "MEMBERSHIP" },
+              { program: { contains: "membership", mode: "insensitive" } },
+              { program: { contains: "patron", mode: "insensitive" } },
+            ],
+            AND: [{ OR: donationOrConditions }],
+          },
+          data: {
+            program: newProgramName,
           },
         })
         .catch(() => null);

@@ -7,7 +7,7 @@ import { prisma } from "@/lib/server/prisma";
 import { donationCategory } from "@/lib/server/donation-category";
 import { publicBaseUrl } from "@/lib/server/donation";
 import { donationIdSchema } from "@/lib/validation/donation";
-import { formatINR, planForProgram, membershipValidUntil } from "@/lib/donation-config";
+import { formatINR, planForProgram, membershipValidUntil, MEMBERSHIP_PLANS } from "@/lib/donation-config";
 import { getCurrentUser } from "@/lib/server/user-auth";
 import { getAdmin } from "@/lib/server/auth";
 
@@ -91,7 +91,40 @@ export default async function EventPassPage({
 
   // If this is a MEMBERSHIP payment, render the Devotee Member Digital Pass
   if (donation.type === "MEMBERSHIP" || category.kind === "membership") {
-    const plan = planForProgram(donation.program);
+    let plan = planForProgram(donation.program);
+    try {
+      const memberRecord = await prisma.member.findFirst({
+        where: {
+          OR: [
+            { email: donation.donorEmail },
+            { email: donation.donorEmail.toLowerCase() },
+            ...(donation.donorMobile ? [{ phone: donation.donorMobile }] : []),
+          ],
+        },
+        select: { tier: true },
+      });
+      if (memberRecord && memberRecord.tier && memberRecord.tier !== "FREE") {
+        const updatedPlan = MEMBERSHIP_PLANS.find((p) => p.id === memberRecord.tier.toLowerCase());
+        if (updatedPlan) plan = updatedPlan;
+      } else {
+        const userRecord = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { email: donation.donorEmail },
+              { email: donation.donorEmail.toLowerCase() },
+              ...(donation.donorMobile ? [{ phone: donation.donorMobile }] : []),
+            ],
+          },
+          select: { membershipTier: true },
+        });
+        if (userRecord && userRecord.membershipTier && userRecord.membershipTier !== "FREE") {
+          const updatedPlan = MEMBERSHIP_PLANS.find((p) => p.id === userRecord.membershipTier?.toLowerCase());
+          if (updatedPlan) plan = updatedPlan;
+        }
+      }
+    } catch {
+      // fallback
+    }
     const startDate = donation.verifiedAt ?? donation.createdAt;
     const expiry = membershipValidUntil(plan, startDate);
     const validStr = expiry

@@ -8,7 +8,8 @@ import { PDFDocument, degrees, rgb, type PDFFont, type PDFPage, type RGB } from 
 import QRCode from "qrcode";
 import type { Donation } from "@prisma/client";
 import { createHash } from "node:crypto";
-import { membershipValidUntil, planForProgram } from "@/lib/donation-config";
+import { membershipValidUntil, planForProgram, MEMBERSHIP_PLANS } from "@/lib/donation-config";
+import { prisma } from "./prisma";
 import { env } from "./env";
 
 // Donation (or membership) certificate: one A4 landscape page, attached to the donor's confirmation
@@ -165,7 +166,40 @@ export async function generateCertificatePdf(d: Donation, verifyUrl: string) {
   // the plan's colour holds the membership details and the QR; the right side has the citation
   // and the plan's privileges.
   async function drawMembership() {
-    const plan = planForProgram(d.program);
+    let plan = planForProgram(d.program);
+    try {
+      const memberRecord = await prisma.member.findFirst({
+        where: {
+          OR: [
+            { email: d.donorEmail },
+            { email: d.donorEmail.toLowerCase() },
+            ...(d.donorMobile ? [{ phone: d.donorMobile }] : []),
+          ],
+        },
+        select: { tier: true },
+      });
+      if (memberRecord && memberRecord.tier && memberRecord.tier !== "FREE") {
+        const updatedPlan = MEMBERSHIP_PLANS.find((p) => p.id === memberRecord.tier.toLowerCase());
+        if (updatedPlan) plan = updatedPlan;
+      } else {
+        const userRecord = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { email: d.donorEmail },
+              { email: d.donorEmail.toLowerCase() },
+              ...(d.donorMobile ? [{ phone: d.donorMobile }] : []),
+            ],
+          },
+          select: { membershipTier: true },
+        });
+        if (userRecord && userRecord.membershipTier && userRecord.membershipTier !== "FREE") {
+          const updatedPlan = MEMBERSHIP_PLANS.find((p) => p.id === userRecord.membershipTier?.toLowerCase());
+          if (updatedPlan) plan = updatedPlan;
+        }
+      }
+    } catch {
+      // fallback
+    }
     const tier = hex(plan.color);
     const since = d.verifiedAt ?? new Date();
     const longDate = (x: Date) =>
