@@ -59,8 +59,8 @@ export default function MembershipPage() {
 
   const tiers = [
     {
-      name: "Membership",
-      nameHi: "साधारण सदस्यता",
+      name: "Basic Membership",
+      nameHi: "बेसिक सदस्यता",
       price: 1100,
       period: findPlan("basic")!.period,
       periodHi: "प्रति वर्ष",

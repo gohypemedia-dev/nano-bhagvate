@@ -390,7 +390,11 @@ export default function AccountPage() {
                     <div className="min-w-0">
                       <p className="text-xs text-white/70">{hi ? "आपकी सदस्यता" : "Your membership"}</p>
                       <h2 className="font-editorial text-xl sm:text-2xl font-bold truncate">
-                        {hi && user.membership.tierNameHi ? user.membership.tierNameHi : user.membership.tierName}
+                        {hi && user.membership.tierNameHi
+                          ? user.membership.tierNameHi
+                          : user.membership.tierName?.toLowerCase() === "membership" || user.membership.tier === "BASIC"
+                          ? "Basic Membership"
+                          : user.membership.tierName}
                       </h2>
                     </div>
                   </div>

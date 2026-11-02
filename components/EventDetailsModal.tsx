@@ -22,13 +22,14 @@ export interface EventItem {
   image?: string | null;
   contactPhone?: string | null;
   isPublished?: boolean;
+  customAmounts?: number[] | null;
 }
 
 interface EventDetailsModalProps {
   event: EventItem | null;
   isOpen: boolean;
   onClose: () => void;
-  onRegister: (eventTitle: string) => void;
+  onRegister: (eventTitle: string, customAmounts?: number[]) => void;
   lang?: "en" | "hi";
 }
 
@@ -450,7 +451,12 @@ export default function EventDetailsModal({
               type="button"
               onClick={() => {
                 onClose();
-                onRegister(event.title);
+                onRegister(
+                  event.title,
+                  event.customAmounts && event.customAmounts.length === 6
+                    ? event.customAmounts
+                    : undefined
+                );
               }}
               className="flex-1 sm:flex-initial px-5 py-2 rounded-lg bg-[#E86F1D] hover:bg-[#D25E12] text-white font-bold text-xs uppercase tracking-wider inline-flex items-center justify-center gap-1.5 shadow-md hover:shadow-lg transition-all cursor-pointer whitespace-nowrap active:scale-95"
             >

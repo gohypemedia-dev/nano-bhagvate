@@ -78,8 +78,9 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
   const [step, setStep] = useState<Step>("SELECT");
   const [session, setSession] = useState<PaymentSession | null>(null);
   const [resumed, setResumed] = useState(false);
+  const [eventAmounts, setEventAmounts] = useState<number[] | null>(null);
 
-  const [selectedAmount, setSelectedAmount] = useState<number>(PRESET_AMOUNTS[1] ?? 999);
+  const [selectedAmount, setSelectedAmount] = useState<number>(PRESET_AMOUNTS[0] ?? 499);
   const [planId, setPlanId] = useState<string>(MEMBERSHIP_PLANS[0].id);
   const [donorName, setDonorName] = useState("");
   const [donorEmail, setDonorEmail] = useState("");
@@ -101,10 +102,19 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
     donateModal.isMembership || donateModal.program?.toLowerCase().includes("membership"),
   );
   const plan = MEMBERSHIP_PLANS.find((p) => p.id === planId) ?? MEMBERSHIP_PLANS[0];
+  const activePresetAmounts: number[] =
+    donateModal.customAmounts && donateModal.customAmounts.length === 6
+      ? donateModal.customAmounts
+      : eventAmounts && eventAmounts.length === 6
+      ? eventAmounts
+      : PRESET_AMOUNTS;
+
   const currentAmount = isMembership ? plan.price : selectedAmount;
 
   // When the modal opens: resume an unfinished donation from this tab, or start fresh.
-  const openKey = donateModal.isOpen ? `${donateModal.program}|${donateModal.amount}|${isMembership}` : null;
+  const openKey = donateModal.isOpen
+    ? `${donateModal.program}|${donateModal.amount}|${isMembership}|${donateModal.customAmounts?.join(",")}`
+    : null;
   if (openKey !== openedFor) {
     setOpenedFor(openKey);
     if (openKey) {
@@ -141,7 +151,11 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
         if (requestedPlan) {
           setPlanId(requestedPlan.id);
         } else {
-          setSelectedAmount(donateModal.amount || PRESET_AMOUNTS[1] || 999);
+          const effectiveAmounts =
+            donateModal.customAmounts && donateModal.customAmounts.length === 6
+              ? donateModal.customAmounts
+              : PRESET_AMOUNTS;
+          setSelectedAmount(donateModal.amount || effectiveAmounts[0] || effectiveAmounts[1] || 499);
         }
       }
     }
@@ -149,10 +163,48 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
 
   useEffect(() => {
     if (!donateModal.isOpen) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && handleClose();
+  const onKey = (e: KeyboardEvent) => e.key === "Escape" && handleClose();
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   });
+
+  useEffect(() => {
+    if (!donateModal.isOpen) {
+      setEventAmounts(null);
+      return;
+    }
+    if (isMembership || donateModal.customAmounts || !donateModal.program) return;
+    const prog = donateModal.program.toLowerCase().trim();
+    if (
+      prog.includes("general donation") ||
+      prog.includes("general seva") ||
+      prog.includes("founder")
+    ) {
+      return;
+    }
+
+    fetch("/api/events")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!data?.events || !Array.isArray(data.events)) return;
+        const matched = data.events.find(
+          (e: any) =>
+            e.title?.toLowerCase().trim() === prog ||
+            e.titleHi?.trim() === prog
+        );
+        if (
+          matched?.customAmounts &&
+          Array.isArray(matched.customAmounts) &&
+          matched.customAmounts.length === 6
+        ) {
+          setEventAmounts(matched.customAmounts);
+          if (!donateModal.amount) {
+            setSelectedAmount(matched.customAmounts[0]);
+          }
+        }
+      })
+      .catch(() => {});
+  }, [donateModal.isOpen, donateModal.program, donateModal.customAmounts, donateModal.amount, isMembership]);
 
   // While the QR is showing (and after "I have paid"), ask the server whether the
   // bank has confirmed the payment. The server checks the bank-alert inbox.
@@ -417,7 +469,7 @@ function localizeProgramName(name: string | undefined | null, isHi: boolean): st
     if (lower.includes("silver")) return "रजत (सिल्वर) सदस्यता";
     if (lower.includes("gold")) return "स्वर्ण (गोल्ड) सदस्यता";
     if (lower.includes("platinum")) return "प्लेटिनम सदस्यता";
-    return "साधारण सदस्यता";
+    return "बेसिक सदस्यता";
   }
   return name;
 }
@@ -519,7 +571,7 @@ function localizeError(msg: string | undefined, isHi: boolean): string {
                       {hi ? "योगदान की राशि चुनें" : "Select Contribution Amount"}
                     </label>
                     <div className="grid grid-cols-3 gap-2.5">
-                      {PRESET_AMOUNTS.map((amt) => {
+                      {activePresetAmounts.map((amt) => {
                         const selected = selectedAmount === amt;
                         return (
                           <button

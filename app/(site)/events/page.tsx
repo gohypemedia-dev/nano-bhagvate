@@ -33,6 +33,10 @@ export default async function EventsPage() {
     image: e.image,
     contactPhone: e.contactPhone,
     isPublished: e.isPublished,
+    customAmounts:
+      e.customAmounts && e.customAmounts.length === 6
+        ? e.customAmounts
+        : [499, 999, 1499, 2100, 5100, 11000],
   }));
 
   return <EventsClientView initialEvents={serializedEvents} />;

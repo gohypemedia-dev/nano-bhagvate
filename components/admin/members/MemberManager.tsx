@@ -22,6 +22,16 @@ import {
   Loader2,
   Edit2,
   Filter,
+  Eye,
+  Calendar,
+  Clock,
+  Ticket,
+  Download,
+  CheckCircle2,
+  Package,
+  Receipt,
+  FileText,
+  QrCode,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -42,6 +52,100 @@ export interface AdminMemberItem {
   photoUrl?: string | null;
   validUntil?: string | Date | null;
   createdAt: string | Date;
+}
+
+export interface MemberDetailsData {
+  member: AdminMemberItem;
+  linkedUser?: {
+    id: string;
+    name: string;
+    email: string;
+    phone?: string | null;
+    createdAt?: string;
+  } | null;
+  stats: {
+    totalContributedPaise: number;
+    totalVerifiedDonationsCount: number;
+    totalEventPassesCount: number;
+    totalAllDonationsCount: number;
+    totalOrdersCount: number;
+  };
+  history: {
+    eventPasses: Array<{
+      donationId: string;
+      amountPaise: number;
+      status: string;
+      createdAt: string;
+      verifiedAt: string | null;
+      utr?: string | null;
+      certificateKey: string;
+      passUrl: string;
+      pdfUrl: string;
+      event: {
+        id: string;
+        title: string;
+        titleHi?: string | null;
+        slug: string;
+        startDate: string;
+        endDate?: string | null;
+        location: string;
+        address?: string | null;
+        image?: string | null;
+        timeText?: string | null;
+      };
+    }>;
+    membershipDonations: Array<{
+      donationId: string;
+      program?: string | null;
+      amountPaise: number;
+      status: string;
+      createdAt: string;
+      verifiedAt?: string | null;
+      utr?: string | null;
+      certificateKey: string;
+      certificateUrl: string;
+      certificatePdfUrl: string;
+      passUrl: string;
+    }>;
+    generalDonations: Array<{
+      donationId: string;
+      program: string;
+      amountPaise: number;
+      status: string;
+      createdAt: string;
+      verifiedAt?: string | null;
+      utr?: string | null;
+      certificateKey: string;
+      certificateUrl: string;
+      certificatePdfUrl: string;
+    }>;
+    allDonations: Array<{
+      donationId: string;
+      type: string;
+      program?: string | null;
+      amountPaise: number;
+      status: string;
+      createdAt: string;
+      verifiedAt?: string | null;
+      utr?: string | null;
+    }>;
+    orders: Array<{
+      id: string;
+      orderNumber: string;
+      totalAmount: number;
+      status: string;
+      paymentStatus: string;
+      createdAt: string;
+      itemsCount: number;
+      items: Array<{
+        id: string;
+        title: string;
+        price: number;
+        quantity: number;
+        image?: string | null;
+      }>;
+    }>;
+  };
 }
 
 const TIER_ORDER: MembershipTier[] = ["BASIC", "SILVER", "GOLD", "PLATINUM"];
@@ -92,6 +196,33 @@ export default function MemberManager({ initialMembers }: MemberManagerProps) {
   const [memberToDelete, setMemberToDelete] = useState<AdminMemberItem | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
+
+  // Member Details & History Modal State
+  const [viewingMember, setViewingMember] = useState<AdminMemberItem | null>(null);
+  const [memberDetailsData, setMemberDetailsData] = useState<MemberDetailsData | null>(null);
+  const [loadingDetails, setLoadingDetails] = useState<boolean>(false);
+  const [historyTab, setHistoryTab] = useState<"all" | "events" | "donations" | "memberships" | "orders">("all");
+
+  const handleOpenDetails = async (member: AdminMemberItem) => {
+    setViewingMember(member);
+    setLoadingDetails(true);
+    setMemberDetailsData(null);
+    setHistoryTab("all");
+
+    try {
+      const res = await fetch(`/api/admin/members/${member.id}`);
+      const data = await res.json();
+      if (res.ok) {
+        setMemberDetailsData(data);
+      } else {
+        toast.error(data.error || "Failed to load member history");
+      }
+    } catch {
+      toast.error("Failed to load member history");
+    } finally {
+      setLoadingDetails(false);
+    }
+  };
 
   // Form State
   const [formData, setFormData] = useState({
@@ -402,7 +533,7 @@ export default function MemberManager({ initialMembers }: MemberManagerProps) {
                   <th className="py-3 px-3">Contact Info</th>
                   <th className="py-3 px-3">Location</th>
                   <th className="py-3 px-3">Membership Plan & Tier</th>
-                  <th className="py-3 px-4 sm:px-5 text-right w-24">Actions</th>
+                  <th className="py-3 px-4 sm:px-5 text-right w-28">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E7D8C8]/60">
@@ -417,15 +548,36 @@ export default function MemberManager({ initialMembers }: MemberManagerProps) {
                   // Clean text badge without AI icons
 
                   return (
-                    <tr key={member.id} className="hover:bg-[#FFFDF9] transition-colors">
+                    <tr
+                      key={member.id}
+                      onClick={(e) => {
+                        const target = e.target as HTMLElement;
+                        if (
+                          target.closest("button") ||
+                          target.closest("select") ||
+                          target.closest("input") ||
+                          target.closest("a")
+                        ) {
+                          return;
+                        }
+                        handleOpenDetails(member);
+                      }}
+                      className="hover:bg-[#FAF3EA]/50 transition-colors cursor-pointer group"
+                      title="Click to view full profile & pass/donation history"
+                    >
                       {/* Name & Role */}
                       <td className="py-3 px-4 sm:px-5">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-full bg-[#FAF3EA] border border-[#E7D8C8] text-[#E86F1D] flex items-center justify-center font-bold text-xs uppercase shrink-0">
+                          <div className="w-8 h-8 rounded-full bg-[#FAF3EA] border border-[#E7D8C8] text-[#E86F1D] flex items-center justify-center font-bold text-xs uppercase shrink-0 group-hover:scale-105 transition-transform">
                             {member.name.charAt(0)}
                           </div>
                           <div className="min-w-0">
-                            <p className="font-bold text-[#2B201A] text-xs sm:text-sm truncate">{member.name}</p>
+                            <div className="flex items-center gap-1.5">
+                              <p className="font-bold text-[#2B201A] text-xs sm:text-sm truncate group-hover:text-[#E86F1D] transition-colors">
+                                {member.name}
+                              </p>
+                              <Eye className="w-3.5 h-3.5 text-[#E86F1D] opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                            </div>
                             <p className="text-[11px] text-[#2B201A]/60 truncate">
                               {member.role || "Devotee Member"}
                             </p>
@@ -532,13 +684,29 @@ export default function MemberManager({ initialMembers }: MemberManagerProps) {
                         </div>
                       </td>
 
-                      {/* Edit & Remove Actions */}
-                      <td className="py-3 px-4 sm:px-5 text-right w-24">
-                        <div className="flex items-center justify-end gap-1.5">
+                      {/* View Details, Edit & Remove Actions */}
+                      <td className="py-3 px-4 sm:px-5 text-right w-28">
+                        <div className="flex items-center justify-end gap-1">
+                          {/* View Full History & Details */}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenDetails(member);
+                            }}
+                            className="p-1.5 rounded-lg text-[#2B201A]/70 hover:text-[#E86F1D] hover:bg-[#FAF3EA] transition-colors cursor-pointer"
+                            title="View member passes, donations & history"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+
                           {/* Edit Details */}
                           <button
                             type="button"
-                            onClick={() => handleOpenEdit(member)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenEdit(member);
+                            }}
                             className="p-1.5 rounded-lg text-[#2B201A]/60 hover:text-[#E86F1D] hover:bg-[#FAF3EA] transition-colors cursor-pointer"
                             title="Edit member details"
                           >
@@ -548,7 +716,10 @@ export default function MemberManager({ initialMembers }: MemberManagerProps) {
                           {/* Remove Member */}
                           <button
                             type="button"
-                            onClick={() => setMemberToDelete(member)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setMemberToDelete(member);
+                            }}
                             className="p-1.5 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 transition-colors cursor-pointer"
                             title="Remove Member"
                           >
@@ -833,6 +1004,586 @@ export default function MemberManager({ initialMembers }: MemberManagerProps) {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: MEMBER DETAILS & HISTORY */}
+      {viewingMember && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-xs">
+          <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[92vh] flex flex-col border border-[#E7D8C8] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="bg-[#FAF6F0] px-5 sm:px-6 py-4 border-b border-[#E7D8C8] flex items-center justify-between gap-3 shrink-0">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#FAF3EA] to-[#F1E5D5] border border-[#E7D8C8] text-[#E86F1D] flex items-center justify-center font-bold text-lg uppercase shrink-0 shadow-2xs">
+                  {viewingMember.name.charAt(0)}
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="font-editorial text-lg sm:text-xl font-bold text-[#2B201A] truncate">
+                      {viewingMember.name}
+                    </h3>
+                    <span
+                      className={`text-[11px] font-bold px-2 py-0.5 rounded-md border shadow-2xs ${
+                        TIER_CONFIG[viewingMember.tier].badgeCls
+                      }`}
+                    >
+                      {TIER_CONFIG[viewingMember.tier].label}
+                    </span>
+                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      {viewingMember.status}
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#2B201A]/60 truncate">
+                    {viewingMember.role || "Devotee Member"} • ID: {viewingMember.id}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setViewingMember(null)}
+                className="w-8 h-8 rounded-full bg-white border border-[#E7D8C8] text-[#2B201A]/60 hover:text-[#2B201A] hover:bg-[#FAF6F0] flex items-center justify-center transition-colors cursor-pointer shrink-0"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5">
+              {/* Member Contact & Location Strip */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 bg-[#FAF6F0]/60 p-3.5 rounded-2xl border border-[#E7D8C8]">
+                <div className="flex items-center gap-2 min-w-0 text-xs text-[#2B201A]">
+                  <Mail className="w-4 h-4 text-[#E86F1D] shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-[10px] uppercase font-bold text-[#2B201A]/50">Email</p>
+                    <p className="truncate font-medium">{viewingMember.email || "Not provided"}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 min-w-0 text-xs text-[#2B201A]">
+                  <Phone className="w-4 h-4 text-[#E86F1D] shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-[10px] uppercase font-bold text-[#2B201A]/50">Phone</p>
+                    <p className="truncate font-medium">{viewingMember.phone || "Not provided"}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 min-w-0 text-xs text-[#2B201A]">
+                  <MapPin className="w-4 h-4 text-[#E86F1D] shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-[10px] uppercase font-bold text-[#2B201A]/50">Location</p>
+                    <p className="truncate font-medium">
+                      {[viewingMember.city, viewingMember.state].filter(Boolean).join(", ") ||
+                        "Not provided"}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 min-w-0 text-xs text-[#2B201A]">
+                  <Calendar className="w-4 h-4 text-[#E86F1D] shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-[10px] uppercase font-bold text-[#2B201A]/50">Joined On</p>
+                    <p className="truncate font-medium">
+                      {new Date(viewingMember.createdAt).toLocaleDateString("en-IN", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Stats Overview */}
+              {loadingDetails ? (
+                <div className="py-12 flex flex-col items-center justify-center text-[#2B201A]/60 space-y-2">
+                  <Loader2 className="w-8 h-8 text-[#E86F1D] animate-spin" />
+                  <p className="text-xs font-semibold">Loading member seva & event history...</p>
+                </div>
+              ) : memberDetailsData ? (
+                <>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-orange-200/80 rounded-2xl p-3.5">
+                      <p className="text-[10px] font-bold text-amber-900/70 uppercase">
+                        Lifetime Seva Given
+                      </p>
+                      <p className="text-lg sm:text-xl font-bold text-[#E86F1D]">
+                        ₹
+                        {(
+                          (memberDetailsData.stats.totalContributedPaise || 0) / 100
+                        ).toLocaleString("en-IN")}
+                      </p>
+                      <p className="text-[10px] text-amber-900/60 mt-0.5">
+                        {memberDetailsData.stats.totalVerifiedDonationsCount} verified transactions
+                      </p>
+                    </div>
+
+                    <div className="bg-white border border-[#E7D8C8] rounded-2xl p-3.5 shadow-2xs">
+                      <p className="text-[10px] font-bold text-[#2B201A]/60 uppercase">
+                        Event Passes
+                      </p>
+                      <p className="text-lg sm:text-xl font-bold text-[#2B201A]">
+                        {memberDetailsData.stats.totalEventPassesCount}
+                      </p>
+                      <p className="text-[10px] text-[#2B201A]/50 mt-0.5">Purchased & verified</p>
+                    </div>
+
+                    <div className="bg-white border border-[#E7D8C8] rounded-2xl p-3.5 shadow-2xs">
+                      <p className="text-[10px] font-bold text-[#2B201A]/60 uppercase">
+                        General Donations
+                      </p>
+                      <p className="text-lg sm:text-xl font-bold text-[#2B201A]">
+                        {memberDetailsData.history.generalDonations.length}
+                      </p>
+                      <p className="text-[10px] text-[#2B201A]/50 mt-0.5">Seva contributions</p>
+                    </div>
+
+                    <div className="bg-white border border-[#E7D8C8] rounded-2xl p-3.5 shadow-2xs">
+                      <p className="text-[10px] font-bold text-[#2B201A]/60 uppercase">
+                        Book Store Orders
+                      </p>
+                      <p className="text-lg sm:text-xl font-bold text-[#2B201A]">
+                        {memberDetailsData.stats.totalOrdersCount}
+                      </p>
+                      <p className="text-[10px] text-[#2B201A]/50 mt-0.5">Purchased items</p>
+                    </div>
+                  </div>
+
+                  {/* History Tabs */}
+                  <div className="flex items-center gap-1.5 border-b border-[#E7D8C8] pb-1 overflow-x-auto">
+                    <button
+                      type="button"
+                      onClick={() => setHistoryTab("all")}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                        historyTab === "all"
+                          ? "bg-[#E86F1D] text-white shadow-2xs"
+                          : "text-[#2B201A]/70 hover:bg-[#FAF6F0]"
+                      }`}
+                    >
+                      All Records (
+                      {memberDetailsData.history.eventPasses.length +
+                        memberDetailsData.history.generalDonations.length +
+                        memberDetailsData.history.membershipDonations.length +
+                        memberDetailsData.history.orders.length}
+                      )
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setHistoryTab("events")}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                        historyTab === "events"
+                          ? "bg-[#E86F1D] text-white shadow-2xs"
+                          : "text-[#2B201A]/70 hover:bg-[#FAF6F0]"
+                      }`}
+                    >
+                      <Ticket className="w-3.5 h-3.5" />
+                      <span>Event Passes ({memberDetailsData.history.eventPasses.length})</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setHistoryTab("donations")}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                        historyTab === "donations"
+                          ? "bg-[#E86F1D] text-white shadow-2xs"
+                          : "text-[#2B201A]/70 hover:bg-[#FAF6F0]"
+                      }`}
+                    >
+                      <Award className="w-3.5 h-3.5" />
+                      <span>General Seva ({memberDetailsData.history.generalDonations.length})</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setHistoryTab("memberships")}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                        historyTab === "memberships"
+                          ? "bg-[#E86F1D] text-white shadow-2xs"
+                          : "text-[#2B201A]/70 hover:bg-[#FAF6F0]"
+                      }`}
+                    >
+                      <Shield className="w-3.5 h-3.5" />
+                      <span>
+                        Membership Seva ({memberDetailsData.history.membershipDonations.length})
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setHistoryTab("orders")}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                        historyTab === "orders"
+                          ? "bg-[#E86F1D] text-white shadow-2xs"
+                          : "text-[#2B201A]/70 hover:bg-[#FAF6F0]"
+                      }`}
+                    >
+                      <Package className="w-3.5 h-3.5" />
+                      <span>Store Orders ({memberDetailsData.history.orders.length})</span>
+                    </button>
+                  </div>
+
+                  {/* Tab Content */}
+                  <div className="space-y-3">
+                    {/* EVENT PASSES */}
+                    {(historyTab === "all" || historyTab === "events") &&
+                      memberDetailsData.history.eventPasses.length > 0 && (
+                        <div className="space-y-2">
+                          {historyTab === "all" && (
+                            <h4 className="text-xs font-bold text-[#2B201A]/80 uppercase tracking-wider flex items-center gap-1.5">
+                              <Ticket className="w-3.5 h-3.5 text-[#E86F1D]" />
+                              <span>Event Passes ({memberDetailsData.history.eventPasses.length})</span>
+                            </h4>
+                          )}
+                          <div className="grid grid-cols-1 gap-2.5">
+                            {memberDetailsData.history.eventPasses.map((pass) => (
+                              <div
+                                key={pass.donationId}
+                                className="bg-[#FAF6F0]/40 border border-[#E7D8C8] rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 hover:border-[#E86F1D]/40 transition-colors"
+                              >
+                                <div className="space-y-1.5 min-w-0">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <h5 className="font-bold text-[#2B201A] text-sm sm:text-base">
+                                      {pass.event.title}
+                                    </h5>
+                                    {pass.event.titleHi && (
+                                      <span className="text-xs text-[#2B201A]/60 font-medium">
+                                        ({pass.event.titleHi})
+                                      </span>
+                                    )}
+                                    <span
+                                      className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${
+                                        pass.status === "VERIFIED"
+                                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                          : "bg-amber-50 text-amber-700 border-amber-200"
+                                      }`}
+                                    >
+                                      {pass.status}
+                                    </span>
+                                  </div>
+
+                                  <div className="flex items-center gap-3 text-xs text-[#2B201A]/70 flex-wrap">
+                                    <div className="flex items-center gap-1">
+                                      <Calendar className="w-3.5 h-3.5 text-[#E86F1D]" />
+                                      <span>
+                                        {new Date(pass.event.startDate).toLocaleDateString("en-IN", {
+                                          day: "numeric",
+                                          month: "short",
+                                          year: "numeric",
+                                        })}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                      <MapPin className="w-3.5 h-3.5 text-[#E86F1D]" />
+                                      <span className="truncate max-w-[200px]">
+                                        {pass.event.location}
+                                      </span>
+                                    </div>
+                                    <span className="text-[#2B201A]/40">•</span>
+                                    <span className="font-bold text-[#E86F1D]">
+                                      ₹{(pass.amountPaise / 100).toLocaleString("en-IN")}
+                                    </span>
+                                    <span className="text-[#2B201A]/40">•</span>
+                                    <span className="text-[11px] font-mono text-[#2B201A]/60">
+                                      ID: {pass.donationId}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#E7D8C8]/60">
+                                  <a
+                                    href={pass.passUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="px-3 py-1.5 rounded-lg bg-[#E86F1D] hover:bg-[#D45A0E] text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-colors"
+                                  >
+                                    <Ticket className="w-3.5 h-3.5" />
+                                    <span>View Pass</span>
+                                  </a>
+                                  <a
+                                    href={pass.pdfUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    download
+                                    className="px-3 py-1.5 rounded-lg bg-white border border-[#E7D8C8] hover:bg-[#FAF6F0] text-[#2B201A] text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-colors"
+                                  >
+                                    <Download className="w-3.5 h-3.5 text-[#E86F1D]" />
+                                    <span>PDF</span>
+                                  </a>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                    {/* GENERAL DONATIONS */}
+                    {(historyTab === "all" || historyTab === "donations") &&
+                      memberDetailsData.history.generalDonations.length > 0 && (
+                        <div className="space-y-2">
+                          {historyTab === "all" && (
+                            <h4 className="text-xs font-bold text-[#2B201A]/80 uppercase tracking-wider flex items-center gap-1.5">
+                              <Award className="w-3.5 h-3.5 text-[#E86F1D]" />
+                              <span>
+                                General Donations ({memberDetailsData.history.generalDonations.length})
+                              </span>
+                            </h4>
+                          )}
+                          <div className="grid grid-cols-1 gap-2.5">
+                            {memberDetailsData.history.generalDonations.map((don) => (
+                              <div
+                                key={don.donationId}
+                                className="bg-[#FAF6F0]/40 border border-[#E7D8C8] rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 hover:border-[#E86F1D]/40 transition-colors"
+                              >
+                                <div className="space-y-1 min-w-0">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <h5 className="font-bold text-[#2B201A] text-sm">
+                                      {don.program}
+                                    </h5>
+                                    <span
+                                      className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${
+                                        don.status === "VERIFIED"
+                                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                          : "bg-amber-50 text-amber-700 border-amber-200"
+                                      }`}
+                                    >
+                                      {don.status}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-3 text-xs text-[#2B201A]/70 flex-wrap">
+                                    <span className="font-bold text-[#E86F1D]">
+                                      ₹{(don.amountPaise / 100).toLocaleString("en-IN")}
+                                    </span>
+                                    <span className="text-[#2B201A]/40">•</span>
+                                    <span>
+                                      {new Date(don.createdAt).toLocaleDateString("en-IN", {
+                                        day: "numeric",
+                                        month: "short",
+                                        year: "numeric",
+                                      })}
+                                    </span>
+                                    {don.utr && (
+                                      <>
+                                        <span className="text-[#2B201A]/40">•</span>
+                                        <span className="font-mono text-[11px]">UTR: {don.utr}</span>
+                                      </>
+                                    )}
+                                    <span className="text-[#2B201A]/40">•</span>
+                                    <span className="font-mono text-[11px] text-[#2B201A]/50">
+                                      Ref: {don.donationId}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#E7D8C8]/60">
+                                  <a
+                                    href={don.certificateUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="px-3 py-1.5 rounded-lg bg-white border border-[#E7D8C8] hover:bg-[#FAF6F0] text-[#2B201A] text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-colors"
+                                  >
+                                    <FileText className="w-3.5 h-3.5 text-[#E86F1D]" />
+                                    <span>Certificate</span>
+                                  </a>
+                                  <a
+                                    href={don.certificatePdfUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    download
+                                    className="px-3 py-1.5 rounded-lg bg-white border border-[#E7D8C8] hover:bg-[#FAF6F0] text-[#2B201A] text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-colors"
+                                  >
+                                    <Download className="w-3.5 h-3.5 text-[#E86F1D]" />
+                                    <span>PDF</span>
+                                  </a>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                    {/* MEMBERSHIP TRANSACTIONS */}
+                    {(historyTab === "all" || historyTab === "memberships") &&
+                      memberDetailsData.history.membershipDonations.length > 0 && (
+                        <div className="space-y-2">
+                          {historyTab === "all" && (
+                            <h4 className="text-xs font-bold text-[#2B201A]/80 uppercase tracking-wider flex items-center gap-1.5">
+                              <Shield className="w-3.5 h-3.5 text-[#E86F1D]" />
+                              <span>
+                                Membership Subscriptions (
+                                {memberDetailsData.history.membershipDonations.length})
+                              </span>
+                            </h4>
+                          )}
+                          <div className="grid grid-cols-1 gap-2.5">
+                            {memberDetailsData.history.membershipDonations.map((mDon) => (
+                              <div
+                                key={mDon.donationId}
+                                className="bg-[#FAF6F0]/40 border border-[#E7D8C8] rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 hover:border-[#E86F1D]/40 transition-colors"
+                              >
+                                <div className="space-y-1 min-w-0">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <h5 className="font-bold text-[#2B201A] text-sm">
+                                      {mDon.program || "Trust Membership Plan"}
+                                    </h5>
+                                    <span
+                                      className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${
+                                        mDon.status === "VERIFIED"
+                                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                          : "bg-amber-50 text-amber-700 border-amber-200"
+                                      }`}
+                                    >
+                                      {mDon.status}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-3 text-xs text-[#2B201A]/70 flex-wrap">
+                                    <span className="font-bold text-[#E86F1D]">
+                                      ₹{(mDon.amountPaise / 100).toLocaleString("en-IN")}
+                                    </span>
+                                    <span className="text-[#2B201A]/40">•</span>
+                                    <span>
+                                      {new Date(mDon.createdAt).toLocaleDateString("en-IN", {
+                                        day: "numeric",
+                                        month: "short",
+                                        year: "numeric",
+                                      })}
+                                    </span>
+                                    {mDon.utr && (
+                                      <>
+                                        <span className="text-[#2B201A]/40">•</span>
+                                        <span className="font-mono text-[11px]">UTR: {mDon.utr}</span>
+                                      </>
+                                    )}
+                                    <span className="text-[#2B201A]/40">•</span>
+                                    <span className="font-mono text-[11px] text-[#2B201A]/50">
+                                      Ref: {mDon.donationId}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#E7D8C8]/60">
+                                  <a
+                                    href={mDon.passUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="px-3 py-1.5 rounded-lg bg-[#E86F1D] hover:bg-[#D45A0E] text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-colors"
+                                  >
+                                    <Ticket className="w-3.5 h-3.5" />
+                                    <span>Devotee Pass</span>
+                                  </a>
+                                  <a
+                                    href={mDon.certificateUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="px-3 py-1.5 rounded-lg bg-white border border-[#E7D8C8] hover:bg-[#FAF6F0] text-[#2B201A] text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-colors"
+                                  >
+                                    <FileText className="w-3.5 h-3.5 text-[#E86F1D]" />
+                                    <span>Certificate</span>
+                                  </a>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                    {/* ORDERS */}
+                    {(historyTab === "all" || historyTab === "orders") &&
+                      memberDetailsData.history.orders.length > 0 && (
+                        <div className="space-y-2">
+                          {historyTab === "all" && (
+                            <h4 className="text-xs font-bold text-[#2B201A]/80 uppercase tracking-wider flex items-center gap-1.5">
+                              <Package className="w-3.5 h-3.5 text-[#E86F1D]" />
+                              <span>Store Orders ({memberDetailsData.history.orders.length})</span>
+                            </h4>
+                          )}
+                          <div className="grid grid-cols-1 gap-2.5">
+                            {memberDetailsData.history.orders.map((ord) => (
+                              <div
+                                key={ord.id}
+                                className="bg-[#FAF6F0]/40 border border-[#E7D8C8] rounded-2xl p-4 space-y-2"
+                              >
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                  <div>
+                                    <span className="font-mono font-bold text-xs text-[#2B201A]">
+                                      Order #{ord.orderNumber}
+                                    </span>
+                                    <span className="text-xs text-[#2B201A]/60 ml-2">
+                                      {new Date(ord.createdAt).toLocaleDateString("en-IN", {
+                                        day: "numeric",
+                                        month: "short",
+                                        year: "numeric",
+                                      })}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs font-bold text-[#E86F1D]">
+                                      ₹{ord.totalAmount.toLocaleString("en-IN")}
+                                    </span>
+                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-stone-100 text-stone-700 border border-stone-200">
+                                      {ord.status}
+                                    </span>
+                                  </div>
+                                </div>
+                                {ord.items.length > 0 && (
+                                  <div className="text-xs text-[#2B201A]/70 divide-y divide-[#E7D8C8]/40 border-t border-[#E7D8C8]/60 pt-2">
+                                    {ord.items.map((item) => (
+                                      <div
+                                        key={item.id}
+                                        className="py-1 flex items-center justify-between gap-2"
+                                      >
+                                        <span className="truncate">{item.title}</span>
+                                        <span className="font-mono text-[#2B201A]/60 shrink-0">
+                                          qty {item.quantity} × ₹{item.price}
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                    {/* EMPTY STATE */}
+                    {memberDetailsData.history.eventPasses.length === 0 &&
+                      memberDetailsData.history.generalDonations.length === 0 &&
+                      memberDetailsData.history.membershipDonations.length === 0 &&
+                      memberDetailsData.history.orders.length === 0 && (
+                        <div className="py-10 text-center text-[#2B201A]/60 bg-[#FAF6F0]/50 rounded-2xl border border-dashed border-[#E7D8C8]">
+                          <Award className="w-8 h-8 mx-auto text-[#2B201A]/30 mb-2" />
+                          <p className="text-xs font-bold text-[#2B201A]">No activity found yet</p>
+                          <p className="text-[11px] text-[#2B201A]/60 mt-0.5">
+                            This member has not purchased any event passes or donations under this email/phone.
+                          </p>
+                        </div>
+                      )}
+                  </div>
+                </>
+              ) : null}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="bg-[#FAF6F0] px-5 sm:px-6 py-3 border-t border-[#E7D8C8] flex items-center justify-between gap-3 shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  const m = viewingMember;
+                  setViewingMember(null);
+                  handleOpenEdit(m);
+                }}
+                className="px-3.5 py-1.5 rounded-xl border border-[#E7D8C8] bg-white hover:bg-[#FAF6F0] text-[#2B201A] text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
+              >
+                <Edit2 className="w-3.5 h-3.5 text-[#E86F1D]" />
+                <span>Edit Member Details</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setViewingMember(null)}
+                className="px-4 py-1.5 rounded-xl bg-[#2B201A] hover:bg-[#3D2D24] text-white text-xs font-bold transition-colors cursor-pointer shadow-2xs"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

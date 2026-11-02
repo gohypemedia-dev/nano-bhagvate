@@ -8,10 +8,10 @@ export const PRESET_AMOUNTS = [499, 999, 1499, 2100, 5100, 11000];
 // and `color` on the certificate.
 export const MEMBERSHIP_PLANS = [
   {
-    id: "basic", name: "Membership", price: 1100, title: "Member", term: "year", color: "#B4531A",
+    id: "basic", name: "Basic Membership", price: 1100, title: "Basic Member", term: "year", color: "#B4531A",
     period: "per year",
     description: "Ideal for devotees starting their journey of seva and spiritual learning.",
-    badge: "MEMBERSHIP TIER",
+    badge: "BASIC TIER",
     benefits: [
       "Annual Trust Membership Certificate",
       "Monthly Spiritual Newsletter & E-books",
@@ -66,7 +66,15 @@ export function findPlan(id: string) {
 
 // Memberships store the plan's name in `program`. Unknown names fall back to the basic plan.
 export function planForProgram(program: string | null | undefined): MembershipPlan {
-  return MEMBERSHIP_PLANS.find((p) => p.name.toLowerCase() === program?.trim().toLowerCase()) ?? MEMBERSHIP_PLANS[0];
+  const norm = program?.trim().toLowerCase() || "";
+  return (
+    MEMBERSHIP_PLANS.find(
+      (p) =>
+        p.name.toLowerCase() === norm ||
+        p.id === norm ||
+        (p.id === "basic" && (norm === "membership" || norm.includes("basic")))
+    ) ?? MEMBERSHIP_PLANS[0]
+  );
 }
 
 // Last day of a yearly membership that starts on `start`; null for lifetime plans.

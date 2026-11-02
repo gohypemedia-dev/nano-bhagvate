@@ -37,6 +37,7 @@ export interface AdminEventItem {
   image?: string | null;
   contactPhone?: string | null;
   isPublished: boolean;
+  customAmounts?: number[];
   createdAt?: string;
   updatedAt?: string;
 }
@@ -73,6 +74,7 @@ export default function EventManager({ initialEvents }: EventManagerProps) {
     mapUrl: "",
     contactPhone: "",
     isPublished: true,
+    customAmounts: [499, 999, 1499, 2100, 5100, 11000] as number[],
   });
 
   const openAddModal = () => {
@@ -93,6 +95,7 @@ export default function EventManager({ initialEvents }: EventManagerProps) {
       mapUrl: "",
       contactPhone: "+91 9910762692",
       isPublished: true,
+      customAmounts: [499, 999, 1499, 2100, 5100, 11000],
     });
     setModalOpen(true);
   };
@@ -115,6 +118,10 @@ export default function EventManager({ initialEvents }: EventManagerProps) {
       mapUrl: event.mapUrl || "",
       contactPhone: event.contactPhone || "",
       isPublished: event.isPublished,
+      customAmounts:
+        event.customAmounts && event.customAmounts.length === 6
+          ? event.customAmounts
+          : [499, 999, 1499, 2100, 5100, 11000],
     });
     setModalOpen(true);
   };
@@ -146,6 +153,15 @@ export default function EventManager({ initialEvents }: EventManagerProps) {
       toast.error("Please enter a location");
       return;
     }
+
+    // Validate 6 custom amounts
+    const validAmounts = (formData.customAmounts || []).map((a) => Number(a));
+    if (validAmounts.length !== 6 || validAmounts.some((a) => !a || isNaN(a) || a <= 0)) {
+      setFormError("Please enter valid positive amounts for all 6 contribution options.");
+      toast.error("Please fill all 6 contribution amounts (positive numbers)");
+      return;
+    }
+
     const summaryTrimmed = formData.summary.trim() || titleTrimmed;
 
     // Clean map URL
@@ -161,6 +177,7 @@ export default function EventManager({ initialEvents }: EventManagerProps) {
       location: locationTrimmed,
       summary: summaryTrimmed,
       mapUrl: cleanedMapUrl,
+      customAmounts: validAmounts,
     };
 
     setSaving(true);
@@ -592,6 +609,71 @@ export default function EventManager({ initialEvents }: EventManagerProps) {
                   placeholder="Short description displayed on the homepage event card..."
                   className="w-full px-3 py-2 text-sm rounded-lg border border-[#E7D8C8] bg-white focus:outline-none focus:ring-2 focus:ring-[#E86F1D]"
                 />
+              </div>
+
+              {/* Event Pass Contribution Amounts (6 Options) */}
+              <div className="bg-[#FAF4ED] p-4 rounded-xl border border-[#E7D8C8] space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]">
+                      Event Pass Contribution Amounts (6 Options) *
+                    </label>
+                    <p className="text-[11px] text-[#2B201A]/60">
+                      Devotees will see these 6 amounts when booking this event pass (matches contribution popup).
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData({
+                        ...formData,
+                        customAmounts: [499, 999, 1499, 2100, 5100, 11000],
+                      })
+                    }
+                    className="text-[11px] font-bold text-[#E86F1D] hover:underline cursor-pointer shrink-0"
+                  >
+                    Reset Defaults
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {formData.customAmounts.map((amt, idx) => (
+                    <div key={idx}>
+                      <label className="block text-[10px] font-bold uppercase text-[#2B201A]/70 mb-1">
+                        Amount {idx + 1} (₹)
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        required
+                        value={amt === 0 ? "" : amt}
+                        onChange={(e) => {
+                          const val = e.target.value === "" ? 0 : parseInt(e.target.value, 10);
+                          const next = [...formData.customAmounts];
+                          next[idx] = isNaN(val) ? 0 : val;
+                          setFormData({ ...formData, customAmounts: next });
+                        }}
+                        placeholder={`e.g. ${[499, 999, 1499, 2100, 5100, 11000][idx]}`}
+                        className="w-full px-3 py-2 text-sm font-bold text-[#2B201A] rounded-lg border border-[#E7D8C8] bg-white focus:outline-none focus:ring-2 focus:ring-[#E86F1D]"
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Devotee Preview Strip */}
+                <div className="pt-2 border-t border-[#E7D8C8]/60 flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] font-bold uppercase text-[#2B201A]/50">
+                    Devotee Popup Preview:
+                  </span>
+                  {formData.customAmounts.map((amt, idx) => (
+                    <span
+                      key={idx}
+                      className="px-2.5 py-1 rounded-lg bg-[#FAF3EA] border border-[#E7D8C8] text-[#E86F1D] text-xs font-bold shadow-2xs"
+                    >
+                      ₹{(amt || 0).toLocaleString("en-IN")}
+                    </span>
+                  ))}
+                </div>
               </div>
 
               <div>

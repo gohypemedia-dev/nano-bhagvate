@@ -159,9 +159,9 @@ export default function EventsClientView({ initialEvents }: EventsClientViewProp
         event={selectedEvent}
         isOpen={eventModalOpen}
         onClose={() => setEventModalOpen(false)}
-        onRegister={(title) => {
+        onRegister={(title, customAmounts) => {
           setEventModalOpen(false);
-          openDonateModal(title);
+          openDonateModal(title, undefined, false, undefined, customAmounts);
         }}
         lang={lang}
       />

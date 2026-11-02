@@ -213,6 +213,7 @@ model Event {
   image        String?
   contactPhone String?
   isPublished  Boolean   @default(true)
+  customAmounts Int[]    @default([499, 999, 1499, 2100, 5100, 11000])
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 

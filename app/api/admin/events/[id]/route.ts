@@ -28,6 +28,7 @@ const updateEventSchema = z.object({
   image: z.string().trim().optional().nullable(),
   contactPhone: z.string().trim().max(50).optional().nullable(),
   isPublished: z.boolean().optional(),
+  customAmounts: z.array(z.coerce.number().int().positive()).optional(),
 });
 
 export async function GET(
@@ -101,6 +102,9 @@ export async function PUT(
         ...(data.image !== undefined ? { image: data.image?.trim() || null } : {}),
         ...(data.contactPhone !== undefined ? { contactPhone: data.contactPhone?.trim() || null } : {}),
         ...(data.isPublished !== undefined ? { isPublished: data.isPublished } : {}),
+        ...(data.customAmounts !== undefined && data.customAmounts.length === 6
+          ? { customAmounts: data.customAmounts }
+          : {}),
       },
     });
 

@@ -32,6 +32,10 @@ export default async function AdminEventsPage() {
     image: item.image,
     contactPhone: item.contactPhone,
     isPublished: item.isPublished,
+    customAmounts:
+      item.customAmounts && item.customAmounts.length === 6
+        ? item.customAmounts
+        : [499, 999, 1499, 2100, 5100, 11000],
     createdAt: item.createdAt.toISOString(),
     updatedAt: item.updatedAt.toISOString(),
   }));

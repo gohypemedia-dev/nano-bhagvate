@@ -15,6 +15,7 @@ interface DonateModalState {
   amount?: number;
   isMembership?: boolean;
   prefill?: DonorPrefill;
+  customAmounts?: number[];
 }
 
 export interface CartItem {
@@ -67,7 +68,13 @@ interface AppContextType {
   setIsCartOpen: (open: boolean) => void;
   // Donate modal
   donateModal: DonateModalState;
-  openDonateModal: (program?: string, amount?: number, isMembership?: boolean, prefill?: DonorPrefill) => void;
+  openDonateModal: (
+    program?: string,
+    amount?: number,
+    isMembership?: boolean,
+    prefill?: DonorPrefill,
+    customAmounts?: number[]
+  ) => void;
   closeDonateModal: () => void;
   // User Auth
   user: UserProfile | null;
@@ -202,8 +209,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const cartTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  const openDonateModal = (program?: string, amount?: number, isMembership?: boolean, prefill?: DonorPrefill) => {
-    setDonateModal({ isOpen: true, program, amount, isMembership, prefill });
+  const openDonateModal = (
+    program?: string,
+    amount?: number,
+    isMembership?: boolean,
+    prefill?: DonorPrefill,
+    customAmounts?: number[]
+  ) => {
+    setDonateModal({ isOpen: true, program, amount, isMembership, prefill, customAmounts });
   };
 
   const closeDonateModal = () => {

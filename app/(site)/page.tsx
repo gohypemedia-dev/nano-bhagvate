@@ -756,7 +756,9 @@ export default function HomePage() {
         event={selectedEvent}
         isOpen={eventModalOpen}
         onClose={() => setEventModalOpen(false)}
-        onRegister={(title) => openDonateModal(title)}
+        onRegister={(title, customAmounts) =>
+          openDonateModal(title, undefined, false, undefined, customAmounts)
+        }
         lang={lang}
       />
     </div>

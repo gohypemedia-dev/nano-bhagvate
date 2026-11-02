@@ -40,6 +40,7 @@ const eventSchema = z.object({
   image: z.string().trim().optional().nullable(),
   contactPhone: z.string().trim().max(50).optional().nullable(),
   isPublished: z.boolean().default(true),
+  customAmounts: z.array(z.coerce.number().int().positive()).optional().default([499, 999, 1499, 2100, 5100, 11000]),
 });
 
 export async function GET(request: Request) {
@@ -104,6 +105,10 @@ export async function POST(request: Request) {
         image: data.image?.trim() || null,
         contactPhone: data.contactPhone?.trim() || null,
         isPublished: Boolean(data.isPublished),
+        customAmounts:
+          data.customAmounts && data.customAmounts.length === 6
+            ? data.customAmounts
+            : [499, 999, 1499, 2100, 5100, 11000],
       },
     });
 
