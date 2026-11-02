@@ -27,6 +27,10 @@ import {
   Award,
   Ticket,
   Download,
+  Globe,
+  ChevronRight,
+  X,
+  Check,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import HeadingDivider from "@/components/HeadingDivider";
@@ -92,7 +96,7 @@ interface Order {
 
 export default function AccountPage() {
   const { user, isLoadingUser, logout, openAuthModal, lang, refreshUser } = useApp();
-  const [activeTab, setActiveTab] = useState<"orders" | "membership" | "events" | "profile">("membership");
+  const [activeTab, setActiveTab] = useState<"profile" | "membership" | "events" | "orders">("profile");
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
   const [userEvents, setUserEvents] = useState<UserEventBooking[]>([]);
@@ -100,7 +104,8 @@ export default function AccountPage() {
   const [eventsFilter, setEventsFilter] = useState<"all" | "upcoming" | "completed">("all");
 
   // Profile Edit State
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditingPersonal, setIsEditingPersonal] = useState(false);
+  const [isEditingAddress, setIsEditingAddress] = useState(false);
   const [editName, setEditName] = useState("");
   const [editPhone, setEditPhone] = useState("");
   const [editAddress, setEditAddress] = useState("");
@@ -171,9 +176,10 @@ export default function AccountPage() {
       });
       if (res.ok) {
         await refreshUser();
-        setIsEditing(false);
+        setIsEditingPersonal(false);
+        setIsEditingAddress(false);
         setProfileSuccess(true);
-        setTimeout(() => setProfileSuccess(false), 3000);
+        setTimeout(() => setProfileSuccess(false), 3500);
       }
     } catch {
       // ignore
@@ -208,6 +214,14 @@ export default function AccountPage() {
   });
 
   const hi = lang === "hi";
+
+  const todayFormatted = new Intl.DateTimeFormat(hi ? "hi-IN" : "en-IN", {
+    weekday: "long",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "Asia/Kolkata",
+  }).format(new Date());
 
   const getMembershipBannerGradient = (tier?: string) => {
     switch ((tier || "").toUpperCase()) {
@@ -248,12 +262,12 @@ export default function AccountPage() {
       case "SHIPPED":
         return {
           label: hi ? "भेजा गया (Dispatched)" : "Shipped / Dispatched",
-          color: "bg-[#E86F1D]/10 text-[#E86F1D] border-[#E86F1D]/30",
+          color: "bg-purple-50 text-purple-700 border-purple-200",
         };
       case "DELIVERED":
         return {
           label: hi ? "वितरित (Delivered)" : "Delivered",
-          color: "bg-[#2F5A43]/10 text-[#2F5A43] border-[#2F5A43]/30",
+          color: "bg-green-50 text-green-700 border-green-200",
         };
       case "CANCELLED":
         return {
@@ -261,45 +275,44 @@ export default function AccountPage() {
           color: "bg-red-50 text-red-700 border-red-200",
         };
       default:
-        return { label: status, color: "bg-gray-100 text-gray-700 border-gray-200" };
+        return {
+          label: status,
+          color: "bg-stone-50 text-stone-700 border-stone-200",
+        };
     }
   };
 
   if (isLoadingUser) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center bg-[#FFF9F2]">
-        <div className="text-center space-y-3">
-          <Loader2 className="w-8 h-8 animate-spin text-[#E86F1D] mx-auto" />
-          <p className="text-sm font-semibold text-[#2B201A]/70">
-            {hi ? "भक्त विवरण लोड हो रहा है..." : "Loading account details..."}
-          </p>
-        </div>
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-4 bg-[#FBF7F2]">
+        <Loader2 className="w-8 h-8 text-[#E86F1D] animate-spin mb-3" />
+        <p className="text-sm font-semibold text-[#2B201A]/70">
+          {hi ? "खाता लोड हो रहा है..." : "Loading devotee account..."}
+        </p>
       </div>
     );
   }
 
-  // Guest State - Prompt to Login
   if (!user) {
     return (
-      <div className="bg-[#FFF9F2] min-h-[75vh] py-16 px-4 flex items-center justify-center">
-        <div className="max-w-md w-full bg-white rounded-3xl border border-[#E7D8C8] shadow-warm-lg p-8 text-center space-y-6">
-          <div className="w-16 h-16 rounded-2xl bg-[#FBF2E7] text-[#E86F1D] mx-auto flex items-center justify-center border border-[#E7D8C8]">
+      <div className="min-h-[75vh] flex items-center justify-center p-4 bg-[#FBF7F2]">
+        <div className="max-w-md w-full bg-white p-8 sm:p-10 rounded-3xl border border-[#E7D8C8] shadow-warm-md text-center space-y-6">
+          <div className="w-16 h-16 rounded-2xl bg-[#FFF9F2] text-[#E86F1D] mx-auto flex items-center justify-center border border-[#E7D8C8]">
             <User className="w-8 h-8" />
           </div>
           <div className="space-y-2">
-            <h1 className="font-editorial text-3xl font-bold text-[#E86F1D]">
-              {hi ? "भक्त खाता एवं आर्डर विवरण" : "Devotee Account & Orders"}
+            <h1 className="font-editorial text-2xl sm:text-3xl font-bold text-[#2B201A]">
+              {hi ? "भक्त खाता पोर्टल" : "Devotee Portal"}
             </h1>
-            <HeadingDivider className="my-1.5" />
             <p className="text-sm text-[#2B201A]/70 leading-relaxed">
               {hi
-                ? "अपनी खरीदी गई पुस्तकों के ऑर्डर और विवरण देखने के लिए कृपया अपने खाते में लॉग इन करें।"
-                : "Sign in to view your purchased publications, order status, and delivery addresses."}
+                ? "अपनी सदस्यता, कार्यक्रम पास और पुस्तक आर्डर्स देखने के लिए कृपया अपने पंजीकृत खाते से लॉग इन करें।"
+                : "Please sign in to view your trust membership privileges, event passes, and order history."}
             </p>
           </div>
           <button
             onClick={() => openAuthModal()}
-            className="btn-primary w-full py-3.5 flex items-center justify-center gap-2 text-sm shadow-warm-md"
+            className="btn-primary w-full py-3.5 flex items-center justify-center gap-2 text-sm shadow-warm-md cursor-pointer"
           >
             <span>{hi ? "लॉग इन या रजिस्टर करें" : "Sign In or Register"}</span>
             <ArrowRight className="w-4 h-4" />
@@ -313,880 +326,1021 @@ export default function AccountPage() {
     );
   }
 
+  // Name splitting for reference display
+  const nameParts = (user.name || "").trim().split(" ");
+  const firstName = nameParts[0] || user.name || "Devotee";
+  const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "—";
+  const userRole = user.membership?.tierName || "Devotee Member";
+  const userLocation = [user.city, user.state, "India"].filter(Boolean).join(", ");
+
   return (
-    <div className="bg-[#FFF9F2] min-h-screen py-6 sm:py-14">
-      <div className="page-container max-w-5xl mx-auto space-y-6 sm:space-y-8 px-3 sm:px-6">
-        {/* Profile Banner Card */}
-        <div className="bg-white rounded-2xl sm:rounded-3xl border border-[#E7D8C8] shadow-warm-sm p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
-          <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#E86F1D] text-white flex items-center justify-center font-editorial font-bold text-xl sm:text-2xl shrink-0">
-              {user.name.charAt(0).toUpperCase()}
-            </div>
-            <div className="min-w-0 flex-1">
-              <h1 className="font-editorial text-xl sm:text-2xl font-bold text-[#2B201A] truncate capitalize">
-                {user.name}
-              </h1>
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-[#2B201A]/60 mt-0.5">
-                <span className="flex items-center gap-1 min-w-0 max-w-full">
-                  <Mail className="w-3.5 h-3.5 shrink-0" />
-                  <span className="truncate">{user.email}</span>
-                </span>
-                {user.phone && (
-                  <span className="flex items-center gap-1">
-                    <Phone className="w-3.5 h-3.5" />
-                    <span>{user.phone}</span>
-                  </span>
-                )}
+    <div className="bg-[#F8F4EE] min-h-screen py-6 sm:py-10">
+      <div className="page-container max-w-7xl mx-auto px-3 sm:px-6">
+        {/* Main Dashboard Layout (Sidebar + Content matching reference) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          
+          {/* ============================================================ */}
+          {/* LEFT SIDEBAR (Sticky on scroll, beautifully balanced) */}
+          {/* ============================================================ */}
+          <aside className="lg:col-span-4 xl:col-span-3 lg:sticky lg:top-[96px] self-start space-y-4">
+            <div className="bg-white rounded-3xl border border-[#E7D8C8] p-5 lg:p-6 shadow-warm-xs flex flex-col space-y-5">
+              {/* Trust Branding */}
+              <div className="flex items-center gap-3.5 pb-4 border-b border-[#E7D8C8]/80">
+                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#B8893E]/40 shrink-0 bg-white shadow-2xs">
+                  <Image
+                    src="/images/logo.jpg"
+                    alt="Trust Logo"
+                    width={48}
+                    height={48}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <h2 className="font-editorial font-bold text-lg text-[#1E1612] truncate leading-tight">
+                    Namo Bhagwate
+                  </h2>
+                  <p className="text-[11px] font-sans text-[#E86F1D] font-bold uppercase tracking-wider">
+                    Devotee Portal
+                  </p>
+                </div>
               </div>
-            </div>
-          </div>
 
-          <button
-            onClick={() => logout()}
-            className="btn-outline py-2 px-4 text-xs flex items-center justify-center gap-2 w-full sm:w-auto"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>{hi ? "लॉग आउट" : "Logout"}</span>
-          </button>
-        </div>
-
-        {/* Navigation Tabs */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 p-1 rounded-2xl bg-[#FBF2E7] border border-[#E7D8C8]">
-          {(
-            [
-              { key: "membership", icon: Award, label: hi ? "सदस्यता" : "Membership", count: null },
-              { key: "orders", icon: Package, label: hi ? "आर्डर्स" : "Orders", count: orders.length },
-              { key: "events", icon: Ticket, label: hi ? "कार्यक्रम" : "Events", count: userEvents.length },
-              { key: "profile", icon: MapPin, label: hi ? "प्रोफ़ाइल" : "Profile", count: null },
-            ] as const
-          ).map(({ key, icon: Icon, label, count }) => {
-            const active = activeTab === key;
-            return (
-              <button
-                key={key}
-                onClick={() => setActiveTab(key)}
-                aria-current={active ? "page" : undefined}
-                className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-                  active ? "bg-white text-[#E86F1D] shadow-sm" : "text-[#2B201A]/65 hover:text-[#2B201A]"
-                }`}
-              >
-                <Icon className="w-4 h-4 shrink-0" />
-                <span>{label}</span>
-                {!!count && <span className="text-xs text-[#2B201A]/45">({count})</span>}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* TAB: MEMBERSHIP */}
-        {activeTab === "membership" && (
-          <div className="space-y-6">
-            {user.membership ? (
-              <div className="bg-white rounded-2xl sm:rounded-3xl border border-[#E7D8C8] shadow-warm-sm overflow-hidden">
-                {/* Header */}
-                <div className={`px-5 py-5 sm:px-8 sm:py-6 text-white flex items-center justify-between gap-3 ${getMembershipBannerGradient(user.membership.tier)}`}>
+              {/* Navigation Menu Links (Spacious, prominent text & descriptions) */}
+              <nav className="flex flex-col gap-2 sm:gap-2.5" aria-label="Account navigation">
+                {/* 1. My Profile */}
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("profile")}
+                  className={`w-full flex items-center justify-between p-3.5 rounded-2xl transition-all cursor-pointer text-left ${
+                    activeTab === "profile"
+                      ? "bg-[#E86F1D] text-white shadow-warm-xs"
+                      : "text-[#2B201A] hover:bg-[#FAF3EA] border border-transparent hover:border-[#E7D8C8]"
+                  }`}
+                >
                   <div className="flex items-center gap-3 min-w-0">
-                    <Award className="w-8 h-8 text-[#FBBF24] shrink-0" />
+                    <div
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                        activeTab === "profile"
+                          ? "bg-white/20 text-white"
+                          : "bg-[#FAF3EA] text-[#E86F1D] border border-[#E7D8C8]"
+                      }`}
+                    >
+                      <User className="w-5 h-5" />
+                    </div>
                     <div className="min-w-0">
-                      <p className="text-xs text-white/70">{hi ? "आपकी सदस्यता" : "Your membership"}</p>
-                      <h2 className="font-editorial text-xl sm:text-2xl font-bold truncate">
-                        {hi && user.membership.tierNameHi
-                          ? user.membership.tierNameHi
-                          : user.membership.tierName?.toLowerCase() === "membership" || user.membership.tier === "BASIC"
-                          ? "Basic Membership"
-                          : user.membership.tierName}
-                      </h2>
+                      <div className="font-bold text-sm leading-tight truncate">
+                        {hi ? "मेरी प्रोफ़ाइल" : "My Profile"}
+                      </div>
+                      <div
+                        className={`text-[11px] truncate mt-0.5 ${
+                          activeTab === "profile" ? "text-white/80" : "text-[#2B201A]/60"
+                        }`}
+                      >
+                        {hi ? "नाम, पता व संपर्क जानकारी" : "Personal info & address"}
+                      </div>
                     </div>
                   </div>
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white text-emerald-700 text-xs font-semibold shrink-0">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
+                  <ChevronRight
+                    className={`w-4 h-4 shrink-0 ml-2 ${
+                      activeTab === "profile" ? "text-white" : "text-[#2B201A]/40"
+                    }`}
+                  />
+                </button>
+
+                {/* 2. Membership */}
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("membership")}
+                  className={`w-full flex items-center justify-between p-3.5 rounded-2xl transition-all cursor-pointer text-left ${
+                    activeTab === "membership"
+                      ? "bg-[#E86F1D] text-white shadow-warm-xs"
+                      : "text-[#2B201A] hover:bg-[#FAF3EA] border border-transparent hover:border-[#E7D8C8]"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                        activeTab === "membership"
+                          ? "bg-white/20 text-white"
+                          : "bg-[#FAF3EA] text-[#E86F1D] border border-[#E7D8C8]"
+                      }`}
+                    >
+                      <Award className="w-5 h-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-bold text-sm leading-tight truncate">
+                        {hi ? "ट्रस्ट सदस्यता" : "Membership"}
+                      </div>
+                      <div
+                        className={`text-[11px] truncate mt-0.5 ${
+                          activeTab === "membership" ? "text-white/80" : "text-[#2B201A]/60"
+                        }`}
+                      >
+                        {hi ? "सक्रिय स्तर, आईडी व लाभ" : "Active tier, ID & benefits"}
+                      </div>
+                    </div>
+                  </div>
+                  {user.membership?.tier ? (
+                    <span
+                      className={`text-[10px] uppercase font-bold px-2.5 py-1 rounded-full shrink-0 ml-2 ${
+                        activeTab === "membership"
+                          ? "bg-white/20 text-white"
+                          : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                      }`}
+                    >
+                      {user.membership.tier}
+                    </span>
+                  ) : (
+                    <ChevronRight
+                      className={`w-4 h-4 shrink-0 ml-2 ${
+                        activeTab === "membership" ? "text-white" : "text-[#2B201A]/40"
+                      }`}
+                    />
+                  )}
+                </button>
+
+                {/* 3. Events & Passes */}
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("events")}
+                  className={`w-full flex items-center justify-between p-3.5 rounded-2xl transition-all cursor-pointer text-left ${
+                    activeTab === "events"
+                      ? "bg-[#E86F1D] text-white shadow-warm-xs"
+                      : "text-[#2B201A] hover:bg-[#FAF3EA] border border-transparent hover:border-[#E7D8C8]"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                        activeTab === "events"
+                          ? "bg-white/20 text-white"
+                          : "bg-[#FAF3EA] text-[#E86F1D] border border-[#E7D8C8]"
+                      }`}
+                    >
+                      <Ticket className="w-5 h-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-bold text-sm leading-tight truncate">
+                        {hi ? "कार्यक्रम एवं पास" : "My Events & Passes"}
+                      </div>
+                      <div
+                        className={`text-[11px] truncate mt-0.5 ${
+                          activeTab === "events" ? "text-white/80" : "text-[#2B201A]/60"
+                        }`}
+                      >
+                        {hi ? "डिजिटल पास व प्रवेश क्यूआर" : "Booked passes & digital QR"}
+                      </div>
+                    </div>
+                  </div>
+                  {userEvents.length > 0 ? (
+                    <span
+                      className={`text-xs font-bold px-2.5 py-0.5 rounded-full shrink-0 ml-2 ${
+                        activeTab === "events"
+                          ? "bg-white/20 text-white"
+                          : "bg-[#FAF3EA] text-[#E86F1D] border border-[#E7D8C8]"
+                      }`}
+                    >
+                      {userEvents.length}
+                    </span>
+                  ) : (
+                    <ChevronRight
+                      className={`w-4 h-4 shrink-0 ml-2 ${
+                        activeTab === "events" ? "text-white" : "text-[#2B201A]/40"
+                      }`}
+                    />
+                  )}
+                </button>
+
+                {/* 4. Orders */}
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("orders")}
+                  className={`w-full flex items-center justify-between p-3.5 rounded-2xl transition-all cursor-pointer text-left ${
+                    activeTab === "orders"
+                      ? "bg-[#E86F1D] text-white shadow-warm-xs"
+                      : "text-[#2B201A] hover:bg-[#FAF3EA] border border-transparent hover:border-[#E7D8C8]"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                        activeTab === "orders"
+                          ? "bg-white/20 text-white"
+                          : "bg-[#FAF3EA] text-[#E86F1D] border border-[#E7D8C8]"
+                      }`}
+                    >
+                      <Package className="w-5 h-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-bold text-sm leading-tight truncate">
+                        {hi ? "पुस्तक आर्डर्स" : "Store Orders"}
+                      </div>
+                      <div
+                        className={`text-[11px] truncate mt-0.5 ${
+                          activeTab === "orders" ? "text-white/80" : "text-[#2B201A]/60"
+                        }`}
+                      >
+                        {hi ? "आर्डर ट्रैकिंग व प्रेषण स्थिति" : "Order tracking & parcels"}
+                      </div>
+                    </div>
+                  </div>
+                  {orders.length > 0 ? (
+                    <span
+                      className={`text-xs font-bold px-2.5 py-0.5 rounded-full shrink-0 ml-2 ${
+                        activeTab === "orders"
+                          ? "bg-white/20 text-white"
+                          : "bg-[#FAF3EA] text-[#E86F1D] border border-[#E7D8C8]"
+                      }`}
+                    >
+                      {orders.length}
+                    </span>
+                  ) : (
+                    <ChevronRight
+                      className={`w-4 h-4 shrink-0 ml-2 ${
+                        activeTab === "orders" ? "text-white" : "text-[#2B201A]/40"
+                      }`}
+                    />
+                  )}
+                </button>
+              </nav>
+
+              {/* Devotee Helpline & Seva Desk Card */}
+              <div className="p-4 rounded-2xl bg-[#FAF5EE] border border-[#E7D8C8] space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs font-bold text-[#E86F1D]">
+                    <Phone className="w-3.5 h-3.5 shrink-0" />
+                    <span>{hi ? "ट्रस्ट सहायता केंद्र" : "Devotee Seva Desk"}</span>
+                  </div>
+                  <span className="text-[10px] uppercase font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                     {hi ? "सक्रिय" : "Active"}
                   </span>
                 </div>
-
-                <div className="p-5 sm:p-8 space-y-6">
-                  {/* Details */}
-                  <dl className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-                    <div>
-                      <dt className="text-xs text-[#2B201A]/55">{hi ? "सदस्य" : "Member"}</dt>
-                      <dd className="font-semibold text-[#2B201A] capitalize mt-0.5">{user.name}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs text-[#2B201A]/55">{hi ? "सदस्यता तिथि" : "Member since"}</dt>
-                      <dd className="font-semibold text-[#2B201A] mt-0.5">
-                        {formatShortDate(user.membership.verifiedAt || user.createdAt) || "—"}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs text-[#2B201A]/55">{hi ? "संदर्भ ID" : "Reference ID"}</dt>
-                      <dd className="font-mono font-semibold text-[#2B201A] mt-0.5 break-all">
-                        {user.membership.donationId || "NBVT-VERIFIED"}
-                      </dd>
-                    </div>
-                  </dl>
-
-                  {/* Certificate & Digital Pass Links */}
-                  {user.membership.donationId && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <Link
-                        href={`/certificate/${user.membership.donationId}${user.membership.certificateKey ? `?k=${user.membership.certificateKey}` : ""}`}
-                        target="_blank"
-                        className="btn-primary py-3 px-4 text-sm flex items-center justify-center gap-2"
-                      >
-                        <Award className="w-4 h-4" />
-                        <span>{hi ? "प्रमाणपत्र देखें" : "View Certificate"}</span>
-                      </Link>
-                      <Link
-                        href={`/pass/${user.membership.donationId}${user.membership.certificateKey ? `?k=${user.membership.certificateKey}` : ""}`}
-                        target="_blank"
-                        className="btn-outline py-3 px-4 text-sm flex items-center justify-center gap-2"
-                      >
-                        <QrCode className="w-4 h-4" />
-                        <span>{hi ? "डिजिटल पास देखें" : "View Digital Pass"}</span>
-                      </Link>
-                    </div>
-                  )}
-
-                  {/* Benefits */}
-                  <div className="pt-6 border-t border-[#E7D8C8]">
-                    <h3 className="font-semibold text-[#2B201A] mb-3">
-                      {hi ? "आपके सदस्यता लाभ" : "Your benefits"}
-                    </h3>
-                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5">
-                      {(user.membership.benefits || [
-                        "Annual Trust Membership Certificate",
-                        "Monthly Spiritual Newsletter & E-books",
-                        "Invitation to Annual Spiritual Gathering",
-                        "Direct Seva Participation Opportunities",
-                        "Special Prasad & Blessing Card from Ashram",
-                      ]).map((b, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-[#2B201A]/80">
-                          <CheckCircle2 className="w-4 h-4 text-[#2F5A43] shrink-0 mt-0.5" />
-                          <span>{b}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-white rounded-3xl border border-[#E7D8C8] p-8 sm:p-12 text-center space-y-5 shadow-sm">
-                <div className="w-16 h-16 rounded-2xl bg-[#FFF9F2] text-[#E86F1D] mx-auto flex items-center justify-center border border-[#E7D8C8]">
-                  <Award className="w-8 h-8" />
-                </div>
-                <div className="space-y-2 max-w-md mx-auto">
-                  <h3 className="font-editorial text-2xl sm:text-3xl font-bold text-[#2B201A]">
-                    {hi ? "ट्रस्ट की पावन सदस्यता प्राप्त करें" : "Become a Trust Member"}
-                  </h3>
-                  <p className="text-sm text-[#2B201A]/70 leading-relaxed">
-                    {hi
-                      ? "गुरुकुल शिक्षा, गौ सेवा, किसान कल्याण और आध्यात्मिक आयोजनों में ट्रस्ट के साथ जुड़कर पुण्य के भागी बनें।"
-                      : "Join the Namo Bhagwate Vasudevaya Trust family. Support Gurukul education, Gau Seva, and community welfare programs."}
-                  </p>
-                </div>
-                <Link
-                  href="/membership"
-                  className="btn-primary inline-flex items-center gap-2 text-sm py-3 px-8 shadow-warm-md"
-                >
-                  <span>{hi ? "सदस्यता योजनाएं देखें (View Plans)" : "Explore Membership Plans"}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* TAB 1: ORDERS LIST */}
-        {activeTab === "orders" && (
-          <div className="space-y-6">
-            {loadingOrders ? (
-              <div className="py-16 text-center space-y-2">
-                <Loader2 className="w-6 h-6 animate-spin text-[#E86F1D] mx-auto" />
-                <p className="text-xs text-[#2B201A]/60">
-                  {hi ? "आर्डर्स लोड हो रहे हैं..." : "Loading orders..."}
-                </p>
-              </div>
-            ) : orders.length === 0 ? (
-              <div className="bg-white rounded-3xl border border-[#E7D8C8] p-10 sm:p-14 text-center space-y-4 shadow-sm">
-                <Package className="w-14 h-14 text-[#B8893E] mx-auto stroke-1" />
-                <h3 className="font-editorial text-2xl font-bold text-[#2B201A]">
-                  {hi ? "कोई पुस्तक ऑर्डर नहीं मिला" : "No Orders Yet"}
-                </h3>
-                <p className="text-sm text-[#2B201A]/70 max-w-sm mx-auto leading-relaxed">
+                <p className="text-[11px] text-[#2B201A]/70 leading-relaxed">
                   {hi
-                    ? "आपने अभी तक कोई पुस्तक ऑर्डर नहीं की है। ट्रस्ट के आध्यात्मिक एवं कृषि साहित्य को देखें।"
-                    : "You haven't ordered any publications yet. Explore our value-led books and agricultural guides."}
+                    ? "पास, सदस्यता या दान संबंधी किसी भी सहायता के लिए संपर्क करें:"
+                    : "For inquiries regarding passes, seva, or membership support:"}
                 </p>
-                <Link
-                  href="/books"
-                  className="btn-primary inline-flex items-center gap-2 text-xs py-2.5 px-6 shadow-warm-sm"
-                >
-                  <BookOpen className="w-4 h-4" />
-                  <span>{hi ? "पुस्तकें देखें (Explore Books)" : "Explore Publications"}</span>
-                </Link>
-              </div>
-            ) : (
-              orders.map((order) => {
-                const badge = getStatusBadge(order.status);
-                const orderDate = new Date(order.createdAt).toLocaleDateString("en-IN", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                });
-
-                return (
-                  <div
-                    key={order.id}
-                    className="bg-white rounded-3xl border border-[#E7D8C8] shadow-sm overflow-hidden divide-y divide-[#E7D8C8]"
+                <div className="pt-1.5 flex items-center justify-between border-t border-[#E7D8C8]/60 text-xs">
+                  <a
+                    href="tel:+919910762692"
+                    className="font-bold text-[#2F5A43] hover:text-[#E86F1D] flex items-center gap-1.5 transition-colors"
                   >
-                    {/* Order Header */}
-                    <div className="p-4 sm:p-6 bg-[#FBF2E7]/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-                      <div className="space-y-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-mono font-bold text-sm text-[#2B201A]">
-                            {order.orderNumber}
-                          </span>
-                          <span
-                            className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${badge.color}`}
-                          >
-                            {badge.label}
-                          </span>
-
-                          {/* Payment Method Tag */}
-                          <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-[#FAF6F0] text-[#6B5B4E] border-[#E7D8C8] inline-flex items-center gap-1">
-                            {order.paymentMethod === "COD" ? (
-                              <>
-                                <Banknote className="w-3 h-3 text-[#2F5A43]" />
-                                <span>{hi ? "कैश ऑन डिलीवरी" : "Cash on Delivery"}</span>
-                              </>
-                            ) : (
-                              <>
-                                <QrCode className="w-3 h-3 text-[#E86F1D]" />
-                                <span>{hi ? "प्रीपेड UPI" : "Prepaid UPI"}</span>
-                              </>
-                            )}
-                          </span>
-
-                          {/* Payment Status Badge */}
-                          {order.refundStatus === "COMPLETED" ? (
-                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-emerald-50 text-emerald-800 border-emerald-300 inline-flex items-center gap-1">
-                              <RotateCcw className="w-3 h-3 text-emerald-600" />
-                              <span>{hi ? "रिफंड हो गया (Refunded)" : "Refunded"}</span>
-                            </span>
-                          ) : order.refundStatus === "PENDING" ? (
-                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-amber-50 text-amber-900 border-amber-300 inline-flex items-center gap-1">
-                              <RotateCcw className="w-3 h-3 text-amber-700" />
-                              <span>{hi ? "रिफंड प्रक्रिया में (Refund in progress)" : "Refund in progress"}</span>
-                            </span>
-                          ) : order.status === "CANCELLED" && order.paymentStatus !== "PAID" ? (
-                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-[#FAF6F0] text-[#6B5B4E] border-[#E7D8C8]">
-                              <span>{hi ? "कोई भुगतान देय नहीं (No payment due)" : "No payment due"}</span>
-                            </span>
-                          ) : order.paymentStatus === "PAID" ? (
-                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-emerald-50 text-emerald-800 border-emerald-300 inline-flex items-center gap-1">
-                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                              <span>{hi ? "भुगतान स्वीकृत (Paid)" : "Payment Verified (Paid)"}</span>
-                            </span>
-                          ) : order.paymentStatus === "FAILED" ? (
-                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-red-50 text-red-700 border-red-200">
-                              <span>{hi ? "✗ भुगतान अस्वीकृत (Failed)" : "✗ Payment Failed"}</span>
-                            </span>
-                          ) : (
-                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-amber-50 text-amber-900 border-amber-300 inline-flex items-center gap-1">
-                              <Clock className="w-3 h-3 text-amber-700 animate-pulse" />
-                              <span>
-                                {order.paymentMethod === "COD"
-                                  ? hi ? "डिलीवरी पर देय (Pending)" : "Pending on Delivery"
-                                  : hi ? "भुगतान लंबित (Approval Pending)" : "Payment Pending Approval"}
-                              </span>
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-xs text-[#2B201A]/60 flex items-center gap-1.5">
-                          <Calendar className="w-3.5 h-3.5" />
-                          <span>{orderDate}</span>
-                          <span>•</span>
-                          <span>{order.items.length} {order.items.length === 1 ? "Item" : "Items"}</span>
-                        </p>
-                      </div>
-
-                      <div className="flex items-center justify-between sm:block sm:text-right border-t sm:border-t-0 pt-2 sm:pt-0 border-[#E7D8C8]/60">
-                        <p className="text-[11px] font-bold uppercase tracking-wider text-[#2B201A]/60">
-                          {hi ? "कुल राशि" : "Total Amount"}
-                        </p>
-                        <p className="font-editorial text-xl font-bold text-[#E86F1D]">
-                          ₹{order.totalAmount.toFixed(2)} INR
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Refund notice for cancelled orders paid online */}
-                    {order.refundStatus === "PENDING" && (
-                      <div className="mx-4 sm:mx-6 my-3 p-3 bg-amber-50/80 border border-amber-200 rounded-2xl text-xs text-amber-900 flex items-start gap-2.5">
-                        <RotateCcw className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-                        <div className="space-y-0.5">
-                          <p className="font-bold">
-                            {hi
-                              ? `₹${order.totalAmount.toFixed(2)} का रिफंड प्रक्रिया में है`
-                              : `Refund of ₹${order.totalAmount.toFixed(2)} in progress`}
-                          </p>
-                          <p className="text-[11px] text-amber-800 leading-relaxed">
-                            {hi
-                              ? "यह ऑर्डर रद्द कर दिया गया है। राशि उसी UPI खाते में वापस भेजी जाएगी जिससे आपने भुगतान किया था। रिफंड भेजे जाने पर आपको ईमेल मिलेगा और यहाँ स्थिति अपडेट होगी।"
-                              : "This order was cancelled. The amount will be sent back to the UPI account you paid from. You'll get an email and this page will update once the refund is sent."}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                    {order.refundStatus === "COMPLETED" && (
-                      <div className="mx-4 sm:mx-6 my-3 p-3 bg-emerald-50/80 border border-emerald-200 rounded-2xl text-xs text-emerald-900 flex items-start gap-2.5">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                        <div className="space-y-0.5">
-                          <p className="font-bold">
-                            {hi
-                              ? `₹${order.totalAmount.toFixed(2)} का रिफंड भेज दिया गया`
-                              : `Refund of ₹${order.totalAmount.toFixed(2)} sent`}
-                          </p>
-                          <p className="text-[11px] text-emerald-800 leading-relaxed">
-                            {hi ? "आपके UPI खाते में भेजा गया" : "Sent to the UPI account you paid from"}
-                            {order.refundedAt &&
-                              ` ${hi ? "दिनांक" : "on"} ${new Date(order.refundedAt).toLocaleDateString("en-IN", {
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                              })}`}
-                            .
-                            {order.refundReference && (
-                              <>
-                                {" "}
-                                {hi ? "UPI संदर्भ:" : "UPI reference:"}{" "}
-                                <span className="font-mono font-bold">{order.refundReference}</span>
-                              </>
-                            )}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Notice when UPI Payment is pending admin approval */}
-                    {order.status !== "CANCELLED" && order.paymentStatus === "PENDING" && order.paymentMethod === "PREPAID" && (
-                      <div className="mx-4 sm:mx-6 my-3 p-3 bg-amber-50/80 border border-amber-200 rounded-2xl text-xs text-amber-900 flex items-start gap-2.5">
-                        <Clock className="w-4 h-4 text-amber-700 shrink-0 mt-0.5 animate-pulse" />
-                        <div className="space-y-0.5">
-                          <p className="font-bold">
-                            {hi ? "UPI भुगतान सत्यापन लंबित (Pending Admin Verification)" : "UPI Payment Pending Admin Approval"}
-                          </p>
-                          <p className="text-[11px] text-amber-800 leading-relaxed">
-                            {hi
-                              ? "आपका भुगतान अनुरोध दर्ज हो चुका है। ट्रस्ट एडमिन द्वारा बैंक खाते से पुष्टि (Approve) होते ही यहाँ 'Paid' शो होगा।"
-                              : "Your payment has been submitted. Once approved by the Trust admin, this order will update to Paid."}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Order Items List */}
-                    <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-                      {order.items.map((item) => (
-                        <div key={item.id} className="flex items-center gap-4">
-                          <div className="relative w-16 h-20 rounded-xl overflow-hidden border border-[#E7D8C8] bg-[#FBF2E7] shrink-0">
-                            <Image
-                              src={item.image || "/images/sugarcane-guide-book.webp"}
-                              alt={item.title}
-                              fill
-                              className="object-contain p-1"
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-bold text-sm text-[#2B201A] truncate">{item.title}</h4>
-                            <p className="text-xs text-[#2B201A]/70 mt-0.5">
-                              Quantity: <strong className="text-[#2B201A]">{item.quantity}</strong> × ₹{item.price.toFixed(2)}
-                            </p>
-                          </div>
-                          <span className="font-bold text-sm text-[#2B201A]">
-                            ₹{(item.price * item.quantity).toFixed(2)}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Shipping Address Footer */}
-                    <div className="p-4 sm:p-6 bg-[#FFFDF8] flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 text-xs">
-                      <div className="space-y-1">
-                        <p className="font-bold text-[#6B5B4E] uppercase tracking-wider flex items-center gap-1.5">
-                          <MapPin className="w-3.5 h-3.5 text-[#E86F1D]" />
-                          <span>{hi ? "डिलीवरी का पता" : "Shipping Address"}</span>
-                        </p>
-                        <p className="text-[#2B201A] font-medium leading-relaxed">
-                          <strong>{order.shippingName}</strong> ({order.shippingPhone})<br />
-                          {order.shippingAddress}, {order.shippingCity}, {order.shippingState} - {order.shippingPincode}
-                        </p>
-                      </div>
-
-                      {order.status === "CANCELLED" ? (
-                        <div className="flex items-center gap-2 text-red-700 font-bold bg-red-50 px-3.5 py-2 rounded-xl self-start sm:self-center">
-                          <XCircle className="w-4 h-4 shrink-0" />
-                          <span>{hi ? "ऑर्डर रद्द — भेजा नहीं जाएगा" : "Order cancelled — will not be shipped"}</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2 text-[#2F5A43] font-bold bg-[#2F5A43]/10 px-3.5 py-2 rounded-xl self-start sm:self-center">
-                          <Truck className="w-4 h-4 shrink-0" />
-                          <span>{hi ? "स्पीड पोस्ट / कूरियर द्वारा प्रेषित" : "Pan-India Courier Dispatch"}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        )}
-
-        {/* TAB: MY REGISTERED EVENTS & PASSES */}
-        {activeTab === "events" && (
-          <div className="space-y-6">
-            {/* Header & Sub-filter pills */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-[#E7D8C8] shadow-xs">
-              <div>
-                <h3 className="font-editorial text-xl sm:text-2xl font-bold text-[#2B201A]">
-                  {hi ? "मेरे पंजीकृत कार्यक्रम एवं डिजिटल पास" : "My Registered Events & Entry Passes"}
-                </h3>
-                <p className="text-xs text-[#2B201A]/70 mt-0.5">
-                  {hi
-                    ? "आपके द्वारा बुक किए गए आगामी एवं सम्पन्न सत्संग व कथा के आधिकारिक प्रवेश पत्र।"
-                    : "Official entry passes and schedules for all your spiritual events and discourses."}
-                </p>
+                    <span>+91 9910762692</span>
+                  </a>
+                  <span className="text-[10px] text-[#2B201A]/50 font-medium">10 AM – 7 PM</span>
+                </div>
               </div>
 
-              {/* Filter Pills: All | Upcoming | Completed */}
-              <div className="inline-flex items-center gap-1 bg-[#FAF6F0] p-1 rounded-xl border border-[#E7D8C8] self-start sm:self-center shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setEventsFilter("all")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    eventsFilter === "all"
-                      ? "bg-[#E86F1D] text-white shadow-xs"
-                      : "text-[#2B201A]/70 hover:text-[#2B201A]"
-                  }`}
-                >
-                  <span>{hi ? "सभी" : "All"}</span>
-                  <span className="ml-1 opacity-75 tabular-nums">({userEvents.length})</span>
-                </button>
+              {/* Bottom Mini User Card with Logout */}
+              <div className="pt-2 border-t border-[#E7D8C8]/70">
+                <div className="bg-[#FAF6F0] p-3.5 rounded-2xl border border-[#E7D8C8] flex items-center justify-between gap-2.5">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-10 rounded-full bg-[#E86F1D] text-white flex items-center justify-center font-bold text-sm uppercase shrink-0 shadow-2xs">
+                      {user.name.charAt(0)}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-[#1E1612] truncate capitalize">
+                        {user.name}
+                      </p>
+                      <p className="text-[11px] text-[#1E1612]/60 truncate font-mono">
+                        {user.email}
+                      </p>
+                    </div>
+                  </div>
 
-                <button
-                  type="button"
-                  onClick={() => setEventsFilter("upcoming")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    eventsFilter === "upcoming"
-                      ? "bg-[#E86F1D] text-white shadow-xs"
-                      : "text-[#2B201A]/70 hover:text-[#2B201A]"
-                  }`}
-                >
-                  <span>{hi ? "आगामी" : "Upcoming"}</span>
-                  <span className="ml-1 opacity-75 tabular-nums">
-                    ({userEvents.filter((e) => !e.isCompleted).length})
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setEventsFilter("completed")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    eventsFilter === "completed"
-                      ? "bg-[#E86F1D] text-white shadow-xs"
-                      : "text-[#2B201A]/70 hover:text-[#2B201A]"
-                  }`}
-                >
-                  <span>{hi ? "सम्पन्न" : "Completed"}</span>
-                  <span className="ml-1 opacity-75 tabular-nums">
-                    ({userEvents.filter((e) => e.isCompleted).length})
-                  </span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => logout()}
+                    title="Logout from portal"
+                    className="p-2.5 rounded-xl text-stone-500 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer shrink-0"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
+          </aside>
 
-            {/* Content Area */}
-            {loadingEvents ? (
-              <div className="bg-white rounded-3xl border border-[#E7D8C8] py-16 text-center space-y-2">
-                <Loader2 className="w-6 h-6 animate-spin text-[#E86F1D] mx-auto" />
-                <p className="text-xs text-[#2B201A]/60 font-bold uppercase tracking-wider">
-                  {hi ? "पंजीकृत कार्यक्रम लोड हो रहे हैं..." : "Loading registered events..."}
-                </p>
+          {/* ============================================================ */}
+          {/* RIGHT MAIN CONTENT AREA */}
+          {/* ============================================================ */}
+          <main className="lg:col-span-8 xl:col-span-9 space-y-6">
+            
+            {/* Profile Update Success Notification */}
+            {profileSuccess && (
+              <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-2xl font-bold flex items-center gap-2.5 animate-in fade-in duration-200">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>{hi ? "विवरण सफलतापूर्वक सहेज लिए गए!" : "Profile details updated successfully!"}</span>
               </div>
-            ) : filteredEvents.length === 0 ? (
-              <div className="bg-white rounded-3xl border border-[#E7D8C8] p-8 sm:p-14 text-center space-y-4 shadow-sm">
-                <div className="w-16 h-16 rounded-2xl bg-[#FFF9F2] text-[#E86F1D] mx-auto flex items-center justify-center border border-[#E7D8C8]">
-                  <Calendar className="w-8 h-8" />
-                </div>
-                <div className="space-y-1.5 max-w-md mx-auto">
-                  <h4 className="font-editorial text-xl sm:text-2xl font-bold text-[#2B201A]">
-                    {eventsFilter === "upcoming"
-                      ? hi
-                        ? "कोई आगामी कार्यक्रम पंजीकृत नहीं है"
-                        : "No Upcoming Events Booked"
-                      : eventsFilter === "completed"
-                      ? hi
-                        ? "कोई सम्पन्न कार्यक्रम नहीं मिला"
-                        : "No Completed Past Events"
-                      : hi
-                      ? "अभी तक कोई कार्यक्रम बुक नहीं किया गया है"
-                      : "No Events Registered Yet"}
-                  </h4>
-                  <p className="text-xs sm:text-sm text-[#2B201A]/70 leading-relaxed">
-                    {hi
-                      ? "आश्रम में आयोजित होने वाले आगामी सत्संग, श्रीमद् भागवत कथा और योग शिविरों में भाग लेने हेतु अपना भक्त पास आज ही प्राप्त करें।"
-                      : "Join our upcoming spiritual gatherings, Shrimad Bhagwat Katha, and Vedic conclaves. Reserve your devotee pass today."}
-                  </p>
-                </div>
-                <Link
-                  href="/events"
-                  className="btn-primary inline-flex items-center gap-2 text-xs py-2.5 px-6 shadow-warm-sm"
-                >
-                  <span>{hi ? "आगामी कार्यक्रम देखें (Explore Events)" : "Explore Upcoming Events"}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {filteredEvents.map((booking) => {
-                  const passUrl = `/pass/${booking.donationId}${booking.certificateKey ? `?k=${booking.certificateKey}` : ""}`;
-                  const pdfUrl = `/api/pass/${booking.donationId}${booking.certificateKey ? `?k=${booking.certificateKey}` : ""}`;
-                  const detailsUrl = `/?event=${encodeURIComponent(booking.event.slug)}#events`;
-                  const eventDateStr = formatEventDate(booking.event.startDate, booking.event.endDate);
+            )}
 
-                  return (
-                    <div
-                      key={booking.donationId}
-                      className="bg-white rounded-2xl sm:rounded-3xl border border-[#E7D8C8] overflow-hidden shadow-xs hover:shadow-sm transition-all"
-                    >
-                      {/* Top Header Strip */}
-                      <div className="p-4 sm:p-5 border-b border-[#E7D8C8] flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#FFFDF8]">
-                        <div className="flex flex-wrap items-center gap-2">
-                          {/* Upcoming vs Completed Tag */}
-                          {!booking.isCompleted ? (
-                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-orange-50 text-[#B4531A] border-[#B4531A]/30 inline-flex items-center gap-1">
-                              <Clock className="w-3 h-3 text-[#B4531A]" />
-                              <span>{hi ? "आगामी कार्यक्रम" : "Upcoming Event"}</span>
-                            </span>
-                          ) : (
-                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-stone-100 text-stone-600 border-stone-300 inline-flex items-center gap-1">
-                              <CheckCircle2 className="w-3 h-3 text-stone-500" />
-                              <span>{hi ? "सम्पन्न कार्यक्रम" : "Completed Event"}</span>
-                            </span>
-                          )}
+            {/* ============================================================ */}
+            {/* VIEW 1: MY PROFILE (MATCHING REFERENCE CARDS 1, 2, 3) */}
+            {/* ============================================================ */}
+            {activeTab === "profile" && (
+              <div className="space-y-6">
+                
+                {/* CARD 1: PROFILE HEADER CARD (Avatar, Name, Role, Location) */}
+                <div className="bg-white rounded-3xl border border-[#E7D8C8] p-5 sm:p-7 shadow-warm-xs flex flex-col sm:flex-row sm:items-center gap-5">
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-[#F59E0B] via-[#E86F1D] to-[#B45309] text-white flex items-center justify-center font-editorial font-bold text-3xl sm:text-4xl shadow-md border-4 border-white shrink-0">
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
 
-                          {/* Verification Status */}
-                          {booking.status === "VERIFIED" ? (
-                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-emerald-50 text-emerald-800 border-emerald-300 inline-flex items-center gap-1">
-                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                              <span>{hi ? "पास स्वीकृत (Verified)" : "Pass Verified & Active"}</span>
-                            </span>
-                          ) : booking.status === "CANCELLED" ? (
-                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-stone-100 text-stone-600 border-stone-300 inline-flex items-center gap-1">
-                              <XCircle className="w-3 h-3 text-stone-500" />
-                              <span>{hi ? "रद्द (Cancelled)" : "Booking Cancelled"}</span>
-                            </span>
-                          ) : booking.status === "REJECTED" ? (
-                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-rose-50 text-rose-700 border-rose-200 inline-flex items-center gap-1">
-                              <XCircle className="w-3 h-3 text-rose-600" />
-                              <span>{hi ? "अस्वीकृत (Rejected)" : "Booking Rejected"}</span>
-                            </span>
-                          ) : (
-                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border bg-amber-50 text-amber-900 border-amber-300 inline-flex items-center gap-1">
-                              <Clock className="w-3 h-3 text-amber-700 animate-pulse" />
-                              <span>{hi ? "सत्यापन लंबित" : "Verification Pending"}</span>
-                            </span>
-                          )}
+                  <div className="min-w-0 flex-1 space-y-1.5">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <h2 className="font-editorial text-2xl sm:text-3xl font-bold text-[#1E1612] truncate capitalize">
+                        {user.name}
+                      </h2>
+                      <span className="inline-flex items-center gap-1 px-3 py-0.5 rounded-full bg-[#FAF3EA] border border-[#E7D8C8] text-[#E86F1D] text-xs font-bold shadow-2xs">
+                        <Award className="w-3.5 h-3.5" />
+                        <span>{userRole}</span>
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-[#2B201A]/60 font-medium">
+                      {userRole} • ID: {user.id.slice(0, 12)}
+                    </p>
+
+                    <div className="flex items-center gap-1.5 text-xs text-[#2B201A]/70 pt-0.5">
+                      <MapPin className="w-3.5 h-3.5 text-[#E86F1D] shrink-0" />
+                      <span className="truncate">{userLocation}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CARD 2: PERSONAL INFORMATION CARD (Matching Reference Card 2) */}
+                <div className="bg-white rounded-3xl border border-[#E7D8C8] p-5 sm:p-7 shadow-warm-xs space-y-5">
+                  <div className="flex items-center justify-between pb-3.5 border-b border-[#E7D8C8]/60">
+                    <div>
+                      <h3 className="font-editorial text-lg sm:text-xl font-bold text-[#1E1612]">
+                        {hi ? "व्यक्तिगत जानकारी" : "Personal Information"}
+                      </h3>
+                      <p className="text-xs text-[#2B201A]/60">
+                        {hi ? "आपका नाम, संपर्क व सदस्यता विवरण" : "Your personal contact & member details"}
+                      </p>
+                    </div>
+
+                    {!isEditingPersonal && (
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingPersonal(true)}
+                        className="px-4 py-2 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                        <span>{hi ? "बदलें" : "Edit"}</span>
+                      </button>
+                    )}
+                  </div>
+
+                  {isEditingPersonal ? (
+                    <form onSubmit={handleSaveProfile} className="space-y-4 pt-1">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase text-[#2B201A]/70 mb-1">
+                            {hi ? "पूरा नाम" : "Full Name"} *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            value={editName}
+                            onChange={(e) => setEditName(e.target.value)}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7D8C8] bg-[#FAF6F0] text-sm font-medium focus:outline-none focus:border-[#E86F1D]"
+                          />
                         </div>
 
-                        {/* Pass ID */}
-                        <div className="text-xs text-[#2B201A]/60 flex items-center gap-1.5 font-mono">
-                          <span>Ref ID:</span>
-                          <span className="font-bold text-[#2B201A]">{booking.donationId}</span>
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase text-[#2B201A]/70 mb-1">
+                            {hi ? "मोबाइल नंबर" : "Phone Number"}
+                          </label>
+                          <input
+                            type="tel"
+                            value={editPhone}
+                            onChange={(e) => setEditPhone(e.target.value)}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7D8C8] bg-[#FAF6F0] text-sm font-medium focus:outline-none focus:border-[#E86F1D]"
+                          />
                         </div>
                       </div>
 
-                      {/* Event Details Content */}
-                      <div className="p-4 sm:p-6">
-                        <div className="flex flex-col md:flex-row gap-5 items-start">
-                          {/* Event Image Thumbnail */}
-                          {booking.event.image && (
-                            <div className="relative w-full md:w-36 h-36 rounded-2xl overflow-hidden shrink-0 border border-[#E7D8C8]">
-                              <Image
-                                src={booking.event.image}
-                                alt={booking.event.title}
-                                fill
-                                className="object-cover"
-                              />
-                            </div>
-                          )}
+                      <div className="flex items-center gap-2 pt-2">
+                        <button
+                          type="submit"
+                          disabled={savingProfile}
+                          className="px-5 py-2 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-sm cursor-pointer"
+                        >
+                          {savingProfile && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                          <span>{hi ? "सहेजें" : "Save Changes"}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setIsEditingPersonal(false)}
+                          className="px-4 py-2 rounded-xl border border-[#E7D8C8] text-xs font-bold text-stone-600 hover:bg-stone-50 cursor-pointer"
+                        >
+                          {hi ? "रद्द करें" : "Cancel"}
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    /* Read-Only Grid (Matching reference layout) */
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-xs sm:text-sm">
+                      <div className="space-y-1">
+                        <p className="text-[11px] font-bold text-[#8C6B3E] uppercase tracking-wider">
+                          {hi ? "प्रथम नाम" : "First Name"}
+                        </p>
+                        <p className="font-bold text-[#1E1612] text-sm sm:text-base capitalize">
+                          {firstName}
+                        </p>
+                      </div>
 
-                          {/* Info columns */}
-                          <div className="flex-1 space-y-3 w-full">
-                            <div>
-                              <h4 className="font-editorial text-xl sm:text-2xl font-bold text-[#2B201A]">
-                                {hi && booking.event.titleHi ? booking.event.titleHi : booking.event.title}
+                      <div className="space-y-1">
+                        <p className="text-[11px] font-bold text-[#8C6B3E] uppercase tracking-wider">
+                          {hi ? "अंतिम नाम" : "Last Name"}
+                        </p>
+                        <p className="font-bold text-[#1E1612] text-sm sm:text-base capitalize">
+                          {lastName}
+                        </p>
+                      </div>
+
+                      <div className="space-y-1">
+                        <p className="text-[11px] font-bold text-[#8C6B3E] uppercase tracking-wider">
+                          {hi ? "सदस्यता तिथि" : "Member Since"}
+                        </p>
+                        <p className="font-bold text-[#1E1612] text-sm sm:text-base">
+                          {formatShortDate(user.createdAt) || "—"}
+                        </p>
+                      </div>
+
+                      <div className="space-y-1">
+                        <p className="text-[11px] font-bold text-[#8C6B3E] uppercase tracking-wider">
+                          {hi ? "ईमेल पता" : "Email Address"}
+                        </p>
+                        <p className="font-bold text-[#1E1612] text-xs sm:text-sm break-all font-mono">
+                          {user.email}
+                        </p>
+                      </div>
+
+                      <div className="space-y-1">
+                        <p className="text-[11px] font-bold text-[#8C6B3E] uppercase tracking-wider">
+                          {hi ? "फ़ोन नंबर" : "Phone Number"}
+                        </p>
+                        <p className="font-bold text-[#1E1612] text-xs sm:text-sm">
+                          {user.phone || "—"}
+                        </p>
+                      </div>
+
+                      <div className="space-y-1">
+                        <p className="text-[11px] font-bold text-[#8C6B3E] uppercase tracking-wider">
+                          {hi ? "उपयोगकर्ता श्रेणी" : "User Role"}
+                        </p>
+                        <p className="font-bold text-[#E86F1D] text-xs sm:text-sm">
+                          {userRole}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* CARD 3: ADDRESS CARD (Matching Reference Card 3) */}
+                <div className="bg-white rounded-3xl border border-[#E7D8C8] p-5 sm:p-7 shadow-warm-xs space-y-5">
+                  <div className="flex items-center justify-between pb-3.5 border-b border-[#E7D8C8]/60">
+                    <div>
+                      <h3 className="font-editorial text-lg sm:text-xl font-bold text-[#1E1612]">
+                        {hi ? "पता एवं स्थान" : "Address"}
+                      </h3>
+                      <p className="text-xs text-[#2B201A]/60">
+                        {hi ? "पुस्तक डिलीवरी एवं संपर्क पता" : "Delivery address for books & prasad dispatch"}
+                      </p>
+                    </div>
+
+                    {!isEditingAddress && (
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingAddress(true)}
+                        className="px-4 py-2 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                        <span>{hi ? "बदलें" : "Edit"}</span>
+                      </button>
+                    )}
+                  </div>
+
+                  {isEditingAddress ? (
+                    <form onSubmit={handleSaveProfile} className="space-y-4 pt-1">
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase text-[#2B201A]/70 mb-1">
+                          {hi ? "सड़क / मकान का पता" : "Full Street Address"}
+                        </label>
+                        <textarea
+                          rows={2}
+                          value={editAddress}
+                          onChange={(e) => setEditAddress(e.target.value)}
+                          placeholder="House / Flat No., Street, Landmark"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7D8C8] bg-[#FAF6F0] text-sm font-medium focus:outline-none focus:border-[#E86F1D]"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase text-[#2B201A]/70 mb-1">
+                            {hi ? "शहर" : "City"}
+                          </label>
+                          <input
+                            type="text"
+                            value={editCity}
+                            onChange={(e) => setEditCity(e.target.value)}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7D8C8] bg-[#FAF6F0] text-sm font-medium focus:outline-none focus:border-[#E86F1D]"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase text-[#2B201A]/70 mb-1">
+                            {hi ? "राज्य" : "State"}
+                          </label>
+                          <input
+                            type="text"
+                            value={editState}
+                            onChange={(e) => setEditState(e.target.value)}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7D8C8] bg-[#FAF6F0] text-sm font-medium focus:outline-none focus:border-[#E86F1D]"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase text-[#2B201A]/70 mb-1">
+                            {hi ? "पिनकोड" : "Postal Code / Pincode"}
+                          </label>
+                          <input
+                            type="text"
+                            value={editPincode}
+                            onChange={(e) => setEditPincode(e.target.value)}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7D8C8] bg-[#FAF6F0] text-sm font-medium focus:outline-none focus:border-[#E86F1D]"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 pt-2">
+                        <button
+                          type="submit"
+                          disabled={savingProfile}
+                          className="px-5 py-2 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-sm cursor-pointer"
+                        >
+                          {savingProfile && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                          <span>{hi ? "सहेजें" : "Save Address"}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setIsEditingAddress(false)}
+                          className="px-4 py-2 rounded-xl border border-[#E7D8C8] text-xs font-bold text-stone-600 hover:bg-stone-50 cursor-pointer"
+                        >
+                          {hi ? "रद्द करें" : "Cancel"}
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    /* Read-Only Grid */
+                    <div className="space-y-4 text-xs sm:text-sm">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        <div className="space-y-1">
+                          <p className="text-[11px] font-bold text-[#8C6B3E] uppercase tracking-wider">
+                            {hi ? "देश" : "Country"}
+                          </p>
+                          <p className="font-bold text-[#1E1612] text-sm sm:text-base">
+                            India
+                          </p>
+                        </div>
+
+                        <div className="space-y-1">
+                          <p className="text-[11px] font-bold text-[#8C6B3E] uppercase tracking-wider">
+                            {hi ? "शहर एवं राज्य" : "City & State"}
+                          </p>
+                          <p className="font-bold text-[#1E1612] text-sm sm:text-base">
+                            {[user.city, user.state].filter(Boolean).join(", ") || "—"}
+                          </p>
+                        </div>
+
+                        <div className="space-y-1">
+                          <p className="text-[11px] font-bold text-[#8C6B3E] uppercase tracking-wider">
+                            {hi ? "पिनकोड" : "Postal Code"}
+                          </p>
+                          <p className="font-bold text-[#1E1612] text-sm sm:text-base font-mono">
+                            {user.pincode || "—"}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="pt-2 border-t border-[#E7D8C8]/60 space-y-1">
+                        <p className="text-[11px] font-bold text-[#8C6B3E] uppercase tracking-wider">
+                          {hi ? "सड़क / मकान का पूरा पता" : "Street Address"}
+                        </p>
+                        <p className="font-medium text-[#1E1612] text-xs sm:text-sm leading-relaxed">
+                          {user.address ? (
+                            user.address
+                          ) : (
+                            <span className="text-[#2B201A]/50 italic">
+                              {hi ? "कोई सड़क पता सहेजा नहीं गया है।" : "No street address saved yet."}
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* ============================================================ */}
+            {/* VIEW 2: MEMBERSHIP */}
+            {/* ============================================================ */}
+            {activeTab === "membership" && (
+              <div className="space-y-6">
+                {user.membership ? (
+                  <div className="bg-white rounded-3xl border border-[#E7D8C8] shadow-warm-xs overflow-hidden">
+                    {/* Header Banner */}
+                    <div
+                      className={`px-6 py-6 sm:px-8 sm:py-7 text-white flex items-center justify-between gap-3 ${getMembershipBannerGradient(
+                        user.membership.tier
+                      )}`}
+                    >
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <Award className="w-8 h-8 text-[#FBBF24] shrink-0" />
+                        <div className="min-w-0">
+                          <p className="text-xs text-white/75 uppercase tracking-wider font-medium">
+                            {hi ? "आपकी सदस्यता" : "Your membership"}
+                          </p>
+                          <h2 className="font-editorial text-xl sm:text-2xl font-bold truncate">
+                            {hi && user.membership.tierNameHi
+                              ? user.membership.tierNameHi
+                              : user.membership.tierName?.toLowerCase() === "membership" ||
+                                user.membership.tier === "BASIC"
+                              ? "Basic Membership"
+                              : user.membership.tierName}
+                          </h2>
+                        </div>
+                      </div>
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white text-emerald-800 text-xs font-bold shrink-0 shadow-2xs">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>{hi ? "सक्रिय" : "Active"}</span>
+                      </span>
+                    </div>
+
+                    <div className="p-6 sm:p-8 space-y-6">
+                      {/* Details strip */}
+                      <dl className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs sm:text-sm bg-[#FAF6F0] p-4 rounded-2xl border border-[#E7D8C8]">
+                        <div>
+                          <dt className="text-[11px] uppercase font-bold text-[#8C6B3E]">
+                            {hi ? "सदस्य" : "Member"}
+                          </dt>
+                          <dd className="font-bold text-[#1E1612] capitalize mt-0.5">
+                            {user.name}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="text-[11px] uppercase font-bold text-[#8C6B3E]">
+                            {hi ? "सदस्यता तिथि" : "Member since"}
+                          </dt>
+                          <dd className="font-bold text-[#1E1612] mt-0.5">
+                            {formatShortDate(user.membership.verifiedAt || user.createdAt) || "—"}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="text-[11px] uppercase font-bold text-[#8C6B3E]">
+                            {hi ? "संदर्भ ID" : "Reference ID"}
+                          </dt>
+                          <dd className="font-mono font-bold text-[#1E1612] mt-0.5 break-all">
+                            {user.membership.donationId || "NBVT-VERIFIED"}
+                          </dd>
+                        </div>
+                      </dl>
+
+                      {/* Certificate & Pass Action Buttons */}
+                      {user.membership.donationId && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                          <Link
+                            href={`/certificate/${user.membership.donationId}${
+                              user.membership.certificateKey
+                                ? `?k=${user.membership.certificateKey}`
+                                : ""
+                            }`}
+                            target="_blank"
+                            className="btn-primary py-3 px-5 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-2xs cursor-pointer"
+                          >
+                            <Award className="w-4 h-4" />
+                            <span>{hi ? "प्रमाणपत्र देखें" : "View Certificate"}</span>
+                          </Link>
+                          <Link
+                            href={`/pass/${user.membership.donationId}${
+                              user.membership.certificateKey
+                                ? `?k=${user.membership.certificateKey}`
+                                : ""
+                            }`}
+                            target="_blank"
+                            className="btn-outline py-3 px-5 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-2xs cursor-pointer"
+                          >
+                            <QrCode className="w-4 h-4 text-[#E86F1D]" />
+                            <span>{hi ? "डिजिटल पास देखें" : "View Digital Pass"}</span>
+                          </Link>
+                        </div>
+                      )}
+
+                      {/* Benefits list */}
+                      <div className="pt-4 border-t border-[#E7D8C8]">
+                        <h3 className="font-bold text-sm text-[#1E1612] mb-3">
+                          {hi ? "आपके सदस्यता लाभ" : "Your benefits"}
+                        </h3>
+                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5">
+                          {(
+                            user.membership.benefits || [
+                              "Annual Trust Membership Certificate",
+                              "Monthly Spiritual Newsletter & E-books",
+                              "Invitation to Annual Spiritual Gathering",
+                              "Direct Seva Participation Opportunities",
+                              "Special Prasad & Blessing Card from Ashram",
+                            ]
+                          ).map((b, i) => (
+                            <li key={i} className="flex items-start gap-2 text-xs sm:text-sm text-[#2B201A]/80">
+                              <CheckCircle2 className="w-4 h-4 text-[#2F5A43] shrink-0 mt-0.5" />
+                              <span>{b}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-white rounded-3xl border border-[#E7D8C8] p-8 sm:p-12 text-center space-y-5 shadow-warm-xs">
+                    <div className="w-16 h-16 rounded-2xl bg-[#FFF9F2] text-[#E86F1D] mx-auto flex items-center justify-center border border-[#E7D8C8]">
+                      <Award className="w-8 h-8" />
+                    </div>
+                    <div className="space-y-2 max-w-md mx-auto">
+                      <h3 className="font-editorial text-2xl sm:text-3xl font-bold text-[#2B201A]">
+                        {hi ? "ट्रस्ट की पावन सदस्यता प्राप्त करें" : "Become a Trust Member"}
+                      </h3>
+                      <p className="text-sm text-[#2B201A]/70 leading-relaxed">
+                        {hi
+                          ? "गुरुकुल शिक्षा, गौ सेवा, किसान कल्याण और आध्यात्मिक आयोजनों में ट्रस्ट के साथ जुड़कर पुण्य के भागी बनें।"
+                          : "Join the Namo Bhagwate Vasudevaya Trust family. Support Gurukul education, Gau Seva, and community welfare programs."}
+                      </p>
+                    </div>
+                    <Link
+                      href="/membership"
+                      className="btn-primary inline-flex items-center gap-2 text-sm py-3 px-8 shadow-warm-md"
+                    >
+                      <span>{hi ? "सदस्यता योजनाएं देखें (View Plans)" : "Explore Membership Plans"}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ============================================================ */}
+            {/* VIEW 3: EVENTS & PASSES */}
+            {/* ============================================================ */}
+            {activeTab === "events" && (
+              <div className="space-y-5">
+                {/* Filter buttons */}
+                <div className="flex items-center justify-between gap-3 flex-wrap bg-white p-3 rounded-2xl border border-[#E7D8C8] shadow-2xs">
+                  <div className="flex items-center gap-1.5">
+                    {(
+                      [
+                        { key: "all", label: hi ? "सभी पास" : "All Passes" },
+                        { key: "upcoming", label: hi ? "आगामी" : "Upcoming" },
+                        { key: "completed", label: hi ? "संपन्न" : "Completed" },
+                      ] as const
+                    ).map((tab) => (
+                      <button
+                        key={tab.key}
+                        type="button"
+                        onClick={() => setEventsFilter(tab.key)}
+                        className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                          eventsFilter === tab.key
+                            ? "bg-[#E86F1D] text-white shadow-2xs"
+                            : "text-[#2B201A]/70 hover:bg-[#FAF3EA]"
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <span className="text-xs text-[#2B201A]/60 font-medium">
+                    {filteredEvents.length} {hi ? "पास उपलब्ध" : "passes found"}
+                  </span>
+                </div>
+
+                {loadingEvents ? (
+                  <div className="py-16 text-center space-y-2">
+                    <Loader2 className="w-6 h-6 animate-spin text-[#E86F1D] mx-auto" />
+                    <p className="text-xs text-[#2B201A]/60">
+                      {hi ? "पास लोड हो रहे हैं..." : "Loading event passes..."}
+                    </p>
+                  </div>
+                ) : filteredEvents.length === 0 ? (
+                  <div className="bg-white rounded-3xl border border-[#E7D8C8] p-10 sm:p-14 text-center space-y-4 shadow-warm-xs">
+                    <Ticket className="w-14 h-14 text-[#B8893E] mx-auto stroke-1" />
+                    <h3 className="font-editorial text-2xl font-bold text-[#2B201A]">
+                      {hi ? "कोई कार्यक्रम पास नहीं मिला" : "No Event Passes Yet"}
+                    </h3>
+                    <p className="text-sm text-[#2B201A]/70 max-w-sm mx-auto leading-relaxed">
+                      {hi
+                        ? "आपने अभी तक किसी कार्यक्रम का पास प्राप्त नहीं किया है। आगामी सत्संग एवं कथा देखें।"
+                        : "You haven't booked any event passes yet. Check out upcoming discourses and community gatherings."}
+                    </p>
+                    <Link
+                      href="/events"
+                      className="btn-primary inline-flex items-center gap-2 text-xs py-2.5 px-6 shadow-warm-sm"
+                    >
+                      <Ticket className="w-4 h-4" />
+                      <span>{hi ? "कार्यक्रम देखें (Explore Events)" : "Explore Events"}</span>
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-4">
+                    {filteredEvents.map((booking) => {
+                      const passUrl = `/pass/${booking.donationId}${
+                        booking.certificateKey ? `?k=${booking.certificateKey}` : ""
+                      }`;
+                      const pdfUrl = `/api/pass/${booking.donationId}${
+                        booking.certificateKey ? `?k=${booking.certificateKey}` : ""
+                      }`;
+                      const detailsUrl = booking.event.slug ? `/events` : "/events";
+
+                      return (
+                        <div
+                          key={booking.donationId}
+                          className="bg-white rounded-3xl border border-[#E7D8C8] p-5 sm:p-6 shadow-warm-xs hover:border-[#E86F1D]/50 transition-all space-y-4"
+                        >
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E7D8C8]/60">
+                            <div className="flex items-center gap-2">
+                              <span
+                                className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${
+                                  booking.isCompleted
+                                    ? "bg-stone-100 text-stone-700 border border-stone-200"
+                                    : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                }`}
+                              >
+                                {booking.isCompleted
+                                  ? hi
+                                    ? "संपन्न कार्यक्रम"
+                                    : "Completed Event"
+                                  : hi
+                                  ? "आगामी कार्यक्रम"
+                                  : "Upcoming Event"}
+                              </span>
+                              <span className="text-xs font-mono text-[#2B201A]/50">
+                                Pass #{booking.donationId}
+                              </span>
+                            </div>
+
+                            <span className="text-sm font-bold text-[#E86F1D]">
+                              ₹{(booking.amountPaise / 100).toLocaleString("en-IN")} Seva
+                            </span>
+                          </div>
+
+                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div className="space-y-1.5 min-w-0">
+                              <h4 className="font-editorial text-lg sm:text-xl font-bold text-[#1E1612]">
+                                {booking.event.title}
                               </h4>
-                              {booking.event.titleHi && !hi && (
-                                <p className="text-xs text-[#B8893E] font-medium mt-0.5">
+                              {booking.event.titleHi && (
+                                <p className="text-xs text-[#2B201A]/70 font-medium">
                                   {booking.event.titleHi}
                                 </p>
                               )}
-                              {booking.event.summary && (
-                                <p className="text-xs text-[#2B201A]/75 mt-1 line-clamp-2 leading-relaxed">
-                                  {hi && booking.event.summaryHi ? booking.event.summaryHi : booking.event.summary}
-                                </p>
-                              )}
-                            </div>
-
-                            {/* Schedule & Location Grid */}
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 text-xs">
-                              <div className="bg-[#FBF2E7] p-3 rounded-xl border border-[#E7D8C8]/60 space-y-1">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B5B4E] flex items-center gap-1">
-                                  <Calendar className="w-3 h-3 text-[#E86F1D]" />
-                                  <span>{hi ? "दिनांक" : "Event Date"}</span>
+                              <div className="flex items-center gap-3 text-xs text-[#2B201A]/70 flex-wrap pt-1">
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="w-3.5 h-3.5 text-[#E86F1D]" />
+                                  <span>{formatEventDate(booking.event.startDate, booking.event.endDate)}</span>
                                 </span>
-                                <p className="font-bold text-[#2B201A] text-xs">{eventDateStr}</p>
-                              </div>
-
-                              <div className="bg-[#FBF2E7] p-3 rounded-xl border border-[#E7D8C8]/60 space-y-1">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B5B4E] flex items-center gap-1">
-                                  <Clock className="w-3 h-3 text-[#B8893E]" />
-                                  <span>{hi ? "समय" : "Daily Timing"}</span>
+                                <span className="flex items-center gap-1">
+                                  <MapPin className="w-3.5 h-3.5 text-[#E86F1D]" />
+                                  <span className="truncate max-w-[200px]">{booking.event.location}</span>
                                 </span>
-                                <p className="font-bold text-[#2B201A] text-xs">
-                                  {booking.event.timeText || "4:00 PM – 7:30 PM"}
-                                </p>
-                              </div>
-
-                              <div className="bg-[#FBF2E7] p-3 rounded-xl border border-[#E7D8C8]/60 space-y-1">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B5B4E] flex items-center gap-1">
-                                  <MapPin className="w-3 h-3 text-[#2F5A43]" />
-                                  <span>{hi ? "स्थान / आश्रम" : "Venue"}</span>
-                                </span>
-                                <p className="font-bold text-[#2B201A] text-xs truncate" title={booking.event.location}>
-                                  {booking.event.location}
-                                </p>
                               </div>
                             </div>
 
-                            {/* Seva Amount & Action Buttons */}
-                            <div className="pt-3 border-t border-[#E7D8C8] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                              <div>
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-[#2B201A]/60 block">
-                                  {hi ? "भक्त सेवा सहयोग" : "Devotee Contribution"}
-                                </span>
-                                <span className="font-editorial text-lg font-bold text-[#E86F1D]">
-                                  ₹{(booking.amountPaise / 100).toLocaleString("en-IN")} INR
-                                </span>
-                              </div>
-
-                              <div className="flex flex-wrap items-center gap-2">
-                                {booking.status !== "CANCELLED" && booking.status !== "REJECTED" && (
-                                  <Link
-                                    href={passUrl}
-                                    target="_blank"
-                                    className="btn-primary text-xs py-2 px-3.5 inline-flex items-center gap-1.5 shadow-xs"
-                                  >
-                                    <QrCode className="w-3.5 h-3.5" />
-                                    <span>{hi ? "डिजिटल पास देखें" : "View Digital Pass"}</span>
-                                  </Link>
-                                )}
-
-                                {booking.status === "VERIFIED" && (
-                                  <a
-                                    href={pdfUrl}
-                                    download
-                                    target="_blank"
-                                    className="btn-outline text-xs py-2 px-3 inline-flex items-center gap-1.5"
-                                  >
-                                    <Download className="w-3.5 h-3.5 text-[#E86F1D]" />
-                                    <span>{hi ? "PDF डाउनलोड" : "Download PDF"}</span>
-                                  </a>
-                                )}
-
-                                <Link
-                                  href={detailsUrl}
-                                  className="px-3 py-2 rounded-xl text-xs font-bold text-[#2B201A]/70 hover:text-[#2B201A] hover:bg-[#FBF2E7] border border-[#E7D8C8] inline-flex items-center gap-1 transition-colors"
-                                >
-                                  <span>{hi ? "कार्यक्रम विवरण" : "Event Info"}</span>
-                                  <ArrowRight className="w-3 h-3" />
-                                </Link>
-                              </div>
+                            <div className="flex items-center gap-2 shrink-0 pt-2 md:pt-0">
+                              <Link
+                                href={passUrl}
+                                target="_blank"
+                                className="px-3.5 py-2 rounded-xl bg-[#E86F1D] hover:bg-[#D45A0E] text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-2xs transition-colors"
+                              >
+                                <QrCode className="w-3.5 h-3.5" />
+                                <span>{hi ? "पास देखें" : "View Pass"}</span>
+                              </Link>
+                              <a
+                                href={pdfUrl}
+                                target="_blank"
+                                download
+                                className="px-3 py-2 rounded-xl border border-[#E7D8C8] bg-white hover:bg-[#FAF6F0] text-[#1E1612] text-xs font-bold inline-flex items-center gap-1.5 shadow-2xs transition-colors"
+                              >
+                                <Download className="w-3.5 h-3.5 text-[#E86F1D]" />
+                                <span>PDF</span>
+                              </a>
                             </div>
                           </div>
                         </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ============================================================ */}
+            {/* VIEW 4: STORE ORDERS */}
+            {/* ============================================================ */}
+            {activeTab === "orders" && (
+              <div className="space-y-5">
+                {loadingOrders ? (
+                  <div className="py-16 text-center space-y-2">
+                    <Loader2 className="w-6 h-6 animate-spin text-[#E86F1D] mx-auto" />
+                    <p className="text-xs text-[#2B201A]/60">
+                      {hi ? "आर्डर्स लोड हो रहे हैं..." : "Loading orders..."}
+                    </p>
+                  </div>
+                ) : orders.length === 0 ? (
+                  <div className="bg-white rounded-3xl border border-[#E7D8C8] p-10 sm:p-14 text-center space-y-4 shadow-warm-xs">
+                    <Package className="w-14 h-14 text-[#B8893E] mx-auto stroke-1" />
+                    <h3 className="font-editorial text-2xl font-bold text-[#2B201A]">
+                      {hi ? "कोई पुस्तक ऑर्डर नहीं मिला" : "No Orders Yet"}
+                    </h3>
+                    <p className="text-sm text-[#2B201A]/70 max-w-sm mx-auto leading-relaxed">
+                      {hi
+                        ? "आपने अभी तक कोई पुस्तक ऑर्डर नहीं की है। ट्रस्ट के आध्यात्मिक एवं कृषि साहित्य को देखें।"
+                        : "You haven't ordered any publications yet. Explore our value-led books and agricultural guides."}
+                    </p>
+                    <Link
+                      href="/books"
+                      className="btn-primary inline-flex items-center gap-2 text-xs py-2.5 px-6 shadow-warm-sm"
+                    >
+                      <BookOpen className="w-4 h-4" />
+                      <span>{hi ? "पुस्तकें देखें (Explore Books)" : "Explore Publications"}</span>
+                    </Link>
+                  </div>
+                ) : (
+                  orders.map((order) => {
+                    const badge = getStatusBadge(order.status);
+                    return (
+                      <div
+                        key={order.id}
+                        className="bg-white rounded-3xl border border-[#E7D8C8] p-5 sm:p-6 shadow-warm-xs space-y-4"
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E7D8C8]/60">
+                          <div>
+                            <span className="font-mono font-bold text-sm text-[#1E1612]">
+                              Order #{order.orderNumber}
+                            </span>
+                            <span className="text-xs text-[#2B201A]/60 ml-2 font-medium">
+                              {formatShortDate(order.createdAt)}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold text-[#E86F1D]">
+                              ₹{order.totalAmount.toLocaleString("en-IN")}
+                            </span>
+                            <span
+                              className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${badge.color}`}
+                            >
+                              {badge.label}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Order items */}
+                        <div className="divide-y divide-[#E7D8C8]/50 text-xs sm:text-sm">
+                          {order.items.map((item) => (
+                            <div
+                              key={item.id}
+                              className="py-2.5 flex items-center justify-between gap-3"
+                            >
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                <BookOpen className="w-4 h-4 text-[#E86F1D] shrink-0" />
+                                <span className="font-semibold text-[#1E1612] truncate">
+                                  {item.title}
+                                </span>
+                              </div>
+                              <span className="font-mono text-xs text-[#2B201A]/70 shrink-0">
+                                {item.quantity} × ₹{item.price}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Shipping destination */}
+                        <div className="pt-2 text-xs text-[#2B201A]/60 flex items-center gap-1.5 border-t border-[#E7D8C8]/50">
+                          <MapPin className="w-3.5 h-3.5 text-[#E86F1D] shrink-0" />
+                          <span className="truncate">
+                            Shipping to: {order.shippingAddress}, {order.shippingCity},{" "}
+                            {order.shippingState} - {order.shippingPincode}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })
+                )}
               </div>
             )}
-          </div>
-        )}
-
-        {/* TAB 2: PROFILE & ADDRESS */}
-        {activeTab === "profile" && (
-          <div className="bg-white rounded-2xl sm:rounded-3xl border border-[#E7D8C8] p-4 sm:p-10 shadow-sm space-y-5 sm:space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 border-b border-[#E7D8C8] pb-4">
-              <div>
-                <h3 className="font-editorial text-2xl font-bold text-[#2B201A]">
-                  {hi ? "व्यक्तिगत विवरण एवं पता" : "Personal Details & Shipping Address"}
-                </h3>
-                <p className="text-xs text-[#2B201A]/70 mt-0.5">
-                  {hi ? "यह पता भविष्य के सभी पुस्तक आर्डर्स पर स्वतः भर जाएगा।" : "Saved for fast checkout on your future book purchases."}
-                </p>
-              </div>
-              {!isEditing && (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-[#E7D8C8] text-xs font-bold text-[#E86F1D] hover:bg-[#FBF2E7] transition-colors"
-                >
-                  <Edit2 className="w-3.5 h-3.5" />
-                  <span>{hi ? "बदलें" : "Edit Details"}</span>
-                </button>
-              )}
-            </div>
-
-            {profileSuccess && (
-              <div className="p-3 bg-green-50 border border-green-200 text-green-700 text-xs rounded-xl font-bold flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4" />
-                <span>{hi ? "विवरण सफलतापूर्वक सहेज लिए गए!" : "Profile details saved successfully!"}</span>
-              </div>
-            )}
-
-            {isEditing ? (
-              <form onSubmit={handleSaveProfile} className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/70 mb-1">
-                      {hi ? "पूरा नाम" : "Full Name"} *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={editName}
-                      onChange={(e) => setEditName(e.target.value)}
-                      className="w-full px-3.5 py-2.5 bg-white border border-[#E7D8C8] rounded-xl text-sm focus:outline-hidden focus:border-[#E86F1D]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/70 mb-1">
-                      {hi ? "मोबाइल नंबर" : "Phone Number"}
-                    </label>
-                    <input
-                      type="tel"
-                      value={editPhone}
-                      onChange={(e) => setEditPhone(e.target.value)}
-                      className="w-full px-3.5 py-2.5 bg-white border border-[#E7D8C8] rounded-xl text-sm focus:outline-hidden focus:border-[#E86F1D]"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/70 mb-1">
-                    {hi ? "सड़क / मकान का पता" : "Street Address / House No."}
-                  </label>
-                  <textarea
-                    rows={2}
-                    value={editAddress}
-                    onChange={(e) => setEditAddress(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-white border border-[#E7D8C8] rounded-xl text-sm focus:outline-hidden focus:border-[#E86F1D]"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/70 mb-1">
-                      {hi ? "शहर" : "City"}
-                    </label>
-                    <input
-                      type="text"
-                      value={editCity}
-                      onChange={(e) => setEditCity(e.target.value)}
-                      className="w-full px-3.5 py-2.5 bg-white border border-[#E7D8C8] rounded-xl text-sm focus:outline-hidden focus:border-[#E86F1D]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/70 mb-1">
-                      {hi ? "राज्य" : "State"}
-                    </label>
-                    <input
-                      type="text"
-                      value={editState}
-                      onChange={(e) => setEditState(e.target.value)}
-                      className="w-full px-3.5 py-2.5 bg-white border border-[#E7D8C8] rounded-xl text-sm focus:outline-hidden focus:border-[#E86F1D]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#2B201A]/70 mb-1">
-                      {hi ? "पिनकोड" : "Pincode"}
-                    </label>
-                    <input
-                      type="text"
-                      value={editPincode}
-                      onChange={(e) => setEditPincode(e.target.value)}
-                      className="w-full px-3.5 py-2.5 bg-white border border-[#E7D8C8] rounded-xl text-sm focus:outline-hidden focus:border-[#E86F1D]"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 pt-2">
-                  <button
-                    type="submit"
-                    disabled={savingProfile}
-                    className="btn-primary text-xs py-2.5 px-6 inline-flex items-center gap-2 shadow-warm-sm"
-                  >
-                    {savingProfile ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Save className="w-4 h-4" />
-                    )}
-                    <span>{hi ? "सहेजें" : "Save Changes"}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setIsEditing(false)}
-                    className="px-4 py-2.5 border border-[#E7D8C8] text-xs font-bold rounded-xl text-[#2B201A]/70 hover:bg-[#FBF2E7]"
-                  >
-                    {hi ? "रद्द करें" : "Cancel"}
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs sm:text-sm">
-                <div className="space-y-1 bg-[#FBF2E7] p-4 rounded-2xl border border-[#E7D8C8]">
-                  <p className="text-[11px] font-bold text-[#6B5B4E] uppercase tracking-wider">
-                    {hi ? "ईमेल आईडी" : "Registered Email"}
-                  </p>
-                  <p className="font-bold text-[#2B201A]">{user.email}</p>
-                </div>
-
-                <div className="space-y-1 bg-[#FBF2E7] p-4 rounded-2xl border border-[#E7D8C8]">
-                  <p className="text-[11px] font-bold text-[#6B5B4E] uppercase tracking-wider">
-                    {hi ? "मोबाइल नंबर" : "Phone Number"}
-                  </p>
-                  <p className="font-bold text-[#2B201A]">{user.phone || "Not set"}</p>
-                </div>
-
-                <div className="sm:col-span-2 space-y-1 bg-[#FBF2E7] p-4 rounded-2xl border border-[#E7D8C8]">
-                  <p className="text-[11px] font-bold text-[#6B5B4E] uppercase tracking-wider">
-                    {hi ? "डिफ़ॉल्ट डिलीवरी पता" : "Default Delivery Address"}
-                  </p>
-                  <p className="font-bold text-[#2B201A] leading-relaxed">
-                    {user.address ? (
-                      `${user.address}, ${user.city || ""}, ${user.state || ""} - ${user.pincode || ""}`
-                    ) : (
-                      <span className="text-[#2B201A]/60 italic font-normal">
-                        {hi ? "कोई पता सहेजा नहीं गया है।" : "No delivery address saved yet."}
-                      </span>
-                    )}
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+          </main>
+        </div>
       </div>
     </div>
   );
