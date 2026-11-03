@@ -7,6 +7,7 @@ import { ArrowRight, Ticket } from "lucide-react";
 import StatusBadge from "@/components/admin/StatusBadge";
 import { rupeesFromPaise, formatIST } from "@/lib/admin-format";
 import type { DonationStatus, DonationType } from "@prisma/client";
+import { useAdminNavigation } from "./AdminNavigationContext";
 
 export interface AdminDonationItem {
   donationId: string;
@@ -26,6 +27,7 @@ interface AdminDonationRowProps {
 
 export default function AdminDonationRow({ donation: d }: AdminDonationRowProps) {
   const router = useRouter();
+  const { navigate } = useAdminNavigation();
   const isUnverified = d.status !== "VERIFIED";
 
   const handleRowClick = (e: React.MouseEvent<HTMLTableRowElement>) => {
@@ -36,7 +38,7 @@ export default function AdminDonationRow({ donation: d }: AdminDonationRowProps)
     }
 
     if (isUnverified) {
-      router.push(`/admin/donations/${d.donationId}`);
+      navigate(`/admin/donations/${d.donationId}`);
     }
   };
 
@@ -62,7 +64,11 @@ export default function AdminDonationRow({ donation: d }: AdminDonationRowProps)
           href={`/admin/donations/${d.donationId}`}
           prefetch={true}
           className="font-mono font-semibold text-[#E86F1D] hover:underline"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            navigate(`/admin/donations/${d.donationId}`);
+          }}
         >
           {d.donationId}
         </Link>

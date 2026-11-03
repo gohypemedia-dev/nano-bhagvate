@@ -281,6 +281,7 @@ export default async function AdminDashboard({
             <div className="flex flex-wrap items-center gap-1.5">
               <Link
                 href={href({ type, status, q, page: page - 1 })}
+                prefetch={true}
                 className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#E7D8C8] bg-white text-xs font-bold text-[#2B201A]/80 hover:bg-[#FBF2E7] transition-colors ${
                   page <= 1 ? "pointer-events-none opacity-40" : ""
                 }`}
@@ -298,6 +299,7 @@ export default async function AdminDashboard({
                     <Link
                       key={p}
                       href={href({ type, status, q, page: p })}
+                      prefetch={true}
                       className={`min-w-8 h-8 px-2 flex items-center justify-center rounded-lg text-xs font-bold border transition-colors ${
                         page === p
                           ? "bg-[#2B201A] text-white border-[#2B201A] shadow-xs"
@@ -312,6 +314,7 @@ export default async function AdminDashboard({
 
               <Link
                 href={href({ type, status, q, page: page + 1 })}
+                prefetch={true}
                 className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#E7D8C8] bg-white text-xs font-bold text-[#2B201A]/80 hover:bg-[#FBF2E7] transition-colors ${
                   page >= pages ? "pointer-events-none opacity-40" : ""
                 }`}
