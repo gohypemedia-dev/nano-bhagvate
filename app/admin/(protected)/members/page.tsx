@@ -12,8 +12,8 @@ export const metadata = {
 export default async function AdminMembersPage() {
   await requireAdminPage();
 
-  // Automatically ensure all verified membership donations are synced into Member table
-  await ensureVerifiedMembershipsSynced();
+  // Sync verified memberships non-blockingly in the background
+  void ensureVerifiedMembershipsSynced();
 
   const rawMembers = await prisma.member.findMany({
     orderBy: { createdAt: "desc" },

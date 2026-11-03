@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { randomBytes, scrypt, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -59,7 +60,7 @@ export async function destroySession() {
   store.delete(SESSION_COOKIE);
 }
 
-export async function getAdmin() {
+export const getAdmin = cache(async () => {
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!token) return null;
   const session = await prisma.adminSession.findUnique({
@@ -68,7 +69,7 @@ export async function getAdmin() {
   });
   if (!session || session.expiresAt < new Date()) return null;
   return session.admin;
-}
+});
 
 export type Admin = NonNullable<Awaited<ReturnType<typeof getAdmin>>>;
 

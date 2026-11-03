@@ -20,6 +20,32 @@ const updateMemberSchema = z.object({
   photoUrl: z.string().trim().optional().nullable(),
 });
 
+// In-memory cache for event lookups to avoid querying events on every member modal open
+let cachedEvents: any[] | null = null;
+let lastEventsFetch = 0;
+async function getCachedEvents() {
+  const now = Date.now();
+  if (cachedEvents && now - lastEventsFetch < 60000) {
+    return cachedEvents;
+  }
+  cachedEvents = await prisma.event.findMany({
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      titleHi: true,
+      startDate: true,
+      endDate: true,
+      location: true,
+      address: true,
+      image: true,
+      timeText: true,
+    },
+  });
+  lastEventsFetch = now;
+  return cachedEvents;
+}
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -82,21 +108,8 @@ export async function GET(
   if (linkedUser?.email) emails.add(linkedUser.email.toLowerCase());
   if (linkedUser?.phone) phones.add(linkedUser.phone);
 
-  // 2. Fetch all events to correlate programs
-  const allEvents = await prisma.event.findMany({
-    select: {
-      id: true,
-      slug: true,
-      title: true,
-      titleHi: true,
-      startDate: true,
-      endDate: true,
-      location: true,
-      address: true,
-      image: true,
-      timeText: true,
-    },
-  });
+  // 2. Fetch all events to correlate programs (using 60s memory cache)
+  const allEvents = await getCachedEvents();
   const eventMap = new Map(allEvents.map((e) => [e.title.toLowerCase().trim(), e]));
 
   // 3. Query all donations for this member

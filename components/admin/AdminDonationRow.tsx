@@ -40,9 +40,16 @@ export default function AdminDonationRow({ donation: d }: AdminDonationRowProps)
     }
   };
 
+  const handleMouseEnter = () => {
+    if (isUnverified) {
+      router.prefetch(`/admin/donations/${d.donationId}`);
+    }
+  };
+
   return (
     <tr
       onClick={handleRowClick}
+      onMouseEnter={handleMouseEnter}
       className={`border-b border-[#E7D8C8] last:border-0 transition-all duration-150 ${
         isUnverified
           ? "cursor-pointer hover:bg-[#FDF3E7] hover:border-[#E86F1D]/40"
@@ -53,6 +60,7 @@ export default function AdminDonationRow({ donation: d }: AdminDonationRowProps)
       <td className="px-4 py-3 whitespace-nowrap">
         <Link
           href={`/admin/donations/${d.donationId}`}
+          prefetch={true}
           className="font-mono font-semibold text-[#E86F1D] hover:underline"
           onClick={(e) => e.stopPropagation()}
         >

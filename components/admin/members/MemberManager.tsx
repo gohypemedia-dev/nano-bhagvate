@@ -202,18 +202,39 @@ export default function MemberManager({ initialMembers }: MemberManagerProps) {
   const [memberDetailsData, setMemberDetailsData] = useState<MemberDetailsData | null>(null);
   const [loadingDetails, setLoadingDetails] = useState<boolean>(false);
   const [historyTab, setHistoryTab] = useState<"all" | "events" | "donations" | "memberships" | "orders">("all");
+  const [detailsCache, setDetailsCache] = useState<Record<string, MemberDetailsData>>({});
+
+  const prefetchDetails = (memberId: string) => {
+    if (detailsCache[memberId]) return;
+    fetch(`/api/admin/members/${memberId}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && !data.error) {
+          setDetailsCache((prev) => ({ ...prev, [memberId]: data }));
+        }
+      })
+      .catch(() => {});
+  };
 
   const handleOpenDetails = async (member: AdminMemberItem) => {
     setViewingMember(member);
+    setHistoryTab("all");
+
+    if (detailsCache[member.id]) {
+      setMemberDetailsData(detailsCache[member.id]);
+      setLoadingDetails(false);
+      return;
+    }
+
     setLoadingDetails(true);
     setMemberDetailsData(null);
-    setHistoryTab("all");
 
     try {
       const res = await fetch(`/api/admin/members/${member.id}`);
       const data = await res.json();
       if (res.ok) {
         setMemberDetailsData(data);
+        setDetailsCache((prev) => ({ ...prev, [member.id]: data }));
       } else {
         toast.error(data.error || "Failed to load member history");
       }
@@ -550,6 +571,7 @@ export default function MemberManager({ initialMembers }: MemberManagerProps) {
                   return (
                     <tr
                       key={member.id}
+                      onMouseEnter={() => prefetchDetails(member.id)}
                       onClick={(e) => {
                         const target = e.target as HTMLElement;
                         if (

@@ -79,7 +79,16 @@ export async function syncDonationToMember(donation: {
   });
 }
 
+let lastSyncTime = 0;
+const SYNC_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes throttle
+
 export async function ensureVerifiedMembershipsSynced() {
+  const now = Date.now();
+  if (now - lastSyncTime < SYNC_INTERVAL_MS) {
+    return;
+  }
+  lastSyncTime = now;
+
   try {
     const verifiedMemberships = await prisma.donation.findMany({
       where: {

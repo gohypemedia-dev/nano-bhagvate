@@ -33,6 +33,20 @@ const TYPES = [
   { value: "EVENT", label: "Events" },
 ] as const;
 
+// In-memory cache for event titles (60s TTL) to prevent repeated DB round-trips
+let cachedEventTitles: string[] | null = null;
+let lastEventTitlesFetch = 0;
+async function getCachedEventTitles(): Promise<string[]> {
+  const now = Date.now();
+  if (cachedEventTitles && now - lastEventTitlesFetch < 60000) {
+    return cachedEventTitles;
+  }
+  const allEvents = await prisma.event.findMany({ select: { title: true } });
+  cachedEventTitles = allEvents.map((e) => e.title);
+  lastEventTitlesFetch = now;
+  return cachedEventTitles;
+}
+
 export default async function AdminDashboard({
   searchParams,
 }: {
@@ -45,9 +59,8 @@ export default async function AdminDashboard({
   const q = sp.q?.trim() || undefined;
   const page = Math.max(1, Number.parseInt(sp.page ?? "1", 10) || 1);
 
-  // Fetch all existing event titles to differentiate event registrations from general donations
-  const allEvents = await prisma.event.findMany({ select: { title: true } });
-  const eventTitles = allEvents.map((e) => e.title);
+  // Cached event titles for fast differentiation of event registrations
+  const eventTitles = await getCachedEventTitles();
 
   // The stats and status counts follow the Donations / Memberships / Events filter.
   let typeWhere: Prisma.DonationWhereInput = {};
@@ -251,7 +264,7 @@ export default async function AdminDashboard({
                   donation={{
                     ...d,
                     isEvent: eventTitles.some(
-                      (t) => t.toLowerCase() === (d.program || "").toLowerCase().trim()
+                      (t: string) => t.toLowerCase() === (d.program || "").toLowerCase().trim()
                     ),
                   }}
                 />
