@@ -33,6 +33,7 @@ import {
   Check,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+import { cachedFetch } from "@/lib/client-cache";
 import HeadingDivider from "@/components/HeadingDivider";
 
 interface OrderItem {
@@ -116,35 +117,36 @@ export default function AccountPage() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileSuccess, setProfileSuccess] = useState(false);
 
-  const fetchOrders = useCallback(async () => {
-    setLoadingOrders(true);
+  const fetchOrders = useCallback(async (force = false) => {
+    // Only show full loading spinner if we don't have orders yet
+    if (orders.length === 0) setLoadingOrders(true);
     try {
-      const res = await fetch("/api/orders");
-      if (res.ok) {
-        const data = await res.json();
-        setOrders(data.orders || []);
-      }
+      const data = await cachedFetch<{ orders: Order[] }>("/api/orders", {
+        ttlMs: 60 * 1000,
+        forceRefresh: force,
+      });
+      setOrders(data?.orders || []);
     } catch {
       // ignore
     } finally {
       setLoadingOrders(false);
     }
-  }, []);
+  }, [orders.length]);
 
-  const fetchEvents = useCallback(async () => {
-    setLoadingEvents(true);
+  const fetchEvents = useCallback(async (force = false) => {
+    if (userEvents.length === 0) setLoadingEvents(true);
     try {
-      const res = await fetch("/api/account/events");
-      if (res.ok) {
-        const data = await res.json();
-        setUserEvents(data.events || []);
-      }
+      const data = await cachedFetch<{ events: UserEventBooking[] }>("/api/account/events", {
+        ttlMs: 60 * 1000,
+        forceRefresh: force,
+      });
+      setUserEvents(data?.events || []);
     } catch {
       // ignore
     } finally {
       setLoadingEvents(false);
     }
-  }, []);
+  }, [userEvents.length]);
 
   useEffect(() => {
     if (user) {

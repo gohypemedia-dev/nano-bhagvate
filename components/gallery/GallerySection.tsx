@@ -6,6 +6,7 @@ import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import { Play } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+import { cachedFetch } from "@/lib/client-cache";
 import { galleryData, GalleryItem } from "@/data/gallery";
 import GalleryModal from "./GalleryModal";
 import HeadingDivider from "@/components/HeadingDivider";
@@ -91,7 +92,7 @@ function GalleryCarouselTile({
             alt={item.alt || title}
             fill
             loading="lazy"
-            unoptimized={item.thumbnail.startsWith("http")}
+            unoptimized={item.thumbnail.startsWith("http") && !item.thumbnail.includes("r2.dev") && !item.thumbnail.includes("youtube.com") && !item.thumbnail.includes("unsplash.com")}
             sizes="(max-width: 640px) 90vw, (max-width: 1024px) 50vw, 25vw"
             className="object-cover transition-transform duration-500 ease-out group-hover:scale-106"
             style={{ objectPosition: item.focalPoint || "center" }}
@@ -113,10 +114,9 @@ export default function GallerySection({ initialItems }: { initialItems?: Galler
   const [isHovered, setIsHovered] = useState(false);
   const lastTriggerRef = useRef<HTMLElement | null>(null);
 
-  // Fetch live Cloudflare R2 gallery items from database
+  // Fetch live Cloudflare R2 gallery items from database with client cache
   useEffect(() => {
-    fetch("/api/gallery")
-      .then((res) => (res.ok ? res.json() : null))
+    cachedFetch<GalleryItem[]>("/api/gallery", { ttlMs: 5 * 60 * 1000 })
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
           setItems(data);

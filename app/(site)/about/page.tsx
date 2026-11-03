@@ -94,7 +94,7 @@ export default function AboutPage() {
             alt="Rooted in Wisdom. Driven by Service."
             fill
             priority
-            unoptimized
+            sizes="100vw"
             className="object-cover object-right lg:object-center"
           />
           {/* Clean feathered mask: completely masks baked-in text on the left while seamlessly revealing Lord Krishna on the right */}
@@ -115,7 +115,7 @@ export default function AboutPage() {
               alt="Lord Krishna and Children - Rooted in Wisdom. Driven by Service."
               fill
               priority
-              unoptimized
+              sizes="100vw"
               className="w-full h-full object-cover object-top block select-none pointer-events-none"
             />
           </ParallaxImage>
@@ -285,8 +285,7 @@ export default function AboutPage() {
               src="/images/about-temple-quote-bg.webp"
               alt="Sacred Vedic Temple Skyline"
               fill
-              unoptimized
-              priority
+              sizes="(max-width: 768px) 100vw, 1200px"
               className="object-cover object-right md:object-center"
             />
             {/* Soft gradient wash on left for contrast */}
@@ -403,8 +402,7 @@ export default function AboutPage() {
                       <Image
                         src={card.image}
                         alt={card.title}
-                        fill
-                        unoptimized
+                        fill sizes="100vw"
                         className="object-cover transition-transform duration-500 hover:scale-105"
                       />
                     </div>
@@ -433,8 +431,7 @@ export default function AboutPage() {
             src="/images/about-closing-walk.jpg"
             alt="Rural family walking together into golden horizon"
             fill
-            unoptimized
-            priority
+            sizes="100vw"
             className="object-cover object-bottom"
           />
         </ParallaxImage>

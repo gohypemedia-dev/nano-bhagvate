@@ -212,9 +212,8 @@ export default function MembershipPage() {
           <Image
             src="/images/membership-hero-banner.png"
             alt="Together for a Better Tomorrow"
-            fill
+            fill sizes="100vw"
             priority
-            unoptimized
             className="object-cover object-center"
           />
           {/* Clean Gradient on Desktop: leaves joined hands & temple completely crisp and clear on right */}
@@ -227,9 +226,8 @@ export default function MembershipPage() {
             <Image
               src="/images/membership-mobile-hero.png"
               alt="Together for a Better Tomorrow - Namo Bhagwate Vasudevaya"
-              fill
+              fill sizes="100vw"
               priority
-              unoptimized
               className="w-full h-full object-cover object-top block select-none pointer-events-none"
             />
           </ParallaxImage>
@@ -942,9 +940,8 @@ export default function MembershipPage() {
                       <Image
                         src="/images/trust-payment-qr.png"
                         alt="Namo Bhagwate Trust UPI QR Code"
-                        fill
+                        fill sizes="100vw"
                         priority
-                        unoptimized
                         className="object-contain"
                       />
                     </div>

@@ -99,7 +99,7 @@ function GalleryCard({ item, title, onOpen, lang }: GalleryCardProps) {
           alt={item.alt || title}
           fill
           loading="lazy"
-          unoptimized={item.thumbnail.startsWith("http")}
+          unoptimized={item.thumbnail.startsWith("http") && !item.thumbnail.includes("r2.dev") && !item.thumbnail.includes("youtube.com") && !item.thumbnail.includes("unsplash.com")}
           sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
           className="object-cover transition-transform duration-500 ease-out group-hover:scale-106"
           style={{ objectPosition: item.focalPoint || "center" }}

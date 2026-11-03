@@ -4,8 +4,10 @@ import { galleryData } from "@/data/gallery";
 
 export const dynamic = "force-dynamic";
 
-// Not cached: a CDN copy would keep showing photos for minutes after the admin changes or deletes them.
-const NO_STORE = { "Cache-Control": "no-store" };
+// Edge cache for 2 minutes, stale-while-revalidate for 10 minutes
+const CACHE_HEADERS = {
+  "Cache-Control": "public, s-maxage=120, stale-while-revalidate=600",
+};
 
 export async function GET() {
   try {
@@ -32,18 +34,18 @@ export async function GET() {
         date: item.date ?? undefined,
       }));
       return NextResponse.json(formatted, {
-        headers: NO_STORE,
+        headers: CACHE_HEADERS,
       });
     }
 
     return NextResponse.json(galleryData, {
-      headers: NO_STORE,
+      headers: CACHE_HEADERS,
     });
   } catch (error) {
     console.error("Failed to load gallery items from database:", error);
     return NextResponse.json(galleryData, {
       status: 200,
-      headers: NO_STORE,
+      headers: CACHE_HEADERS,
     });
   }
 }

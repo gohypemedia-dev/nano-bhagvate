@@ -16,6 +16,7 @@ import {
   validateMobile,
   validateName,
 } from "@/lib/validation/donation";
+import { cachedFetch } from "@/lib/client-cache";
 
 // SELECT → PAY (QR shown) → SUBMITTED (donor tapped "I have paid"; QR hidden, the Trust
 // is emailed a link to approve) → DONE (approved by the Trust, or matched to a bank alert).
@@ -183,8 +184,7 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
       return;
     }
 
-    fetch("/api/events")
-      .then((res) => (res.ok ? res.json() : null))
+    cachedFetch<{ events: any[] }>("/api/events")
       .then((data) => {
         if (!data?.events || !Array.isArray(data.events)) return;
         const matched = data.events.find(

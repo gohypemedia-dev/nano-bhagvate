@@ -107,9 +107,8 @@ export default function InitiativesPage() {
           <Image
             src="/images/initiatives-hero-banner.png"
             alt="Transforming Lives Through Service"
-            fill
+            fill sizes="100vw"
             priority
-            unoptimized
             className="object-cover object-right lg:object-center"
           />
           {/* Clean feathered mask: completely masks baked-in text & dark background on left while seamlessly revealing community & Sadhvi Ji on right */}
@@ -128,9 +127,8 @@ export default function InitiativesPage() {
             <Image
               src="/images/initiatives-mobile-hero.png"
               alt="Transforming Lives Through Service - Namo Bhagwate Vasudevaya"
-              fill
+              fill sizes="100vw"
               priority
-              unoptimized
               className="w-full h-full object-cover object-top block select-none pointer-events-none"
             />
           </ParallaxImage>

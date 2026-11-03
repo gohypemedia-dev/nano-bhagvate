@@ -18,6 +18,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+import { cachedFetch } from "@/lib/client-cache";
 import EventDetailsModal, { EventItem } from "@/components/EventDetailsModal";
 import GallerySection from "@/components/gallery/GallerySection";
 import MemberCarousel from "@/components/MemberCarousel";
@@ -120,13 +121,8 @@ export default function HomePage() {
       }
     }
 
-    // 2. Fetch live events from API
-    fetch("/api/events")
-      .then((res) => {
-        // On failure the built-in sample events stay on screen, so make the failure visible.
-        if (!res.ok) console.warn(`[events] /api/events failed (${res.status}); showing built-in sample events.`);
-        return res.ok ? res.json() : null;
-      })
+    // 2. Fetch live events from API with client cache & deduplication
+    cachedFetch<{ events: EventItem[] }>("/api/events")
       .then((data) => {
         if (data?.events && Array.isArray(data.events) && data.events.length > 0) {
           setEvents(data.events);
@@ -148,7 +144,7 @@ export default function HomePage() {
           }
         }
       })
-      .catch(() => { });
+      .catch(() => {});
   }, []);
 
   const formatCardDate = (dateVal: string | Date) => {
@@ -174,13 +170,13 @@ export default function HomePage() {
         {/* Full Image Display - Complete uncropped, scrolls naturally */}
         {/* ============================================================ */}
         <div className="hidden sm:block relative w-full">
-          {/* Full Original Hero Photo - untouched and uncropped */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          {/* Full Original Hero Photo with Next.js high-priority preload & optimization */}
+          <Image
             src="/images/new-home-page-banner.webp"
             alt="Namo Bhagwate Vasudevaya Trust - Pujya Sadhvi Vijeshanand Saraswati Ji"
             className="w-full h-auto block select-none"
-            loading="eager"
+            priority
+            sizes="100vw"
             width={1672}
             height={941}
           />
@@ -211,13 +207,13 @@ export default function HomePage() {
         {/* Full Image Display - Complete uncropped */}
         {/* ============================================================ */}
         <div className="sm:hidden relative z-10 w-full">
-          {/* Full Original Mobile Photo - untouched and uncropped */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          {/* Full Original Mobile Photo with Next.js high-priority preload & optimization */}
+          <Image
             src="/images/new-home-page-banner.webp"
             alt="Namo Bhagwate Vasudevaya Trust - Pujya Sadhvi Vijeshanand Saraswati Ji"
             className="w-full h-auto block select-none"
-            loading="eager"
+            priority
+            sizes="100vw"
             width={1672}
             height={941}
           />
@@ -301,8 +297,7 @@ export default function HomePage() {
                     src="/images/card-books-portrait.webp"
                     alt="Books & Sacred Literature"
                     fill
-                    priority
-                    unoptimized
+                    sizes="(max-width: 640px) 100vw, 40vw"
                     className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
@@ -346,8 +341,7 @@ export default function HomePage() {
                     src="/images/card-seva-real.webp"
                     alt="Donate for Seva"
                     fill
-                    priority
-                    unoptimized
+                    sizes="(max-width: 640px) 100vw, 40vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
@@ -392,8 +386,7 @@ export default function HomePage() {
                     src="/images/card-thought-real.webp"
                     alt="Sacred Wisdom - Bhagavad Gita"
                     fill
-                    priority
-                    unoptimized
+                    sizes="(max-width: 640px) 100vw, 40vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>

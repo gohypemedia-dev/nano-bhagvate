@@ -15,10 +15,15 @@ export async function GET() {
     const isPast = (e: (typeof all)[number]) => (e.endDate ?? e.startDate) < today;
     const events = [...all.filter((e) => !isPast(e)), ...all.filter(isPast).reverse()];
 
-    // Not cached: a CDN copy would keep showing events for minutes after the admin edits or deletes them.
-    return Response.json({ events }, {
-      headers: { "Cache-Control": "no-store" },
-    });
+    // Cache at Edge for 60s, stale-while-revalidate for 5 minutes
+    return Response.json(
+      { events },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+        },
+      }
+    );
   } catch (error) {
     console.error("Failed to fetch events:", error);
     return Response.json({ events: [], error: "Failed to fetch events" }, { status: 500 });

@@ -79,7 +79,7 @@ export default function FounderPage() {
                 alt="Pujya Sadhvi Vijeshanand Saraswati Ji - Founder"
                 fill
                 priority
-                unoptimized
+                sizes="100vw"
                 className="object-cover object-[80%_top] lg:object-[82%_top]"
               />
             </div>
@@ -102,7 +102,7 @@ export default function FounderPage() {
               alt="Pujya Sadhvi Vijeshanand Saraswati Ji - Founder"
               fill
               priority
-              unoptimized
+              sizes="100vw"
               className="w-full h-full object-cover object-top block select-none pointer-events-none"
             />
           </ParallaxImage>
@@ -246,8 +246,7 @@ export default function FounderPage() {
           <Image
             src="/images/founder-philosophy-bg.jpg"
             alt="Sacred Bhagavad Gita Scripture and Rudraksha Japa Mala"
-            fill
-            unoptimized
+            fill sizes="100vw"
             className="object-cover object-right sm:object-center"
           />
           {/* Subtle mobile-only soft cream fade for perfect text contrast on small screens */}
@@ -339,8 +338,7 @@ export default function FounderPage() {
           <Image
             src="/images/founder-karma-bg.jpg"
             alt="Bhagavad Gita Wisdom and Vedic Courtyard"
-            fill
-            unoptimized
+            fill sizes="100vw"
             priority
             className="object-cover object-center"
           />

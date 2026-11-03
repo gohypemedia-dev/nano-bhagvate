@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { invalidateClientCache } from "@/lib/client-cache";
 
 // Details already typed elsewhere (e.g. the membership registration form), used to fill the donate modal.
 export interface DonorPrefill {
@@ -185,6 +186,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       try {
         localStorage.removeItem("nbv_user_profile");
       } catch {}
+      invalidateClientCache();
       setUser(null);
       await fetch("/api/auth/logout", { method: "POST" });
     } catch {
