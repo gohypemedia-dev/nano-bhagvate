@@ -5,9 +5,10 @@ import { requireAdminPage } from "@/lib/server/auth";
 import { prisma } from "@/lib/server/prisma";
 import { formatIST, rupeesFromPaise, STATUS_LABELS } from "@/lib/admin-format";
 import StatusBadge from "@/components/admin/StatusBadge";
-import AdminDonationRow from "@/components/admin/AdminDonationRow";
 import BankAlertsPanel from "@/components/admin/BankAlertsPanel";
 import AutoRefresh from "@/components/admin/AutoRefresh";
+import AdminDonationsSection from "@/components/admin/AdminDonationsSection";
+import type { AdminDonationItem } from "@/components/admin/AdminDonationRow";
 
 export const dynamic = "force-dynamic";
 
@@ -150,15 +151,27 @@ export default async function AdminDashboard({
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const pageNumbers = getPageNumbers(page, pages);
 
-  function href(opts: { type?: string; status?: string; q?: string; page?: number }) {
-    const p = new URLSearchParams();
-    if (opts.type) p.set("type", opts.type);
-    if (opts.status) p.set("status", opts.status);
-    if (opts.q) p.set("q", opts.q);
-    if (opts.page && opts.page > 1) p.set("page", String(opts.page));
-    const qs = p.toString();
-    return qs ? `/admin?${qs}` : "/admin";
-  }
+  const formattedDonations: AdminDonationItem[] = donations.map((d) => ({
+    donationId: d.donationId,
+    type: d.type,
+    donorName: d.donorName,
+    donorEmail: d.donorEmail,
+    amountPaise: d.amountPaise,
+    status: d.status,
+    program: d.program,
+    createdAt: d.createdAt,
+    isEvent: eventTitles.some(
+      (t: string) => t.toLowerCase() === (d.program || "").toLowerCase().trim()
+    ),
+  }));
+
+  const statusCountsObj: Record<string, number> = {
+    PENDING_VERIFICATION: count("PENDING_VERIFICATION"),
+    VERIFIED: count("VERIFIED"),
+    REJECTED: count("REJECTED"),
+    PENDING_PAYMENT: count("PENDING_PAYMENT"),
+    CANCELLED: count("CANCELLED"),
+  };
 
   return (
     <div className="space-y-6">
@@ -186,145 +199,19 @@ export default async function AdminDashboard({
         ))}
       </section>
 
-      <section className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <nav className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 sm:pb-0" aria-label="Filter by type">
-            {[{ value: undefined, label: "Everything" }, ...TYPES].map((t) => (
-              <Link key={t.label} href={href({ type: t.value, status, q })} className={`px-3 py-1.5 rounded-lg text-xs font-bold border shrink-0 whitespace-nowrap ${type === t.value ? "bg-[#E86F1D] text-white border-[#E86F1D]" : "bg-white border-[#E7D8C8] text-[#2B201A]/75 hover:border-[#E86F1D]/50"}`}>
-                {t.label}
-              </Link>
-            ))}
-          </nav>
-
-          <Link
-            href="/admin/members"
-            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#FAF3EA] hover:bg-[#E86F1D] text-[#E86F1D] hover:text-white border border-[#E86F1D]/30 hover:border-[#E86F1D] text-xs font-bold transition-all shadow-xs w-full sm:w-auto text-center"
-          >
-            <Users className="w-3.5 h-3.5 shrink-0" />
-            <span>Manage Members (Upgrade / Downgrade Tiers & Remove) →</span>
-          </Link>
-        </div>
-
-        <div className="flex flex-col lg:flex-row lg:items-center gap-3 lg:justify-between">
-          <nav className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 sm:pb-0" aria-label="Filter by status">
-            <Link href={href({ type, q })} className={`px-3 py-1.5 rounded-full text-xs font-bold border shrink-0 whitespace-nowrap ${!status ? "bg-[#2B201A] text-white border-[#2B201A]" : "bg-white border-[#E7D8C8] text-[#2B201A]/75 hover:border-[#2B201A]/40"}`}>
-              All
-            </Link>
-            {STATUSES.map((s) => (
-              <Link key={s} href={href({ type, status: s, q })} className={`px-3 py-1.5 rounded-full text-xs font-bold border shrink-0 whitespace-nowrap ${status === s ? "bg-[#2B201A] text-white border-[#2B201A]" : "bg-white border-[#E7D8C8] text-[#2B201A]/75 hover:border-[#2B201A]/40"}`}>
-                {STATUS_LABELS[s]} <span className="opacity-60 tabular-nums">{count(s)}</span>
-              </Link>
-            ))}
-          </nav>
-
-          <form method="get" className="flex items-center gap-2">
-            {type && <input type="hidden" name="type" value={type} />}
-            {status && <input type="hidden" name="status" value={status} />}
-            <input
-              type="search"
-              name="q"
-              defaultValue={q ?? ""}
-              placeholder="Search ID, name, email or UTR..."
-              className="px-3.5 py-1.5 text-xs bg-white border border-[#E7D8C8] rounded-xl focus:outline-hidden focus:border-[#E86F1D] w-full sm:w-64"
-            />
-            <button type="submit" className="px-3.5 py-1.5 bg-white border border-[#E7D8C8] rounded-xl text-xs font-bold text-[#2B201A] hover:bg-[#FBF2E7]">
-              Search
-            </button>
-            {q && (
-              <Link href={href({ type, status })} className="text-xs text-[#E86F1D] hover:underline">
-                Clear
-              </Link>
-            )}
-          </form>
-        </div>
-
-        <div className="overflow-x-auto rounded-xl border border-[#E7D8C8] bg-white">
-          <table className="w-full text-sm min-w-[680px]">
-            <thead>
-              <tr className="text-left text-[11px] uppercase tracking-wider text-[#2B201A]/60 border-b border-[#E7D8C8]">
-                <th className="px-4 py-3 font-bold">Donation ID</th>
-                <th className="px-4 py-3 font-bold">Donor</th>
-                <th className="px-4 py-3 font-bold">For</th>
-                <th className="px-4 py-3 font-bold text-right">Amount</th>
-                <th className="px-4 py-3 font-bold">Status</th>
-                <th className="px-4 py-3 font-bold">Created</th>
-              </tr>
-            </thead>
-            <tbody>
-              {donations.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="px-4 py-10 text-center text-[#2B201A]/60">
-                    {q || status || type ? `No ${noun} match this filter.` : "No donations yet. They will appear here when donors submit the donation form."}
-                  </td>
-                </tr>
-              )}
-              {donations.map((d) => (
-                <AdminDonationRow
-                  key={d.donationId}
-                  donation={{
-                    ...d,
-                    isEvent: eventTitles.some(
-                      (t: string) => t.toLowerCase() === (d.program || "").toLowerCase().trim()
-                    ),
-                  }}
-                />
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {pages > 1 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-[#E7D8C8]/60 text-xs sm:text-sm">
-            <span className="text-[#2B201A]/70 font-medium">
-              Showing <strong className="text-[#2B201A]">{(page - 1) * PAGE_SIZE + 1}</strong>–<strong className="text-[#2B201A]">{Math.min(page * PAGE_SIZE, total)}</strong> of <strong className="text-[#2B201A]">{total}</strong> {noun}
-            </span>
-            <div className="flex flex-wrap items-center gap-1.5">
-              <Link
-                href={href({ type, status, q, page: page - 1 })}
-                prefetch={true}
-                className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#E7D8C8] bg-white text-xs font-bold text-[#2B201A]/80 hover:bg-[#FBF2E7] transition-colors ${
-                  page <= 1 ? "pointer-events-none opacity-40" : ""
-                }`}
-              >
-                <span>← Previous</span>
-              </Link>
-
-              <div className="flex items-center gap-1">
-                {pageNumbers.map((p, idx) =>
-                  p === "…" ? (
-                    <span key={`ellipsis-${idx}`} className="px-2 py-1 text-xs text-[#2B201A]/40 font-bold">
-                      …
-                    </span>
-                  ) : (
-                    <Link
-                      key={p}
-                      href={href({ type, status, q, page: p })}
-                      prefetch={true}
-                      className={`min-w-8 h-8 px-2 flex items-center justify-center rounded-lg text-xs font-bold border transition-colors ${
-                        page === p
-                          ? "bg-[#2B201A] text-white border-[#2B201A] shadow-xs"
-                          : "bg-white text-[#2B201A]/80 border-[#E7D8C8] hover:bg-[#FBF2E7]"
-                      }`}
-                    >
-                      {p}
-                    </Link>
-                  )
-                )}
-              </div>
-
-              <Link
-                href={href({ type, status, q, page: page + 1 })}
-                prefetch={true}
-                className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#E7D8C8] bg-white text-xs font-bold text-[#2B201A]/80 hover:bg-[#FBF2E7] transition-colors ${
-                  page >= pages ? "pointer-events-none opacity-40" : ""
-                }`}
-              >
-                <span>Next →</span>
-              </Link>
-            </div>
-          </div>
-        )}
-      </section>
+      <AdminDonationsSection
+        currentType={type}
+        currentStatus={status}
+        currentQuery={q}
+        currentPage={page}
+        totalPages={pages}
+        pageNumbers={pageNumbers}
+        pageSize={PAGE_SIZE}
+        total={total}
+        statusCounts={statusCountsObj}
+        donations={formattedDonations}
+        noun={noun}
+      />
     </div>
   );
 }

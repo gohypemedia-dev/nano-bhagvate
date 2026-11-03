@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   HeartHandshake,
   Images,
@@ -14,11 +14,12 @@ import {
 import { useAdminNavigation } from "./AdminNavigationContext";
 
 export default function AdminNav() {
+  const router = useRouter();
   const pathname = usePathname();
   const { pendingPath, navigate } = useAdminNavigation();
 
-  // Active state tracks optimistic pending path immediately on click
-  const effectivePath = pendingPath || pathname;
+  // Active state tracks optimistic pending path immediately on click (0ms switch)
+  const effectivePath = pendingPath ? pendingPath.split("?")[0] : pathname;
 
   const isDonations =
     effectivePath === "/admin" || effectivePath.startsWith("/admin/donations");
@@ -65,7 +66,7 @@ export default function AdminNav() {
       {links.map((link) => {
         const isThisPending = Boolean(
           pendingPath &&
-            (pendingPath === link.href ||
+            (pendingPath.split("?")[0] === link.href ||
               (link.href !== "/admin" && pendingPath.startsWith(link.href)))
         );
 
@@ -76,6 +77,12 @@ export default function AdminNav() {
             key={link.href}
             href={link.href}
             prefetch={true}
+            onMouseEnter={() => {
+              router.prefetch(link.href);
+            }}
+            onTouchStart={() => {
+              router.prefetch(link.href);
+            }}
             onClick={(e) => {
               // Trigger instant optimistic section transition and preloader
               e.preventDefault();

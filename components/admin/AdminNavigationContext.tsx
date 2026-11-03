@@ -5,7 +5,7 @@ import React, {
   useContext,
   useState,
   useEffect,
-  useTransition,
+  useRef,
   useCallback,
 } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -35,41 +35,52 @@ export function AdminNavigationProvider({ children }: { children: React.ReactNod
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
   const [pendingPath, setPendingPath] = useState<string | null>(null);
+  const prevPathnameRef = useRef(pathname);
 
-  // Clear pending state when current pathname and query match the destination
-  const fullCurrentPath = `${pathname}${
-    searchParams?.toString() ? `?${searchParams.toString()}` : ""
-  }`;
-
+  // Clear pending state as soon as the router finishes transitioning to the new route
   useEffect(() => {
-    if (pendingPath && fullCurrentPath === pendingPath) {
+    if (prevPathnameRef.current !== pathname) {
+      prevPathnameRef.current = pathname;
       setPendingPath(null);
+    } else if (pendingPath) {
+      const cleanTarget = pendingPath.split("?")[0];
+      if (pathname === cleanTarget) {
+        setPendingPath(null);
+      }
     }
-  }, [fullCurrentPath, pendingPath]);
+  }, [pathname, searchParams, pendingPath]);
 
-  // Fallback safety: clear pending after 8 seconds if navigation stalled
+  // Fallback safety: clear pending after 6s in case navigation stalled
   useEffect(() => {
     if (!pendingPath) return;
     const timer = setTimeout(() => {
       setPendingPath(null);
-    }, 8000);
+    }, 6000);
     return () => clearTimeout(timer);
   }, [pendingPath]);
 
   const navigate = useCallback(
     (href: string) => {
-      if (href === fullCurrentPath) return;
+      const currentFull = `${pathname}${
+        searchParams?.toString() ? `?${searchParams.toString()}` : ""
+      }`;
+
+      // If user is already exactly on this URL, no action needed
+      if (href === currentFull) return;
+
+      // 1. Instant urgent state update: immediate 0ms UI switch
       setPendingPath(href);
-      startTransition(() => {
+
+      // 2. Next.js router transition in next tick so React paints active tab & preloader first
+      setTimeout(() => {
         router.push(href);
-      });
+      }, 0);
     },
-    [fullCurrentPath, router]
+    [pathname, searchParams, router]
   );
 
-  const isNavigating = Boolean(pendingPath && pendingPath !== fullCurrentPath) || isPending;
+  const isNavigating = Boolean(pendingPath);
 
   return (
     <AdminNavigationContext.Provider
@@ -97,16 +108,16 @@ function AdminTopProgressBar({ active }: { active: boolean }) {
     let timer: NodeJS.Timeout;
     if (active) {
       setVisible(true);
-      setProgress(20);
+      setProgress(25);
       timer = setTimeout(() => {
         setProgress(75);
-      }, 150);
+      }, 100);
     } else {
       setProgress(100);
       timer = setTimeout(() => {
         setVisible(false);
         setProgress(0);
-      }, 300);
+      }, 250);
     }
     return () => clearTimeout(timer);
   }, [active]);
@@ -131,19 +142,15 @@ function AdminTopProgressBar({ active }: { active: boolean }) {
 
 /**
  * Wrapper for admin content:
- * When navigating to a new section, immediately displays the preloader matching that section!
+ * When navigating to a new section, immediately unmounts old content and shows section preloader!
  */
 export function AdminContentWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const { pendingPath } = useAdminNavigation();
 
-  const fullCurrentPath = `${pathname}${
-    searchParams?.toString() ? `?${searchParams.toString()}` : ""
-  }`;
-
+  // If a pendingPath is set and destination section differs from current page:
   const isNavigatingToNewSection = Boolean(
-    pendingPath && pendingPath !== fullCurrentPath
+    pendingPath && pendingPath.split("?")[0] !== pathname
   );
 
   if (isNavigatingToNewSection && pendingPath) {
@@ -159,7 +166,7 @@ export function AdminContentWrapper({ children }: { children: React.ReactNode })
 function AdminSectionPreloader({ targetPath }: { targetPath: string }) {
   const cleanPath = targetPath.split("?")[0];
 
-  if (cleanPath === "/admin" || cleanPath.startsWith("/admin?")) {
+  if (cleanPath === "/admin") {
     return (
       <div className="animate-in fade-in duration-150">
         <TableSkeleton label="Loading donations & seva ledger..." rows={8} stats={true} />
@@ -213,4 +220,3 @@ function AdminSectionPreloader({ targetPath }: { targetPath: string }) {
     </div>
   );
 }
-
