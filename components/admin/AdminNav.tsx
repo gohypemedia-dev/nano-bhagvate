@@ -1,6 +1,5 @@
 "use client";
 
-<<<<<<< Updated upstream
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -9,22 +8,10 @@ import {
   Calendar,
   Package,
   Users,
+  UserRound,
   Loader2,
-  type LucideIcon,
 } from "lucide-react";
 import { useAdminNavigation } from "./AdminNavigationContext";
-=======
-import Link, { useLinkStatus } from "next/link";
-import { usePathname } from "next/navigation";
-import { HeartHandshake, Images, Calendar, Package, Users, UserRound, Loader2, type LucideIcon } from "lucide-react";
-
-// Swaps the tab icon for a spinner (same size, so no layout shift) while the clicked page loads.
-function NavIcon({ icon: Icon }: { icon: LucideIcon }) {
-  const { pending } = useLinkStatus();
-  const cls = "w-3.5 h-3.5 sm:w-4 sm:h-4";
-  return pending ? <Loader2 className={`${cls} animate-spin`} aria-label="Loading" /> : <Icon className={cls} />;
-}
->>>>>>> Stashed changes
 
 export default function AdminNav() {
   const router = useRouter();
@@ -51,7 +38,7 @@ export default function AdminNav() {
     {
       href: "/admin/users",
       label: "Users",
-      active: pathname.startsWith("/admin/users"),
+      active: effectivePath.startsWith("/admin/users"),
       icon: UserRound,
     },
     {
