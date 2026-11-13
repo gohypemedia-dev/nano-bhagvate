@@ -108,7 +108,7 @@ export async function PATCH(request: Request) {
     return jsonError(parsed.error.issues[0]?.message ?? "Invalid data.", 400);
   }
 
-  const updated = await prisma.user.update({
+  const [updated] = await prisma.$transaction([prisma.user.update({
     where: { id: user.id },
     data: {
       ...(parsed.data.name ? { name: parsed.data.name } : {}),
@@ -129,7 +129,7 @@ export async function PATCH(request: Request) {
       pincode: true,
       createdAt: true,
     },
-  });
+  }), prisma.userActivity.create({ data: { userId: user.id, type: "PROFILE_UPDATED" } })]);
 
   return Response.json({ success: true, user: updated });
 }

@@ -6,6 +6,7 @@ import { sendApprovalRequestEmail } from "@/lib/server/email";
 import { env } from "@/lib/server/env";
 import { isUniqueViolation, jsonError } from "@/lib/server/http";
 import { prisma } from "@/lib/server/prisma";
+import { getCurrentUser } from "@/lib/server/user-auth";
 import { clientIp, rateLimit, tooManyRequests } from "@/lib/server/rate-limit";
 
 // Gives the background approval email time to send on serverless hosts.
@@ -31,6 +32,7 @@ export async function POST(request: Request) {
   }
 
   const { name, email, mobile, program, amount, planId } = parsed.data;
+  const user = await getCurrentUser();
   const plan = planId ? findPlan(planId) : undefined;
   // Membership prices always come from the server-side plan list.
   const rupees = plan ? plan.price : amount!;
@@ -67,6 +69,7 @@ export async function POST(request: Request) {
       await prisma.donation.create({
         data: {
           donationId,
+          userId: user?.id ?? null,
           type: plan ? "MEMBERSHIP" : "DONATION",
           program: plan ? plan.name : program || "General Donation",
           donorName: name,

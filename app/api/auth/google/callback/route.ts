@@ -97,6 +97,7 @@ export async function GET(request: Request) {
       },
     });
 
+    const registered = !user;
     if (user) {
       // Update googleId and image if not already set
       user = await prisma.user.update({
@@ -121,7 +122,7 @@ export async function GET(request: Request) {
     }
 
     // Create session and set cookie
-    await createUserSession(user.id);
+    await createUserSession(user.id, { provider: "GOOGLE", registered });
 
     const savedReturnUrl = store.get("nbvt_oauth_return_url")?.value || "/";
     store.delete("nbvt_oauth_return_url");

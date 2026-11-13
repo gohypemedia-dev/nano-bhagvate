@@ -46,6 +46,7 @@ export async function POST(request: Request) {
       },
     });
 
+    const registered = !user;
     if (user) {
       user = await prisma.user.update({
         where: { id: user.id },
@@ -67,7 +68,7 @@ export async function POST(request: Request) {
       });
     }
 
-    await createUserSession(user.id);
+    await createUserSession(user.id, { provider: "GOOGLE", registered });
 
     return Response.json({
       success: true,

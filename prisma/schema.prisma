@@ -50,6 +50,8 @@ enum AlertStatus {
 
 model Donation {
   id                 String              @id @default(cuid())
+  userId             String?
+  user               User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
   donationId         String              @unique
   type               DonationType        @default(DONATION)
   program            String?
@@ -86,6 +88,7 @@ model Donation {
   @@index([status, createdAt])
   @@index([utr])
   @@index([donorEmail])
+  @@index([userId, createdAt])
 }
 
 // One row per UTR that is attached to an active (pending or verified) donation.
@@ -258,6 +261,8 @@ model User {
   updatedAt        DateTime      @updatedAt
   sessions         UserSession[]
   orders           Order[]
+  donations        Donation[]
+  activities       UserActivity[]
 
   @@index([email])
 }
@@ -271,6 +276,26 @@ model UserSession {
   createdAt DateTime @default(now())
 
   @@index([expiresAt])
+  @@index([userId, expiresAt])
+}
+
+enum UserActivityType {
+  REGISTER
+  LOGIN
+  LOGOUT
+  PROFILE_UPDATED
+}
+
+// Separate from sessions so logout and expired-session cleanup do not erase history.
+model UserActivity {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      UserActivityType
+  provider  String?          // PASSWORD, GOOGLE; null for historical sessions / profile changes
+  createdAt DateTime         @default(now())
+
+  @@index([userId, createdAt])
 }
 
 model Order {

@@ -2,6 +2,14 @@
 
 How donations work on the Trust website, how to set it up, and how to run it day to day.
 
+### Admin user history
+
+`/admin/users` lists every registered account, including non-members and accounts without payments. Search by name, email or phone, filter by valid sessions or book orders, and open **View history** for account details, memberships, all donation attempts, book orders, refunds and account activity. Dates are shown in IST. A valid session indicates a signed-in device, not current online presence.
+
+Sign-ins (password and Google), registration, explicit sign-outs and profile updates are stored in `UserActivity`, independently of session deletion. The `20261104000000_admin_user_history` migration backfills sign-ins from retained sessions; previously deleted sessions and earlier profile changes cannot be recovered. New signed-in donations store `Donation.userId`. Older and guest donations match by case-insensitive email only when they have no account link; these are labelled **Matched by email**. Guest donors without registered accounts remain in the Donations dashboard.
+
+Run `npm run test:user-history` for focused matching and authentication-history tests. Apply the migration before deploying the updated authentication routes. For databases originally created outside Prisma migrations, reconcile the existing migration baseline before running the full `db:deploy` chain; do not replay table-creation migrations against existing tables.
+
 ---
 
 ## 1. How it works

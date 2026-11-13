@@ -29,16 +29,24 @@ export async function verifyPassword(password: string, stored: string) {
   return timingSafeEqual(actual, expected);
 }
 
-export async function createUserSession(userId: string) {
+export async function createUserSession(
+  userId: string,
+  options: { provider?: "PASSWORD" | "GOOGLE"; registered?: boolean } = {},
+) {
   const token = generateToken();
   const expiresAt = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000);
-  await prisma.userSession.create({
-    data: {
-      tokenHash: sha256(token),
-      userId,
-      expiresAt,
-    },
-  });
+  await prisma.$transaction([
+    prisma.userSession.create({
+      data: { tokenHash: sha256(token), userId, expiresAt },
+    }),
+    prisma.userActivity.create({
+      data: {
+        userId,
+        type: options.registered ? "REGISTER" : "LOGIN",
+        provider: options.provider ?? "PASSWORD",
+      },
+    }),
+  ]);
 
   const store = await cookies();
   store.set(USER_SESSION_COOKIE, token, {
@@ -55,7 +63,14 @@ export async function destroyUserSession() {
   const store = await cookies();
   const token = store.get(USER_SESSION_COOKIE)?.value;
   if (token) {
-    await prisma.userSession.deleteMany({ where: { tokenHash: sha256(token) } });
+    await prisma.$transaction(async (tx) => {
+      const session = await tx.userSession.findUnique({ where: { tokenHash: sha256(token) } });
+      if (!session) return;
+      const deleted = await tx.userSession.deleteMany({ where: { id: session.id } });
+      if (deleted.count && session.expiresAt > new Date()) {
+        await tx.userActivity.create({ data: { userId: session.userId, type: "LOGOUT" } });
+      }
+    });
   }
   store.delete(USER_SESSION_COOKIE);
 }
