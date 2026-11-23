@@ -13,6 +13,7 @@
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "admin:create": "node --env-file=.env scripts/create-admin.mjs",
+    "bank:check": "node --env-file=.env scripts/check-bank-emails.mjs",
     "gallery:sync": "node --env-file=.env scripts/upload-gallery-to-r2.mjs"
   },
   "dependencies": {

@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { after } from "next/server";
 import { Prisma, type DonationStatus } from "@prisma/client";
+import { syncBankAlerts } from "@/lib/server/bank-alerts";
 import { Users, ArrowRight } from "lucide-react";
 import { requireAdminPage } from "@/lib/server/auth";
 import { prisma } from "@/lib/server/prisma";
@@ -54,6 +56,12 @@ export default async function AdminDashboard({
   searchParams: Promise<{ type?: string; status?: string; q?: string; page?: string }>;
 }) {
   await requireAdminPage();
+  // Pick up bank payment emails for donors who closed the payment window before it was
+  // detected. Throttled inside syncBankAlerts and run after the response, so the page
+  // never waits on Gmail; AutoRefresh shows the result on the next refresh.
+  after(() =>
+    syncBankAlerts().catch((e) => console.error("[bank-alerts] dashboard sync failed:", e)),
+  );
   const sp = await searchParams;
   const status = STATUSES.includes(sp.status as DonationStatus) ? (sp.status as DonationStatus) : undefined;
   const type = TYPES.find((t) => t.value === sp.type)?.value;

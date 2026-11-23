@@ -81,7 +81,7 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
   const [resumed, setResumed] = useState(false);
   const [eventAmounts, setEventAmounts] = useState<number[] | null>(null);
 
-  const [selectedAmount, setSelectedAmount] = useState<number>(PRESET_AMOUNTS[0] ?? 499);
+  const [selectedAmount, setSelectedAmount] = useState<number>(PRESET_AMOUNTS[0] ?? 1);
   const [planId, setPlanId] = useState<string>(MEMBERSHIP_PLANS[0].id);
   const [donorName, setDonorName] = useState("");
   const [donorEmail, setDonorEmail] = useState("");
@@ -156,7 +156,7 @@ export default function DonateModal({ minAmount }: { minAmount: number }) {
             donateModal.customAmounts && donateModal.customAmounts.length === 6
               ? donateModal.customAmounts
               : PRESET_AMOUNTS;
-          setSelectedAmount(donateModal.amount || effectiveAmounts[0] || effectiveAmounts[1] || 499);
+          setSelectedAmount(donateModal.amount || effectiveAmounts[0] || effectiveAmounts[1] || 1);
         }
       }
     }
